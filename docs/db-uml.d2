@@ -1,0 +1,42 @@
+vars: {
+
+  d2-config: {
+    layout-engine: elk
+    
+    # Terminal theme code
+    theme-id: 300
+  }
+
+}
+
+patient {
+  shape: class
+
+  id: int
+  assigned-doctor: doctor
+  name: string
+  surname: string
+  email: string
+  password: string
+  appointments: 'appointment[*]'
+}
+
+appointment {
+  shape: class
+
+  appointment-date: date
+  time: string
+  reason: string
+}
+
+doctor {
+  shape: class
+
+  id: int
+  name: string
+  surname: string
+  email: string
+  password: string
+  appointments:'appointment[*]'
+  patients: 'patient[*]'
+}

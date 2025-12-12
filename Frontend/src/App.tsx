@@ -1,31 +1,69 @@
-import { APITester } from "./APITester";
-import "./index.css";
+import React, { useState } from 'react';
+import { MainLayout } from './components/Layout/MainLayout';
+import { Dashboard } from './pages/Dashboard';
+import { CalendarPage } from './pages/CalendarPage';
+import { PatientsPage } from './pages/PatientsPage';
+import { StatisticsPage } from './pages/StatisticsPage';
+import { SettingsPage } from './pages/SettingsPage';
+import { CalendarModal } from './components/Calendar/CalendarModal';
+import { PatientModal } from './components/Patients/PatientModal';
+import { ThemeProvider } from './components/ThemeProvider';
+import './index.css';
 
-import logo from "./logo.svg";
-import reactLogo from "./react.svg";
+type PageType = 'dashboard' | 'calendar' | 'patients' | 'statistics' | 'settings';
+
+const pageConfig: Record<PageType, { title: string; breadcrumb: string[] }> = {
+  dashboard: { title: 'Tableau de bord', breadcrumb: ['Accueil', 'Tableau de bord'] },
+  calendar: { title: 'Calendrier', breadcrumb: ['Accueil', 'Calendrier'] },
+  patients: { title: 'Patients', breadcrumb: ['Accueil', 'Patients'] },
+  statistics: { title: 'Statistiques', breadcrumb: ['Accueil', 'Statistiques'] },
+  settings: { title: 'Paramètres', breadcrumb: ['Accueil', 'Paramètres'] }
+};
 
 export function App() {
-  return (
-    <div className="max-w-7xl mx-auto p-8 text-center relative z-10">
-      <div className="flex justify-center items-center gap-8 mb-8">
-        <img
-          src={logo}
-          alt="Bun Logo"
-          className="h-24 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#646cffaa] scale-120"
-        />
-        <img
-          src={reactLogo}
-          alt="React Logo"
-          className="h-24 p-6 transition-all duration-300 hover:drop-shadow-[0_0_2em_#61dafbaa] animate-[spin_20s_linear_infinite]"
-        />
-      </div>
+  const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
 
-      <h1 className="text-5xl font-bold my-4 leading-tight">Bun + React</h1>
-      <p>
-        Edit <code className="bg-[#1a1a1a] px-2 py-1 rounded font-mono">src/App.tsx</code> and save to test HMR
-      </p>
-      <APITester />
-    </div>
+  const handleNavigate = (page: string) => {
+    setCurrentPage(page as PageType);
+  };
+
+  const renderPage = () => {
+    switch (currentPage) {
+      case 'dashboard':
+        return <Dashboard />;
+      case 'calendar':
+        return <CalendarPage />;
+      case 'patients':
+        return <PatientsPage />;
+      case 'statistics':
+        return <StatisticsPage />;
+      case 'settings':
+        return <SettingsPage />;
+      default:
+        return <Dashboard />;
+    }
+  };
+
+  const { title, breadcrumb } = pageConfig[currentPage];
+
+  return (
+    <ThemeProvider>
+      <MainLayout
+        currentPage={currentPage}
+        onNavigate={handleNavigate}
+        pageTitle={title}
+        breadcrumb={breadcrumb}
+      >
+        {renderPage()}
+        {/* Global modals for pages that don't include them */}
+        {currentPage === 'dashboard' && (
+          <>
+            <CalendarModal />
+            <PatientModal />
+          </>
+        )}
+      </MainLayout>
+    </ThemeProvider>
   );
 }
 

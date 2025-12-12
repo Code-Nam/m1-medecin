@@ -1,0 +1,43 @@
+direction: right
+
+patient {
+  shape: sql_table
+
+  id: int {constraint: primary_key}
+  assigned-doctor: string {constraint: foreign_key}
+  name: string
+  surname: string
+  email: string
+  password: string
+  last_update: datetime
+}
+
+appointment {
+  shape: sql_table
+
+  id: int {constraint: primary_key}
+  appointed-patient: string {constraint: foreign_key}
+  appointed-doctor: string {constraint: foreign_key}
+  date: date
+  time: string
+  reason: string
+  status: string
+  last_update: datetime
+}
+
+doctor {
+  shape: sql_table
+
+  id: int {constraint: primary_key}
+  name: string
+  surname: string
+  email: string
+  phone: int
+  password: string
+  specialization: string
+  last_update: datetime
+}
+
+patient.assigned-doctor --> doctor.id
+appointment.appointed-patient --> patient.id
+appointment.appointed-doctor --> doctor.id

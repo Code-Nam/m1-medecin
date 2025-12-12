@@ -6,6 +6,7 @@
 
 - [Patient endpoints](#patient-endpoints)
   - [Get patient](#get-patient)
+  - [Login patient](#login-patient)
   - [Create patient](#create-patient)
   - [Update patient](#update-patient)
   - [Delete patient](#delete-patient)
@@ -13,18 +14,20 @@
 ## Get patient
 
 **Method**: `GET`
+
 **Endpoint**: `?page={page_number}&pageSize={page_size}`
 
 ### Request Template
 
 ---
 
-```json
+```toml
 HEADER
 
 ---
 {
-  "patientId": "pat_xxxxxx" / "doctorId": "doc_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient or doctor token
 }
 ```
 
@@ -45,13 +48,14 @@ HEADER
 ## Create patient
 
 **Method**: `POST`
+
 **Endpoint**: `/`
 
 ### Request Template
 
 ---
 
-```json
+```toml
 BODY
 ---
 {
@@ -73,24 +77,56 @@ HTTP/1.1 201 Created
 Content-Type: application/json
 ```
 
+## Login patient
+
+**Method**: `POST`
+
+**Endpoint**: `/login`
+
+### Request Template
+
+---
+
+```toml
+BODY
+---
+{
+  "email": "john.doe@gmail.com",
+  "password": "12345"
+}
+```
+
+### Response Template
+
+---
+
+```toml
+{
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient token
+}
+```
+
 ## Update patient
 
 **Method**: `PUT`
+
 **Endpoint**: `/{patient_id}`
 
 ### Request Template
 
 ---
 
-```json
+```toml
 HEADER
 ---
 {
-  "patientId": "pat_xxxxxx" / "doctorId": "doc_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient or doctor token
 }
 ```
 
-```json
+```toml
 BODY
 ---
 {
@@ -115,17 +151,19 @@ Content-Type: application/json
 ## Delete patient
 
 **Method**: `DELETE`
+
 **Endpoint**: `/{patient_id}`
 
 ### Request Template
 
 ---
 
-```HTTP
+```toml
 HEADER
 ---
 {
-  "patientId": "pat_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient token
 }
 ```
 

@@ -6,18 +6,21 @@
 ## Retrieve Appointments
 
 **Method**: `GET`
+
 **Endpoint**: `/{patient_id}?page={page_number}&pageSize={page_size}`
+
 **Endpoint**: `/{doctor_id}?page={page_number}&pageSize={page_size}`
 
 ### Request Template
 
 ---
 
-```json
+```toml
 HEADER
 ---
 {
-  "patientId": "pat_xxxxxx" / "doctorId": "doc_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient or doctor token
 }
 ```
 
@@ -55,17 +58,19 @@ HEADER
 ## Create appointment
 
 **Method**: `POST`
+
 **Endpoint**: `/`
 
 ### Request Template
 
 ---
 
-```json
+```toml
 HEADER
 ---
 {
-  "patientId": "pat_xxxxxx" / "doctorId": "doc_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient or doctor token
 }
 ```
 
@@ -93,21 +98,22 @@ Content-Type: application/json
 ## Update appointment
 
 **Method**: `PUT`
+
 **Endpoint**: `/{appointment_id}`
 
 ### Request Template
 
 ---
 
-```json
+```toml
 HEADER
----
 {
-  "doctorId": "doc_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // doctor token
 }
 ```
 
-```json
+```toml
 BODY
 ---
 {
@@ -127,16 +133,18 @@ Content-Type: application/json
 ### Delete appointment
 
 **Method**: `DELETE`
+
 **Endpoint**: `/{appointment_id}`
 
 ### Request Template
 ---
 
-```json
+```toml
 HEADER
 ---
 {
-  "doctorId": "doc_xxxxxx" / "patientId": "pat_xxxxxx"
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9..."
+  // patient or doctor token
 }
 ```
 

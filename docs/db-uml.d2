@@ -1,42 +1,42 @@
-vars: {
-
-  d2-config: {
-    layout-engine: elk
-    
-    # Terminal theme code
-    theme-id: 300
-  }
-
-}
+direction: right
 
 patient {
-  shape: class
+  shape: sql_table
 
-  id: int
-  assigned-doctor: doctor
+  id: int {constraint: primary_key}
+  assigned-doctor: string {constraint: foreign_key}
   name: string
   surname: string
   email: string
   password: string
-  appointments: 'appointment[*]'
+  last_update: datetime
 }
 
 appointment {
-  shape: class
+  shape: sql_table
 
+  id: int {constraint: primary_key}
+  appointed-patient: string {constraint: foreign_key}
+  appointed-doctor: string {constraint: foreign_key}
   appointment-date: date
   time: string
   reason: string
+  last_update: datetime
 }
 
 doctor {
-  shape: class
+  shape: sql_table
 
-  id: int
+  id: int {constraint: primary_key}
   name: string
   surname: string
   email: string
+  phone: int
   password: string
-  appointments:'appointment[*]'
-  patients: 'patient[*]'
+  specialization: string
+  last_update: datetime
 }
+
+patient.assigned-doctor --> doctor.id
+appointment.appointed-patient --> patient.id
+appointment.appointed-doctor --> doctor.id

@@ -18,9 +18,10 @@ appointment {
   id: int {constraint: primary_key}
   appointed-patient: string {constraint: foreign_key}
   appointed-doctor: string {constraint: foreign_key}
-  appointment-date: date
+  date: date
   time: string
   reason: string
+  status: string
   last_update: datetime
 }
 

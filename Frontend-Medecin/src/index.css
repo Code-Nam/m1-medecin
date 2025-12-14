@@ -45,18 +45,18 @@
 
 /* Palette IIM - Thème sombre */
 .dark {
-  /* Backgrounds */
+  /* Backgrounds - Variantes sombres basées sur la charte */
   --color-bg-primary: #0F0F0F; /* Fond sombre */
-  --color-bg-secondary: #1A1A1A; /* Cartes sombres */
-  --color-bg-card: #1F2937; /* Cartes sombres */
+  --color-bg-secondary: #1E1E1E; /* Cartes sombres - Variante assombrie de #263238 */
+  --color-bg-card: #2A2A2A; /* Cartes sombres - Variante assombrie de #263238 */
   
   /* Text */
   --color-text-primary: #FFFFFF; /* Texte blanc */
   --color-text-secondary: #B0BEC5; /* Texte secondaire clair */
   --color-text-muted: #90A4AE; /* Texte muted clair */
   
-  /* Borders */
-  --color-border: #404040; /* Bordures sombres */
+  /* Borders - Variante sombre de #E0E0E0 avec transparence */
+  --color-border: rgba(224, 224, 224, 0.15); /* Bordures sombres - Variante de #E0E0E0 */
   
   /* Accents (versions plus claires pour le thème sombre) */
   --color-accent-1: #FFD54F; /* Accentuation 1 (jaune plus clair) */
@@ -119,12 +119,12 @@ html {
 
 html.dark {
   --bg-primary: #0F0F0F; /* Fond sombre */
-  --bg-secondary: #1A1A1A; /* Cartes sombres */
-  --bg-card: #1F2937; /* Cartes sombres */
+  --bg-secondary: #1E1E1E; /* Cartes sombres - Variante de #263238 */
+  --bg-card: #2A2A2A; /* Cartes sombres - Variante de #263238 */
   --text-primary: #FFFFFF; /* Texte blanc */
   --text-secondary: #B0BEC5; /* Texte secondaire clair */
   --text-muted: #90A4AE; /* Texte muted clair */
-  --border-color: #404040; /* Bordures sombres */
+  --border-color: rgba(224, 224, 224, 0.15); /* Bordures sombres - Variante de #E0E0E0 */
   --accent-color: #4DB6AC; /* Couleur secondaire (teal clair) */
   --accent-hover-color: #26A69A; /* Hover */
   --accent-1: #FFD54F; /* Accentuation 1 (jaune clair) */
@@ -222,7 +222,7 @@ html:not(.dark) [class*="dark:border-gray-800"] {
 }
 
 html.dark *:focus-visible {
-  box-shadow: 0 0 0 2px #1F2937, 0 0 0 4px #4DB6AC; /* Teal clair pour le sombre */
+  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC; /* Teal clair pour le sombre - Variante de #263238 */
 }
 
 /* Scrollbar styling */
@@ -236,7 +236,7 @@ html.dark *:focus-visible {
 }
 
 html.dark ::-webkit-scrollbar-track {
-  background-color: #1F2937;
+  background-color: #2A2A2A; /* Variante de #263238 */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -245,7 +245,7 @@ html.dark ::-webkit-scrollbar-track {
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-  background-color: #4B5563;
+  background-color: rgba(224, 224, 224, 0.3); /* Variante de #E0E0E0 */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -281,7 +281,11 @@ html.dark ::selection {
 
   /* Glass effect */
   .glass {
-    @apply bg-white/80 dark:bg-gray-800/80 backdrop-blur-md;
+    @apply bg-white/80 backdrop-blur-md;
+  }
+  
+  html.dark .glass {
+    background-color: rgba(42, 42, 42, 0.8) !important; /* Variante de #263238 avec transparence */
   }
 
   /* Gradient text */
@@ -313,7 +317,7 @@ html.dark ::selection {
     color: #546E7A; /* Texte secondaire */
   }
   html.dark .badge-cancelled {
-    background-color: #374151; /* Gris foncé */
+    background-color: #2A2A2A; /* Variante de #263238 */
     color: #90A4AE; /* Texte muted clair */
   }
 
@@ -441,7 +445,7 @@ html.dark ::selection {
 /* FC Header */
 .fc .fc-toolbar-title {
   @apply text-xl font-semibold capitalize;
-  color: #111827 !important;
+  color: #263238 !important; /* Couleur Texte - Palette IIM */
 }
 
 html.dark .fc .fc-toolbar-title {
@@ -459,7 +463,7 @@ html.dark .fc .fc-toolbar-title {
 }
 
 html.dark .fc .fc-button:focus {
-  box-shadow: 0 0 0 2px #1F2937, 0 0 0 4px #4DB6AC !important; /* Teal clair */
+  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC !important; /* Teal clair - Variante de #263238 */
 }
 
 /* FC Day cells - Palette IIM */
@@ -472,7 +476,7 @@ html.dark .fc .fc-button:focus {
 }
 
 html.dark .fc .fc-daygrid-day:hover {
-  background-color: rgba(31, 41, 55, 0.5) !important; /* Gris foncé avec transparence */
+  background-color: rgba(42, 42, 42, 0.5) !important; /* Variante de #263238 avec transparence */
 }
 
 .fc .fc-daygrid-day-number {
@@ -539,7 +543,7 @@ html.dark .fc .fc-timegrid-slot {
 }
 
 html.dark .fc .fc-col-header-cell {
-  background-color: rgba(31, 41, 55, 0.5) !important; /* Gris foncé avec transparence */
+  background-color: rgba(42, 42, 42, 0.5) !important; /* Variante de #263238 avec transparence */
 }
 
 .fc .fc-col-header-cell-cushion {

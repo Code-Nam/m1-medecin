@@ -4,6 +4,7 @@ import { AppointmentStatus } from './AppointmentStatus';
 import { formatDate, formatTime } from '../../utils/dataFormater';
 import { Calendar, Clock, User } from 'lucide-react';
 import { Button } from '../Common/Button';
+import { useTheme } from '../../hooks/useTheme';
 
 interface AppointmentCardProps {
     appointment: Appointment;
@@ -18,14 +19,28 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
     onCancel,
     onEdit,
 }) => {
+    const { colors } = useTheme();
+
     return (
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
+        <div 
+            className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+            style={{
+                backgroundColor: colors.bg.card,
+                borderColor: colors.border.default
+            }}
+        >
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 className="text-lg font-semibold text-gray-900 mb-1">
+                    <h3 
+                        className="text-lg font-semibold mb-1"
+                        style={{ color: colors.text.primary }}
+                    >
                         {appointment.reason}
                     </h3>
-                    <div className="flex items-center text-gray-600 mb-2">
+                    <div 
+                        className="flex items-center mb-2"
+                        style={{ color: colors.text.secondary }}
+                    >
                         <User size={16} className="mr-2" />
                         <span className="text-sm">{doctorName || 'Médecin inconnu'}</span>
                     </div>
@@ -34,18 +49,27 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
             </div>
 
             <div className="flex items-center gap-6 mb-6">
-                <div className="flex items-center text-gray-700">
-                    <Calendar size={18} className="mr-2 text-blue-500" />
+                <div 
+                    className="flex items-center"
+                    style={{ color: colors.text.primary }}
+                >
+                    <Calendar size={18} className="mr-2" style={{ color: colors.accent.primary }} />
                     <span>{formatDate(appointment.date)}</span>
                 </div>
-                <div className="flex items-center text-gray-700">
-                    <Clock size={18} className="mr-2 text-blue-500" />
+                <div 
+                    className="flex items-center"
+                    style={{ color: colors.text.primary }}
+                >
+                    <Clock size={18} className="mr-2" style={{ color: colors.accent.primary }} />
                     <span>{formatTime(appointment.time)}</span>
                 </div>
             </div>
 
             {(onCancel || onEdit) && (
-                <div className="flex gap-3 justify-end pt-4 border-t border-gray-100">
+                <div 
+                    className="flex gap-3 justify-end pt-4 border-t"
+                    style={{ borderColor: colors.border.default }}
+                >
                     {onEdit && (
                         <Button
                             variant="outline"
@@ -57,8 +81,7 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                     )}
                     {onCancel && (
                         <Button
-                            variant="danger" // Using ghost or outline for cancel usually better, but sticking to danger per prompt vibe
-                            className="bg-white text-red-600 border border-red-200 hover:bg-red-50"
+                            variant="danger"
                             size="sm"
                             onClick={() => onCancel(appointment.appointmentId)}
                         >

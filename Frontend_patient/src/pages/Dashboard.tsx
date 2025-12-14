@@ -3,7 +3,7 @@ import { usePatientStore } from '../store/patientStore';
 import { useAppointmentStore } from '../store/appointmentStore';
 import { useDoctorStore } from '../store/doctorStore';
 import { AppointmentReminder, AppointmentCard } from '../components/Appointments';
-import { Sidebar } from '../components/Layout';
+import { useTheme } from '../hooks/useTheme';
 import { Link } from 'react-router-dom';
 import { PlusCircle } from 'lucide-react';
 
@@ -11,6 +11,7 @@ export const Dashboard = () => {
     const { currentPatient } = usePatientStore();
     const { appointments, fetchAppointments, getUpcomingAppointments, isLoading } = useAppointmentStore();
     const { doctors, fetchAllDoctors } = useDoctorStore();
+    const { colors } = useTheme();
 
     useEffect(() => {
         if (currentPatient) {
@@ -32,29 +33,49 @@ export const Dashboard = () => {
     };
 
     return (
-        <div className="flex h-screen bg-gray-50 w-full">
-            <Sidebar />
-            <div className="flex-1 overflow-auto p-8 w-full">
-                <div className="max-w-4xl mx-auto">
+        <div className="max-w-4xl mx-auto">
                     <header className="mb-8">
-                        <h1 className="text-3xl font-bold text-gray-900">
+                        <h1 
+                            className="text-3xl font-bold"
+                            style={{ color: colors.text.primary }}
+                        >
                             Bonjour, {currentPatient?.firstName} 👋
                         </h1>
-                        <p className="text-gray-500 mt-2">
+                        <p 
+                            className="mt-2"
+                            style={{ color: colors.text.secondary }}
+                        >
                             Bienvenue sur votre espace patient. Voici un aperçu de vos activités.
                         </p>
                     </header>
 
                     {isLoading ? (
-                        <div className="p-8 text-center text-gray-500">Chargement...</div>
+                        <div 
+                            className="p-8 text-center"
+                            style={{ color: colors.text.secondary }}
+                        >
+                            Chargement...
+                        </div>
                     ) : (
                         <div className="space-y-8">
                             <section>
                                 <div className="flex items-center justify-between mb-4">
-                                    <h2 className="text-xl font-semibold text-gray-800">Prochain Rendez-vous</h2>
+                                    <h2 
+                                        className="text-xl font-semibold"
+                                        style={{ color: colors.text.primary }}
+                                    >
+                                        Prochain Rendez-vous
+                                    </h2>
                                     <Link
                                         to="/book"
-                                        className="inline-flex items-center text-sm font-medium text-blue-600 hover:text-blue-500"
+                                        className="inline-flex items-center text-sm font-medium transition-colors"
+                                        style={{ color: colors.accent.primary }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.color = colors.accent.hover;
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.color = colors.accent.primary;
+                                        }}
                                     >
                                         <PlusCircle className="w-4 h-4 mr-1" />
                                         Nouveau RDV
@@ -63,9 +84,27 @@ export const Dashboard = () => {
                                 {nextAppointment ? (
                                     <AppointmentReminder appointment={nextAppointment} />
                                 ) : (
-                                    <div className="bg-white p-6 rounded-lg shadow-sm border border-gray-200 text-center">
-                                        <p className="text-gray-500">Aucun rendez-vous à venir.</p>
-                                        <Link to="/book" className="mt-4 inline-block text-blue-600 hover:underline">
+                                    <div 
+                                        className="p-6 rounded-lg shadow-sm border text-center"
+                                        style={{
+                                            backgroundColor: colors.bg.card,
+                                            borderColor: colors.border.default
+                                        }}
+                                    >
+                                        <p style={{ color: colors.text.secondary }}>
+                                            Aucun rendez-vous à venir.
+                                        </p>
+                                        <Link 
+                                            to="/book" 
+                                            className="mt-4 inline-block transition-colors"
+                                            style={{ color: colors.accent.primary }}
+                                            onMouseEnter={(e) => {
+                                                e.currentTarget.style.textDecoration = 'underline';
+                                            }}
+                                            onMouseLeave={(e) => {
+                                                e.currentTarget.style.textDecoration = 'none';
+                                            }}
+                                        >
                                             Prendre un rendez-vous
                                         </Link>
                                     </div>
@@ -74,8 +113,23 @@ export const Dashboard = () => {
 
                             <section>
                                 <div className="flex items-center justify-between mb-4">
-                                    <h2 className="text-xl font-semibold text-gray-800">Rendez-vous à venir</h2>
-                                    <Link to="/appointments" className="text-sm text-blue-600 hover:underline">
+                                    <h2 
+                                        className="text-xl font-semibold"
+                                        style={{ color: colors.text.primary }}
+                                    >
+                                        Rendez-vous à venir
+                                    </h2>
+                                    <Link 
+                                        to="/appointments" 
+                                        className="text-sm transition-colors"
+                                        style={{ color: colors.accent.primary }}
+                                        onMouseEnter={(e) => {
+                                            e.currentTarget.style.textDecoration = 'underline';
+                                        }}
+                                        onMouseLeave={(e) => {
+                                            e.currentTarget.style.textDecoration = 'none';
+                                        }}
+                                    >
                                         Voir tout
                                     </Link>
                                 </div>
@@ -91,7 +145,14 @@ export const Dashboard = () => {
                                         ))}
                                     </div>
                                 ) : (
-                                    <div className="bg-gray-50 rounded-lg p-6 text-center text-gray-500 italic border border-dashed">
+                                    <div 
+                                        className="rounded-lg p-6 text-center italic border border-dashed"
+                                        style={{
+                                            backgroundColor: colors.bg.secondary,
+                                            color: colors.text.secondary,
+                                            borderColor: colors.border.default
+                                        }}
+                                    >
                                         {upcoming.length <= 1 ? "Pas d'autres rendez-vous prévus." : ""}
                                     </div>
                                 )}
@@ -99,7 +160,5 @@ export const Dashboard = () => {
                         </div>
                     )}
                 </div>
-            </div>
-        </div>
     );
 };

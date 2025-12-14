@@ -28,8 +28,12 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className = '' })
 
 // Full page spinner
 export const PageSpinner: React.FC = () => {
+  const { darkMode } = useTheme();
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm z-50">
+    <div 
+      className="fixed inset-0 flex items-center justify-center backdrop-blur-sm z-50"
+      style={{ backgroundColor: darkMode ? 'rgba(15, 15, 15, 0.8)' : 'rgba(255, 255, 255, 0.8)' }}
+    >
       <Spinner size="lg" />
     </div>
   );

@@ -31,6 +31,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const { patients } = usePatientStore();
   const { addAppointment, updateAppointment } = useAppointmentStore();
   const { addToast } = useUIStore();
+  const { colors } = useTheme();
 
   const isEditing = !!appointment;
 
@@ -231,7 +232,10 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
       )}
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div 
+        className="flex justify-end gap-3 pt-4 border-t"
+        style={{ borderColor: colors.border.default }}
+      >
         <Button
           type="button"
           variant="ghost"

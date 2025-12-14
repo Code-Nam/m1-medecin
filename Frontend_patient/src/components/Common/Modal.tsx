@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { X } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 interface ModalProps {
     isOpen: boolean;
@@ -9,6 +10,8 @@ interface ModalProps {
 }
 
 export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }) => {
+    const { colors } = useTheme();
+
     useEffect(() => {
         const handleEscape = (e: KeyboardEvent) => {
             if (e.key === 'Escape') onClose();
@@ -28,15 +31,40 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, onClose, title, children }
     if (!isOpen) return null;
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 backdrop-blur-sm" role="dialog" aria-modal="true" aria-labelledby="modal-title">
-            <div className="relative w-full max-w-lg bg-white rounded-lg shadow-xl animate-in fade-in zoom-in duration-200">
-                <div className="flex items-center justify-between p-4 border-b">
-                    <h2 id="modal-title" className="text-xl font-semibold text-gray-900">
+        <div 
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 backdrop-blur-sm" 
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.5)' }}
+            role="dialog" 
+            aria-modal="true" 
+            aria-labelledby="modal-title"
+        >
+            <div 
+                className="relative w-full max-w-lg rounded-lg shadow-xl animate-in fade-in zoom-in duration-200"
+                style={{ backgroundColor: colors.bg.card }}
+            >
+                <div 
+                    className="flex items-center justify-between p-4 border-b"
+                    style={{ borderColor: colors.border.default }}
+                >
+                    <h2 
+                        id="modal-title" 
+                        className="text-xl font-semibold"
+                        style={{ color: colors.text.primary }}
+                    >
                         {title}
                     </h2>
                     <button
                         onClick={onClose}
-                        className="p-1 text-gray-400 hover:text-gray-500 hover:bg-gray-100 rounded-full transition-colors"
+                        className="p-1 rounded-full transition-colors"
+                        style={{ color: colors.text.muted }}
+                        onMouseEnter={(e) => {
+                            e.currentTarget.style.color = colors.text.secondary;
+                            e.currentTarget.style.backgroundColor = colors.bg.secondary;
+                        }}
+                        onMouseLeave={(e) => {
+                            e.currentTarget.style.color = colors.text.muted;
+                            e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
                         aria-label="Fermer"
                     >
                         <X size={20} />

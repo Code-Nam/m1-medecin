@@ -4,6 +4,7 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { Appointment, AppointmentStatus } from '../../types';
+import { useTheme } from '../../hooks/useTheme';
 import './calendar.css'; // We will create this for any custom overrides if needed
 
 interface AppointmentCalendarProps {
@@ -17,18 +18,20 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
     onSelectSlot,
     onEventClick,
 }) => {
+    const { darkMode, colors } = useTheme();
+
     const getEventColor = (status: AppointmentStatus) => {
         switch (status) {
             case AppointmentStatus.CONFIRMED:
-                return '#22c55e'; // green-500
+                return colors.semantic.success; // Teal - Palette IIM
             case AppointmentStatus.PENDING:
-                return '#eab308'; // yellow-500
+                return colors.semantic.warning; // Jaune - Palette IIM
             case AppointmentStatus.CANCELLED:
-                return '#ef4444'; // red-500
+                return colors.semantic.danger; // Rouge - Palette IIM
             case AppointmentStatus.DOCTOR_CREATED:
-                return '#3b82f6'; // blue-500
+                return colors.semantic.success; // Teal - Palette IIM
             default:
-                return '#6b7280'; // gray-500
+                return colors.text.secondary; // Texte secondaire - Palette IIM
         }
     };
 
@@ -45,7 +48,13 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
     }));
 
     return (
-        <div className="calendar-container p-4 bg-white rounded-lg shadow border border-gray-200">
+        <div 
+            className="rounded-xl shadow-sm border p-4 lg:p-6"
+            style={{
+                backgroundColor: colors.bg.card,
+                borderColor: colors.border.default
+            }}
+        >
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
                 initialView="dayGridMonth"
@@ -54,27 +63,47 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
                     center: 'title',
                     right: 'dayGridMonth,timeGridWeek,timeGridDay'
                 }}
-                events={events}
-                eventClick={(info) => {
-                    if (onEventClick) {
-                        onEventClick(info.event.id);
-                    }
+                locale="fr"
+                firstDay={1}
+                buttonText={{
+                    today: "Aujourd'hui",
+                    month: 'Mois',
+                    week: 'Semaine',
+                    day: 'Jour'
                 }}
+                events={events}
                 dateClick={(info) => {
                     if (onSelectSlot) {
                         onSelectSlot(info.date);
                     }
                 }}
-                locale="fr"
-                buttonText={{
-                    today: "Aujourd'hui",
-                    month: 'Mois',
-                    week: 'Semaine',
-                    day: 'Jour',
-                    list: 'Liste'
+                eventClick={(info) => {
+                    if (onEventClick) {
+                        onEventClick(info.event.id);
+                    }
+                }}
+                selectable={true}
+                editable={false}
+                eventDisplay="block"
+                dayMaxEvents={3}
+                moreLinkText={(n) => `+${n} autres`}
+                slotMinTime="08:00:00"
+                slotMaxTime="19:00:00"
+                allDaySlot={false}
+                slotLabelFormat={{
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
+                }}
+                eventTimeFormat={{
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false
                 }}
                 height="auto"
-                aspectRatio={1.5}
+                aspectRatio={1.8}
+                eventClassNames="cursor-pointer transition-transform hover:scale-[1.02]"
+                dayCellClassNames="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
             />
         </div>
     );

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Patient, PatientUpdatePayload } from '../../types';
 import { Button } from '../Common/Button';
+import { useTheme } from '../../hooks/useTheme';
 import { isValidEmail, isValidPhone } from '../../utils/validation';
 
 interface ProfilFormProps {
@@ -10,6 +11,7 @@ interface ProfilFormProps {
 }
 
 export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCancel }) => {
+    const { colors } = useTheme();
     const [formData, setFormData] = useState({
         firstName: patient.firstName,
         surname: patient.surname,
@@ -56,11 +58,25 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
         }
     };
 
+    const inputBaseStyle: React.CSSProperties = {
+        backgroundColor: colors.bg.card,
+        color: colors.text.primary,
+        borderColor: colors.border.default
+    };
+
     return (
-        <form onSubmit={handleSubmit} className="bg-white shadow sm:rounded-lg p-6 space-y-6">
+        <form 
+            onSubmit={handleSubmit} 
+            className="shadow sm:rounded-lg p-6 space-y-6"
+            style={{ backgroundColor: colors.bg.card }}
+        >
             <div className="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-6">
                 <div className="sm:col-span-3">
-                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
+                    <label 
+                        htmlFor="firstName" 
+                        className="block text-sm font-medium"
+                        style={{ color: colors.text.primary }}
+                    >
                         Prénom
                     </label>
                     <div className="mt-1">
@@ -70,14 +86,38 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
                             id="firstName"
                             value={formData.firstName}
                             onChange={handleChange}
-                            className={`shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border ${errors.firstName ? 'border-red-300' : ''}`}
+                            className="shadow-sm block w-full sm:text-sm rounded-md p-2 border"
+                            style={{
+                                ...inputBaseStyle,
+                                borderColor: errors.firstName ? colors.semantic.danger : colors.border.default
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.borderColor = colors.accent.primary;
+                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                e.currentTarget.style.outlineOffset = '2px';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.borderColor = errors.firstName ? colors.semantic.danger : colors.border.default;
+                                e.currentTarget.style.outline = 'none';
+                            }}
                         />
-                        {errors.firstName && <p className="mt-2 text-sm text-red-600">{errors.firstName}</p>}
+                        {errors.firstName && (
+                            <p 
+                                className="mt-2 text-sm"
+                                style={{ color: colors.semantic.danger }}
+                            >
+                                {errors.firstName}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="sm:col-span-3">
-                    <label htmlFor="surname" className="block text-sm font-medium text-gray-700">
+                    <label 
+                        htmlFor="surname" 
+                        className="block text-sm font-medium"
+                        style={{ color: colors.text.primary }}
+                    >
                         Nom
                     </label>
                     <div className="mt-1">
@@ -87,14 +127,38 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
                             id="surname"
                             value={formData.surname}
                             onChange={handleChange}
-                            className={`shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border ${errors.surname ? 'border-red-300' : ''}`}
+                            className="shadow-sm block w-full sm:text-sm rounded-md p-2 border"
+                            style={{
+                                ...inputBaseStyle,
+                                borderColor: errors.surname ? colors.semantic.danger : colors.border.default
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.borderColor = colors.accent.primary;
+                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                e.currentTarget.style.outlineOffset = '2px';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.borderColor = errors.surname ? colors.semantic.danger : colors.border.default;
+                                e.currentTarget.style.outline = 'none';
+                            }}
                         />
-                        {errors.surname && <p className="mt-2 text-sm text-red-600">{errors.surname}</p>}
+                        {errors.surname && (
+                            <p 
+                                className="mt-2 text-sm"
+                                style={{ color: colors.semantic.danger }}
+                            >
+                                {errors.surname}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="sm:col-span-4">
-                    <label htmlFor="phone" className="block text-sm font-medium text-gray-700">
+                    <label 
+                        htmlFor="phone" 
+                        className="block text-sm font-medium"
+                        style={{ color: colors.text.primary }}
+                    >
                         Téléphone
                     </label>
                     <div className="mt-1">
@@ -104,14 +168,38 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
                             id="phone"
                             value={formData.phone}
                             onChange={handleChange}
-                            className={`shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border ${errors.phone ? 'border-red-300' : ''}`}
+                            className="shadow-sm block w-full sm:text-sm rounded-md p-2 border"
+                            style={{
+                                ...inputBaseStyle,
+                                borderColor: errors.phone ? colors.semantic.danger : colors.border.default
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.borderColor = colors.accent.primary;
+                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                e.currentTarget.style.outlineOffset = '2px';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.borderColor = errors.phone ? colors.semantic.danger : colors.border.default;
+                                e.currentTarget.style.outline = 'none';
+                            }}
                         />
-                        {errors.phone && <p className="mt-2 text-sm text-red-600">{errors.phone}</p>}
+                        {errors.phone && (
+                            <p 
+                                className="mt-2 text-sm"
+                                style={{ color: colors.semantic.danger }}
+                            >
+                                {errors.phone}
+                            </p>
+                        )}
                     </div>
                 </div>
 
                 <div className="sm:col-span-6">
-                    <label htmlFor="address" className="block text-sm font-medium text-gray-700">
+                    <label 
+                        htmlFor="address" 
+                        className="block text-sm font-medium"
+                        style={{ color: colors.text.primary }}
+                    >
                         Adresse
                     </label>
                     <div className="mt-1">
@@ -121,14 +209,37 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
                             id="address"
                             value={formData.address}
                             onChange={handleChange}
-                            className={`shadow-sm focus:ring-blue-500 focus:border-blue-500 block w-full sm:text-sm border-gray-300 rounded-md p-2 border ${errors.address ? 'border-red-300' : ''}`}
+                            className="shadow-sm block w-full sm:text-sm rounded-md p-2 border"
+                            style={{
+                                ...inputBaseStyle,
+                                borderColor: errors.address ? colors.semantic.danger : colors.border.default
+                            }}
+                            onFocus={(e) => {
+                                e.currentTarget.style.borderColor = colors.accent.primary;
+                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                e.currentTarget.style.outlineOffset = '2px';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.borderColor = errors.address ? colors.semantic.danger : colors.border.default;
+                                e.currentTarget.style.outline = 'none';
+                            }}
                         />
-                        {errors.address && <p className="mt-2 text-sm text-red-600">{errors.address}</p>}
+                        {errors.address && (
+                            <p 
+                                className="mt-2 text-sm"
+                                style={{ color: colors.semantic.danger }}
+                            >
+                                {errors.address}
+                            </p>
+                        )}
                     </div>
                 </div>
             </div>
 
-            <div className="flex justify-end gap-3 pt-5 border-t border-gray-200">
+            <div 
+                className="flex justify-end gap-3 pt-5 border-t"
+                style={{ borderColor: colors.border.default }}
+            >
                 <Button variant="secondary" onClick={onCancel} type="button" disabled={isLoading}>
                     Annuler
                 </Button>

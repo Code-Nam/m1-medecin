@@ -1,24 +1,164 @@
-/* Custom Calendar Styles */
-.fc-event {
+/* ===== FULLCALENDAR CUSTOMIZATION - Palette IIM ===== */
+.fc {
+  --fc-border-color: #E0E0E0; /* Bordures - Palette IIM */
+  --fc-button-bg-color: #43A78B; /* Couleur secondaire (teal) - Palette IIM */
+  --fc-button-border-color: #43A78B;
+  --fc-button-hover-bg-color: #2E7D6B; /* Teal foncé */
+  --fc-button-hover-border-color: #2E7D6B;
+  --fc-button-active-bg-color: #1B5E4F; /* Teal très foncé */
+  --fc-today-bg-color: rgba(67, 167, 139, 0.1); /* Teal avec transparence */
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+  font-family: 'Inter', sans-serif;
+}
+
+.dark .fc {
+  --fc-border-color: rgba(224, 224, 224, 0.15); /* Bordures sombres - Variante de #E0E0E0 */
+  --fc-button-bg-color: #4DB6AC; /* Teal clair */
+  --fc-button-border-color: #4DB6AC;
+  --fc-button-hover-bg-color: #26A69A; /* Teal moyen */
+  --fc-button-hover-border-color: #26A69A;
+  --fc-button-active-bg-color: #00897B; /* Teal foncé */
+  --fc-page-bg-color: transparent;
+  --fc-neutral-bg-color: transparent;
+  --fc-today-bg-color: rgba(77, 182, 172, 0.1); /* Teal clair avec transparence */
+}
+
+/* FC Header */
+.fc .fc-toolbar-title {
+  font-size: 1.25rem;
+  font-weight: 600;
+  text-transform: capitalize;
+  color: #263238 !important; /* Couleur Texte - Palette IIM */
+}
+
+html.dark .fc .fc-toolbar-title {
+  color: #FFFFFF !important;
+}
+
+.fc .fc-button {
+  font-weight: 500 !important;
+  border-radius: 0.5rem !important;
+  transition: all 0.2s !important;
+}
+
+.fc .fc-button:focus {
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #43A78B !important; /* Couleur secondaire - Palette IIM */
+}
+
+html.dark .fc .fc-button:focus {
+  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC !important; /* Teal clair */
+}
+
+/* FC Day cells - Palette IIM */
+.fc .fc-daygrid-day {
+  transition: background-color 0.2s;
+}
+
+.fc .fc-daygrid-day:hover {
+  background-color: rgba(252, 252, 247, 0.5) !important; /* Fond avec transparence */
+}
+
+html.dark .fc .fc-daygrid-day:hover {
+  background-color: rgba(42, 42, 42, 0.5) !important; /* Variante de #263238 avec transparence */
+}
+
+.fc .fc-daygrid-day-number {
+  font-weight: 500;
+  padding: 0.5rem;
+  color: #263238 !important; /* Couleur Texte - Palette IIM */
+}
+
+html.dark .fc .fc-daygrid-day-number {
+  color: #B0BEC5 !important; /* Texte secondaire clair */
+}
+
+.fc .fc-day-today .fc-daygrid-day-number {
+  border-radius: 9999px;
+  width: 2rem;
+  height: 2rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #43A78B !important; /* Couleur secondaire (teal) - Palette IIM */
+  color: white !important;
+}
+
+html.dark .fc .fc-day-today .fc-daygrid-day-number {
+  background-color: #4DB6AC !important; /* Teal clair */
+  color: white !important;
+}
+
+/* FC Events */
+.fc .fc-event {
+  border-radius: 0.375rem;
+  border: 0;
+  padding: 0.25rem 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
   cursor: pointer;
+  transition: all 0.2s;
 }
 
-.fc-toolbar-title {
-  font-size: 1.25rem !important;
-  font-weight: 600 !important;
+.fc .fc-event:hover {
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  transform: scale(1.02);
 }
 
-.fc-button-primary {
-  background-color: #3b82f6 !important;
-  border-color: #3b82f6 !important;
+.fc .fc-event-title {
+  font-weight: 500;
 }
 
-.fc-button-primary:hover {
-  background-color: #2563eb !important;
-  border-color: #2563eb !important;
+/* FC More link - Palette IIM */
+.fc .fc-more-link {
+  font-weight: 500;
 }
 
-.fc-button-primary:disabled {
-  background-color: #93c5fd !important;
-  border-color: #93c5fd !important;
+.fc .fc-more-link:hover {
+  text-decoration: underline;
+}
+
+.fc .fc-more-link {
+  color: #43A78B !important; /* Couleur secondaire (teal) - Palette IIM */
+}
+
+html.dark .fc .fc-more-link {
+  color: #4DB6AC !important; /* Teal clair */
+}
+
+/* FC Time grid - Palette IIM */
+.fc .fc-timegrid-slot {
+  font-size: 0.75rem;
+  color: #546E7A !important; /* Texte secondaire - Palette IIM */
+}
+
+html.dark .fc .fc-timegrid-slot {
+  color: #90A4AE !important; /* Texte muted clair */
+}
+
+.fc .fc-timegrid-slot-label {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+/* FC Header cells - Palette IIM */
+.fc .fc-col-header-cell {
+  padding-top: 0.75rem;
+  padding-bottom: 0.75rem;
+  background-color: #FCFCF7 !important; /* Fond - Palette IIM */
+}
+
+html.dark .fc .fc-col-header-cell {
+  background-color: rgba(42, 42, 42, 0.5) !important; /* Variante de #263238 avec transparence */
+}
+
+.fc .fc-col-header-cell-cushion {
+  font-weight: 600;
+  font-size: 0.875rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: #546E7A !important; /* Texte secondaire - Palette IIM */
+}
+
+html.dark .fc .fc-col-header-cell-cushion {
+  color: #90A4AE !important; /* Texte muted clair */
 }

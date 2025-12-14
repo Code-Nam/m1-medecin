@@ -26,8 +26,8 @@ export const DayViewTable: React.FC = () => {
         text: darkMode ? '#FACC15' : '#92400E' 
       },
       cancelled: { 
-        bg: darkMode ? '#374151' : '#F3F4F6', 
-        text: darkMode ? '#9CA3AF' : '#4B5563' 
+        bg: darkMode ? colors.bg.card : '#F3F4F6', 
+        text: colors.text.secondary 
       },
       doctor_created: { 
         bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE', 
@@ -125,7 +125,7 @@ export const DayViewTable: React.FC = () => {
             className="p-4 rounded-lg border transition-all duration-200 hover:shadow-md"
             style={{
               backgroundColor: appointment.status === 'cancelled' 
-                ? (darkMode ? 'rgba(17, 24, 39, 0.5)' : '#F9FAFB')
+                ? (darkMode ? 'rgba(30, 30, 30, 0.5)' : '#F9FAFB')
                 : colors.bg.secondary,
               borderColor: colors.border.default,
               opacity: appointment.status === 'cancelled' ? 0.6 : 1
@@ -181,7 +181,7 @@ export const DayViewTable: React.FC = () => {
                       className="p-2 rounded-lg transition-colors"
                       style={{ color: colors.text.muted }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#F3F4F6';
+                        e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = 'transparent';
@@ -195,7 +195,7 @@ export const DayViewTable: React.FC = () => {
                       className="p-2 rounded-lg transition-colors"
                       style={{ color: colors.text.muted }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#F3F4F6';
+                        e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
                       }}
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = 'transparent';

@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useTheme } from '../../hooks/useTheme';
 
 interface NavItem {
   id: string;
@@ -27,6 +28,24 @@ interface SidebarProps {
 export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
   const { doctor, logout } = useAuthStore();
   const { sidebarCollapsed, toggleSidebar, darkMode } = useUIStore();
+  const { colors } = useTheme();
+  
+  const [isDesktop, setIsDesktop] = React.useState(window.innerWidth >= 1024);
+  
+  React.useEffect(() => {
+    const handleResize = () => {
+      const desktop = window.innerWidth >= 1024;
+      setIsDesktop(desktop);
+      if (desktop && sidebarCollapsed) {
+        toggleSidebar();
+      }
+    };
+    
+    window.addEventListener('resize', handleResize);
+    return () => window.removeEventListener('resize', handleResize);
+  }, [sidebarCollapsed, toggleSidebar]);
+  
+  const isCollapsed = isDesktop ? false : sidebarCollapsed;
 
   const navItems: NavItem[] = [
     { id: 'dashboard', label: 'Tableau de bord', icon: <LayoutDashboard className="w-5 h-5" />, path: 'dashboard' },
@@ -38,8 +57,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
 
   return (
     <>
-      {/* Mobile overlay */}
-      {!sidebarCollapsed && (
+      {!isCollapsed && (
         <div
           className="lg:hidden fixed inset-0 bg-black/50 z-40"
           onClick={toggleSidebar}
@@ -47,24 +65,22 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
         />
       )}
 
-      {/* Sidebar */}
       <aside
         className={`
           fixed lg:static inset-y-0 left-0 z-50
           flex flex-col border-r
           transition-all duration-300 ease-in-out
-          ${sidebarCollapsed ? '-translate-x-full lg:translate-x-0 lg:w-20' : 'translate-x-0 w-64'}
+          ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'} w-64
         `}
         style={{
-          backgroundColor: darkMode ? '#111827' : '#FFFFFF',
-          borderColor: darkMode ? '#374151' : '#E5E7EB'
+          backgroundColor: colors.bg.sidebar,
+          borderColor: colors.border.default
         }}
         aria-label="Menu de navigation principal"
       >
-        {/* Header */}
         <div 
           className="flex items-center gap-3 px-4 py-5 border-b"
-          style={{ borderColor: darkMode ? '#374151' : '#E5E7EB' }}
+          style={{ borderColor: colors.border.default }}
         >
           <div 
             className="flex items-center justify-center w-10 h-10 rounded-xl text-white shadow-lg"
@@ -76,17 +92,17 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           >
             <Stethoscope className="w-6 h-6" />
           </div>
-          {!sidebarCollapsed && (
+          {!isCollapsed && (
             <div className="flex-1 min-w-0">
               <p 
                 className="text-sm font-semibold truncate"
-                style={{ color: darkMode ? '#FFFFFF' : '#111827' }}
+                style={{ color: colors.text.primary }}
               >
                 Dr. {doctor?.FirstName} {doctor?.Surname}
               </p>
               <p 
                 className="text-xs truncate"
-                style={{ color: darkMode ? '#9CA3AF' : '#374151' }}
+                style={{ color: colors.text.secondary }}
               >
                 {doctor?.specialization}
               </p>
@@ -94,14 +110,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           )}
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-lg text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors lg:hidden"
-            aria-label={sidebarCollapsed ? 'Ouvrir le menu' : 'Fermer le menu'}
+            className="p-2 rounded-lg transition-colors lg:hidden"
+            style={{
+              color: colors.text.secondary,
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+            aria-label={isCollapsed ? 'Ouvrir le menu' : 'Fermer le menu'}
           >
             <Menu className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Navigation */}
         <nav className="flex-1 px-3 py-4 overflow-y-auto" role="navigation">
           <ul className="space-y-1">
             {navItems.map((item) => (
@@ -122,7 +147,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                   }}
                   onMouseEnter={(e) => {
                     if (currentPage !== item.path) {
-                      e.currentTarget.style.backgroundColor = darkMode ? '#1F2937' : '#F3F4F6';
+                      e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
                     }
                   }}
                   onMouseLeave={(e) => {
@@ -153,7 +178,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                   >
                     {item.icon}
                   </span>
-                  {!sidebarCollapsed && (
+                  {!isCollapsed && (
                     <span className="truncate">{item.label}</span>
                   )}
                   {currentPage === item.path && (
@@ -165,16 +190,15 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           </ul>
         </nav>
 
-        {/* Footer - Logout */}
         <div 
           className="px-3 py-4 border-t"
-          style={{ borderColor: darkMode ? '#374151' : '#E5E7EB' }}
+          style={{ borderColor: colors.border.default }}
         >
           <button
             onClick={logout}
             className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
             style={{
-              color: darkMode ? '#D1D5DB' : '#111827'
+              color: colors.text.primary
             }}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = darkMode ? 'rgba(239, 68, 68, 0.2)' : '#FEF2F2';
@@ -182,12 +206,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';
-              e.currentTarget.style.color = darkMode ? '#D1D5DB' : '#111827';
+              e.currentTarget.style.color = colors.text.primary;
             }}
             aria-label="Se déconnecter"
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
-            {!sidebarCollapsed && <span>Déconnexion</span>}
+            {!isCollapsed && <span>Déconnexion</span>}
           </button>
         </div>
       </aside>

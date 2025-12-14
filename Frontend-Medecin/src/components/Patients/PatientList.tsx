@@ -74,7 +74,7 @@ export const PatientList: React.FC = () => {
               <tr 
                 className="border-b"
                 style={{
-                  backgroundColor: darkMode ? '#111827' : '#F9FAFB',
+                  backgroundColor: colors.bg.secondary,
                   borderColor: colors.border.default
                 }}
               >
@@ -153,7 +153,7 @@ export const PatientList: React.FC = () => {
                           className="p-2 rounded-lg transition-colors"
                           style={{ color: colors.text.muted }}
                           onMouseEnter={(e) => {
-                            e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#F3F4F6';
+                            e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
                           }}
                           onMouseLeave={(e) => {
                             e.currentTarget.style.backgroundColor = 'transparent';

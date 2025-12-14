@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { Menu, Sun, Moon, Bell, ChevronRight } from 'lucide-react';
-import { useUIStore } from '../../stores/uiStore';
-import { useAppointmentStore } from '../../stores/appointmentStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useUIStore } from '../../store/uiStore';
+import { useAppointmentStore } from '../../store/appointmentStore';
+import { usePatientStore } from '../../store/patientStore';
 import { useTheme } from '../../hooks/useTheme';
 
 interface HeaderProps {
@@ -12,17 +12,19 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) => {
   const { darkMode, toggleDarkMode, toggleSidebar } = useUIStore();
-  const { doctor } = useAuthStore();
-  const { getPendingAppointments } = useAppointmentStore();
+  const { currentPatient } = usePatientStore();
+  const { appointments } = useAppointmentStore();
   const { colors } = useTheme();
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const pendingCount = doctor ? getPendingAppointments(doctor.doctorId).length : 0;
+  const pendingCount = appointments.filter(apt => 
+    apt.status === 'pending' && apt.appointedPatient === currentPatient?.patientId
+  ).length;
 
   useEffect(() => {
     const timer = setInterval(() => {
       setCurrentTime(new Date());
-    }, 60000); // Update every minute
+    }, 60000);
 
     return () => clearInterval(timer);
   }, []);
@@ -47,7 +49,7 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
     <header 
       className="sticky top-0 z-30 backdrop-blur-md border-b"
       style={{
-        backgroundColor: colors.bg.header,
+        backgroundColor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
         borderColor: colors.border.default
       }}
     >
@@ -141,7 +143,10 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
           >
             <Bell className="w-5 h-5" />
             {pendingCount > 0 && (
-              <span className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center">
+              <span 
+                className="absolute top-1 right-1 w-4 h-4 text-white text-xs font-bold rounded-full flex items-center justify-center"
+                style={{ backgroundColor: colors.semantic.danger }}
+              >
                 {pendingCount > 9 ? '9+' : pendingCount}
               </span>
             )}
@@ -164,7 +169,7 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
             aria-label={darkMode ? 'Activer le mode clair' : 'Activer le mode sombre'}
           >
             {darkMode ? (
-              <Sun className="w-5 h-5 text-yellow-500" />
+              <Sun className="w-5 h-5" style={{ color: colors.semantic.warning }} />
             ) : (
               <Moon className="w-5 h-5" />
             )}

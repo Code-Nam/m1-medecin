@@ -1,12 +1,72 @@
-/**
- * This file is the entry point for the React app, it sets up the root
- * element and renders the App component to the DOM.
- *
- * It is included in `src/index.html`.
- */
-
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
+import './index.css';
+
+const initializeTheme = () => {
+  const htmlElement = document.documentElement;
+  const body = document.body;
+  const root = document.getElementById('root');
+  
+  htmlElement.classList.remove('dark');
+  htmlElement.style.colorScheme = 'light';
+  body.style.backgroundColor = '#FCFCF7';
+  body.style.color = '#263238';
+  if (root) {
+    root.style.backgroundColor = '#FCFCF7';
+    root.style.color = '#263238';
+  }
+  
+  const stored = localStorage.getItem('ui-storage');
+  if (stored) {
+    try {
+      const parsed = JSON.parse(stored);
+      const darkMode = parsed?.state?.darkMode ?? false;
+      if (darkMode) {
+        htmlElement.classList.add('dark');
+        htmlElement.style.colorScheme = 'dark';
+        body.style.backgroundColor = '#0F0F0F';
+        body.style.color = '#FFFFFF';
+        if (root) {
+          root.style.backgroundColor = '#0F0F0F';
+          root.style.color = '#FFFFFF';
+        }
+        console.log('🌙 Dark mode activé depuis localStorage');
+      } else {
+        htmlElement.classList.remove('dark');
+        htmlElement.style.colorScheme = 'light';
+        body.style.backgroundColor = '#FCFCF7';
+        body.style.color = '#263238';
+        if (root) {
+          root.style.backgroundColor = '#FCFCF7';
+          root.style.color = '#263238';
+        }
+        console.log('☀️ Light mode activé depuis localStorage');
+      }
+    } catch (e) {
+      htmlElement.classList.remove('dark');
+      htmlElement.style.colorScheme = 'light';
+      body.style.backgroundColor = '#FCFCF7';
+      body.style.color = '#263238';
+      if (root) {
+        root.style.backgroundColor = '#FCFCF7';
+        root.style.color = '#263238';
+      }
+      console.log('☀️ Light mode par défaut (erreur localStorage)');
+    }
+  } else {
+    htmlElement.classList.remove('dark');
+    htmlElement.style.colorScheme = 'light';
+    body.style.backgroundColor = '#FCFCF7';
+    body.style.color = '#263238';
+    if (root) {
+      root.style.backgroundColor = '#FCFCF7';
+      root.style.color = '#263238';
+    }
+    console.log('☀️ Light mode par défaut (pas de localStorage)');
+  }
+};
+
+initializeTheme();
 
 function start() {
   const root = createRoot(document.getElementById("root")!);

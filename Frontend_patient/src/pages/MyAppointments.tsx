@@ -4,14 +4,15 @@ import { useAppointmentStore } from '../store/appointmentStore';
 import { useDoctorStore } from '../store/doctorStore';
 import { AppointmentCard } from '../components/Appointments';
 import { AppointmentCalendar, CalendarLegend } from '../components/Calendar';
-import { Sidebar } from '../components/Layout';
+import { useTheme } from '../hooks/useTheme';
 import { Calendar, List } from 'lucide-react';
 
 export const MyAppointments = () => {
     const { currentPatient } = usePatientStore();
     const { appointments, fetchAppointments, isLoading } = useAppointmentStore();
     const { doctors, fetchAllDoctors } = useDoctorStore();
-    const [viewMode, setViewMode] = useState<'calendar' | 'list'>('calendar');
+    const { darkMode, colors } = useTheme();
+    const [viewMode, setViewMode] = useState<'calendar' | 'list'>('list');
 
     useEffect(() => {
         if (currentPatient) {
@@ -30,32 +31,65 @@ export const MyAppointments = () => {
     }
 
     return (
-        <div className="flex h-screen bg-gray-50 w-full">
-            <Sidebar />
-            <div className="flex-1 overflow-auto p-4 md:p-8 w-full">
-                <div className="max-w-6xl mx-auto">
+        <div className="max-w-6xl mx-auto">
                     <header className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
                         <div className="mb-4 md:mb-0">
-                            <h1 className="text-2xl font-bold text-gray-900">Mes Rendez-vous</h1>
-                            <p className="text-gray-500">Gérez vos rendez-vous passés et à venir.</p>
+                            <h1 
+                                className="text-2xl font-bold"
+                                style={{ color: colors.text.primary }}
+                            >
+                                Mes Rendez-vous
+                            </h1>
+                            <p 
+                                style={{ color: colors.text.secondary }}
+                            >
+                                Gérez vos rendez-vous passés et à venir.
+                            </p>
                         </div>
-                        <div className="flex bg-gray-200 p-1 rounded-lg">
+                        <div 
+                            className="flex p-1 rounded-lg"
+                            style={{ backgroundColor: colors.border.light }}
+                        >
                             <button
                                 onClick={() => setViewMode('calendar')}
-                                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'calendar'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                className="flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all"
+                                style={{
+                                    backgroundColor: viewMode === 'calendar' ? colors.bg.card : 'transparent',
+                                    color: viewMode === 'calendar' ? colors.accent.primary : colors.text.secondary,
+                                    boxShadow: viewMode === 'calendar' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (viewMode !== 'calendar') {
+                                        e.currentTarget.style.color = colors.text.primary;
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (viewMode !== 'calendar') {
+                                        e.currentTarget.style.color = colors.text.secondary;
+                                    }
+                                }}
                             >
                                 <Calendar size={16} className="mr-2" />
                                 Calendrier
                             </button>
                             <button
                                 onClick={() => setViewMode('list')}
-                                className={`flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all ${viewMode === 'list'
-                                        ? 'bg-white text-blue-600 shadow-sm'
-                                        : 'text-gray-600 hover:text-gray-900'
-                                    }`}
+                                className="flex items-center px-4 py-2 rounded-md text-sm font-medium transition-all"
+                                style={{
+                                    backgroundColor: viewMode === 'list' ? colors.bg.card : 'transparent',
+                                    color: viewMode === 'list' ? colors.accent.primary : colors.text.secondary,
+                                    boxShadow: viewMode === 'list' ? '0 1px 2px rgba(0,0,0,0.05)' : 'none'
+                                }}
+                                onMouseEnter={(e) => {
+                                    if (viewMode !== 'list') {
+                                        e.currentTarget.style.color = colors.text.primary;
+                                    }
+                                }}
+                                onMouseLeave={(e) => {
+                                    if (viewMode !== 'list') {
+                                        e.currentTarget.style.color = colors.text.secondary;
+                                    }
+                                }}
                             >
                                 <List size={16} className="mr-2" />
                                 Liste
@@ -63,11 +97,20 @@ export const MyAppointments = () => {
                         </div>
                     </header>
 
-                    <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 min-h-[500px]">
+                    <div 
+                        className="rounded-lg shadow-sm border p-6 min-h-[500px]"
+                        style={{
+                            backgroundColor: colors.bg.card,
+                            borderColor: colors.border.default
+                        }}
+                    >
                         {viewMode === 'calendar' ? (
                             <>
                                 <AppointmentCalendar appointments={appointments} />
-                                <div className="mt-6 border-t pt-4">
+                                <div 
+                                    className="mt-6 border-t pt-4"
+                                    style={{ borderColor: colors.border.default }}
+                                >
                                     <CalendarLegend />
                                 </div>
                             </>
@@ -75,7 +118,9 @@ export const MyAppointments = () => {
                             <>
                                 {appointments.length === 0 ? (
                                     <div className="text-center py-12">
-                                        <p className="text-gray-500">Vous n'avez aucun rendez-vous.</p>
+                                        <p style={{ color: colors.text.secondary }}>
+                                            Vous n'avez aucun rendez-vous.
+                                        </p>
                                     </div>
                                 ) : (
                                     <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3">
@@ -91,8 +136,6 @@ export const MyAppointments = () => {
                             </>
                         )}
                     </div>
-                </div>
-            </div>
         </div>
     );
 };

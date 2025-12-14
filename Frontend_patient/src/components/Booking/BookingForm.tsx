@@ -5,6 +5,7 @@ import { DoctorSelector } from './DoctorSelector';
 import { TimeSlotSelector } from './TimeSlotSelector';
 import { BookingConfirmation } from './BookingConfirmation';
 import { Button } from '../Common/Button';
+import { useTheme } from '../../hooks/useTheme';
 import { Doctor } from '../../types';
 
 interface BookingFormProps {
@@ -15,6 +16,7 @@ interface BookingFormProps {
 export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }) => {
     const { doctors, fetchAllDoctors, isLoading: doctorsLoading } = useDoctorStore();
     const { createAppointment, isLoading: bookingLoading } = useAppointmentStore();
+    const { colors } = useTheme();
 
     const [step, setStep] = useState(1);
     const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
@@ -75,19 +77,58 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
 
             {step === 2 && selectedDoctor && (
                 <div className="space-y-6">
-                    <div className="bg-gray-50 p-4 rounded-md mb-4">
-                        <p className="text-sm text-gray-700">Médecin sélectionné: <strong>Dr. {selectedDoctor.surname}</strong></p>
-                        <button onClick={() => setStep(1)} className="text-blue-600 text-xs hover:underline">Modifier</button>
+                    <div 
+                        className="p-4 rounded-md mb-4"
+                        style={{ backgroundColor: colors.bg.secondary }}
+                    >
+                        <p 
+                            className="text-sm"
+                            style={{ color: colors.text.primary }}
+                        >
+                            Médecin sélectionné: <strong>Dr. {selectedDoctor.surname}</strong>
+                        </p>
+                        <button 
+                            onClick={() => setStep(1)} 
+                            className="text-xs transition-colors"
+                            style={{ color: colors.accent.primary }}
+                            onMouseEnter={(e) => {
+                                e.currentTarget.style.textDecoration = 'underline';
+                            }}
+                            onMouseLeave={(e) => {
+                                e.currentTarget.style.textDecoration = 'none';
+                            }}
+                        >
+                            Modifier
+                        </button>
                     </div>
 
                     <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Date du rendez-vous</label>
+                        <label 
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                        >
+                            Date du rendez-vous
+                        </label>
                         <input
                             type="date"
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                            className="block w-full rounded-md shadow-sm sm:text-sm p-2 border"
+                            style={{
+                                backgroundColor: colors.bg.card,
+                                color: colors.text.primary,
+                                borderColor: colors.border.default
+                            }}
                             value={selectedDate}
                             onChange={(e) => setSelectedDate(e.target.value)}
                             min={new Date().toISOString().split('T')[0]}
+                            onFocus={(e) => {
+                                e.currentTarget.style.borderColor = colors.accent.primary;
+                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                e.currentTarget.style.outlineOffset = '2px';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.borderColor = colors.border.default;
+                                e.currentTarget.style.outline = 'none';
+                            }}
                         />
                     </div>
 
@@ -101,13 +142,32 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                     />
 
                     <div className="pt-4">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Motif du rendez-vous</label>
+                        <label 
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                        >
+                            Motif du rendez-vous
+                        </label>
                         <textarea
-                            className="block w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm p-2 border"
+                            className="block w-full rounded-md shadow-sm sm:text-sm p-2 border"
+                            style={{
+                                backgroundColor: colors.bg.card,
+                                color: colors.text.primary,
+                                borderColor: colors.border.default
+                            }}
                             rows={3}
                             value={reason}
                             onChange={(e) => setReason(e.target.value)}
                             placeholder="Ex: Consultation de routine, Mal de dos..."
+                            onFocus={(e) => {
+                                e.currentTarget.style.borderColor = colors.accent.primary;
+                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                e.currentTarget.style.outlineOffset = '2px';
+                            }}
+                            onBlur={(e) => {
+                                e.currentTarget.style.borderColor = colors.border.default;
+                                e.currentTarget.style.outline = 'none';
+                            }}
                         />
                     </div>
 

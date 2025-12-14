@@ -1,46 +1,70 @@
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Dashboard, BookAppointment, MyAppointments, Profile } from './pages';
-import { Navbar, Footer } from './components/Layout';
-import { ErrorBoundary } from './components/Common';
+import { MainLayout } from './components/Layout';
+import { ErrorBoundary, ThemeProvider } from './components/Common';
 import './index.css';
-
-// Mock setup for development - In real app, this might be in a dedicated init file
 import { usePatientStore } from './store/patientStore';
 import { useEffect } from 'react';
 
-function App() {
+function AppContent() {
+  const location = useLocation();
+  const navigate = useNavigate();
   const { currentPatient, fetchPatient } = usePatientStore();
 
-  // Temporary: Simulate login for development purposes
-  // In a real app, this would be handled by a Login page and AuthContext
   useEffect(() => {
-    // Fetch a mock patient if not logged in
-    // This assumes backend has seed data or we mock the service response
     if (!currentPatient) {
-      // patientId '1' or similar
       fetchPatient('1');
     }
   }, [currentPatient, fetchPatient]);
 
+  const getPageInfo = (pathname: string) => {
+    switch (pathname) {
+      case '/':
+        return { title: 'Tableau de bord', breadcrumb: [] };
+      case '/book':
+        return { title: 'Prendre un rendez-vous', breadcrumb: ['Tableau de bord', 'Prendre un rendez-vous'] };
+      case '/appointments':
+        return { title: 'Mes rendez-vous', breadcrumb: ['Tableau de bord', 'Mes rendez-vous'] };
+      case '/profile':
+        return { title: 'Mon profil', breadcrumb: ['Tableau de bord', 'Mon profil'] };
+      default:
+        return { title: 'Tableau de bord', breadcrumb: [] };
+    }
+  };
+
+  const pageInfo = getPageInfo(location.pathname);
+  const currentPage = location.pathname === '/' ? 'dashboard' : location.pathname.substring(1);
+
+  const handleNavigate = (path: string) => {
+    navigate(path);
+  };
+
+  return (
+    <MainLayout
+      currentPage={currentPage}
+      onNavigate={handleNavigate}
+      pageTitle={pageInfo.title}
+      breadcrumb={pageInfo.breadcrumb}
+    >
+      <Routes>
+        <Route path="/" element={<Dashboard />} />
+        <Route path="/book" element={<BookAppointment />} />
+        <Route path="/appointments" element={<MyAppointments />} />
+        <Route path="/profile" element={<Profile />} />
+        <Route path="*" element={<Navigate to="/" replace />} />
+      </Routes>
+    </MainLayout>
+  );
+}
+
+function App() {
   return (
     <ErrorBoundary>
-      <Router>
-        <div className="flex flex-col min-h-screen bg-gray-50 text-gray-900 font-sans">
-          <Navbar />
-
-          <main className="flex-grow">
-            <Routes>
-              <Route path="/" element={<Dashboard />} />
-              <Route path="/book" element={<BookAppointment />} />
-              <Route path="/appointments" element={<MyAppointments />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="*" element={<Navigate to="/" replace />} />
-            </Routes>
-          </main>
-
-          <Footer />
-        </div>
-      </Router>
+      <ThemeProvider>
+        <Router>
+          <AppContent />
+        </Router>
+      </ThemeProvider>
     </ErrorBoundary>
   );
 }

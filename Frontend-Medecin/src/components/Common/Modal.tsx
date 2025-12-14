@@ -96,8 +96,8 @@ export const Modal: React.FC<ModalProps> = ({
             className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2"
             style={{ color: colors.text.muted }}
             onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#F3F4F6';
-              e.currentTarget.style.color = darkMode ? '#D1D5DB' : '#374151';
+              e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
+              e.currentTarget.style.color = colors.text.secondary;
             }}
             onMouseLeave={(e) => {
               e.currentTarget.style.backgroundColor = 'transparent';

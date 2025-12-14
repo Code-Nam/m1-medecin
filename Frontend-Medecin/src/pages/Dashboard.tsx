@@ -173,14 +173,14 @@ export const Dashboard: React.FC = () => {
                       onClick={() => openModal('deleteAppointment', appointment)}
                       className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
                       style={{
-                        backgroundColor: darkMode ? '#374151' : '#E5E7EB',
-                        color: darkMode ? '#D1D5DB' : '#374151'
+                        backgroundColor: colors.border.light,
+                        color: colors.text.secondary
                       }}
                       onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = darkMode ? '#4B5563' : '#D1D5DB';
+                        e.currentTarget.style.backgroundColor = colors.border.default;
                       }}
                       onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = darkMode ? '#374151' : '#E5E7EB';
+                        e.currentTarget.style.backgroundColor = colors.border.light;
                       }}
                       aria-label="Refuser ce rendez-vous"
                     >

@@ -6,6 +6,7 @@ import interactionPlugin from '@fullcalendar/interaction';
 import { useAppointmentStore } from '../../stores/appointmentStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useTheme } from '../../hooks/useTheme';
 import { getPatientName } from '../../utils/mockData';
 
 export const CalendarView: React.FC = () => {
@@ -13,6 +14,7 @@ export const CalendarView: React.FC = () => {
   const { doctor } = useAuthStore();
   const { getAppointmentsForCalendar, selectAppointment, setSelectedDate } = useAppointmentStore();
   const { openModal } = useUIStore();
+  const { colors } = useTheme();
 
   const events = doctor ? getAppointmentsForCalendar(doctor.doctorId) : [];
 
@@ -44,7 +46,13 @@ export const CalendarView: React.FC = () => {
   };
 
   return (
-    <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 p-4 lg:p-6">
+    <div 
+      className="rounded-xl shadow-sm border p-4 lg:p-6"
+      style={{
+        backgroundColor: colors.bg.card,
+        borderColor: colors.border.default
+      }}
+    >
       <FullCalendar
         ref={calendarRef}
         plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -87,7 +95,7 @@ export const CalendarView: React.FC = () => {
         height="auto"
         aspectRatio={1.8}
         eventClassNames="cursor-pointer transition-transform hover:scale-[1.02]"
-        dayCellClassNames="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+        dayCellClassNames="cursor-pointer transition-colors"
       />
     </div>
   );

@@ -30,11 +30,11 @@ export const Button: React.FC<ButtonProps> = ({
       case 'primary':
         return { bg: colors.accent.primary, text: '#FFFFFF', hoverBg: colors.accent.hover };
       case 'secondary':
-        return { bg: darkMode ? '#374151' : '#F3F4F6', text: darkMode ? '#FFFFFF' : colors.text.primary, hoverBg: darkMode ? '#4B5563' : '#E5E7EB' };
+        return { bg: darkMode ? colors.border.light : '#F3F4F6', text: colors.text.primary, hoverBg: darkMode ? colors.border.default : '#E5E7EB' };
       case 'danger':
         return { bg: colors.semantic.danger, text: '#FFFFFF', hoverBg: darkMode ? '#D32F2F' : '#C62828' };
       case 'ghost':
-        return { bg: 'transparent', text: colors.text.secondary, hoverBg: darkMode ? '#1F2937' : '#F3F4F6' };
+        return { bg: 'transparent', text: colors.text.secondary, hoverBg: darkMode ? colors.bg.card : '#F3F4F6' };
       case 'outline':
         return { bg: 'transparent', text: colors.accent.primary, hoverBg: darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(67, 167, 139, 0.1)', border: colors.accent.primary };
       default:

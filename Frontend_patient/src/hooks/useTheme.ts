@@ -1,4 +1,4 @@
-import { useUIStore } from '../stores/uiStore';
+import { useUIStore } from '../store/uiStore';
 
 export const useTheme = () => {
   const { darkMode } = useUIStore();

@@ -2,6 +2,7 @@ import React from 'react';
 import { clsx, type ClassValue } from 'clsx';
 import { twMerge } from 'tailwind-merge';
 import { Loader2 } from 'lucide-react';
+import { useTheme } from '../../hooks/useTheme';
 
 function cn(...inputs: ClassValue[]) {
     return twMerge(clsx(inputs));
@@ -11,18 +12,63 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     variant?: 'primary' | 'secondary' | 'danger' | 'ghost' | 'outline';
     size?: 'sm' | 'md' | 'lg';
     isLoading?: boolean;
+    leftIcon?: React.ReactNode;
+    rightIcon?: React.ReactNode;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant = 'primary', size = 'md', isLoading, children, disabled, ...props }, ref) => {
-        const variants = {
-            primary: 'bg-blue-600 text-white hover:bg-blue-700 focus:ring-blue-500',
-            secondary: 'bg-gray-200 text-gray-900 hover:bg-gray-300 focus:ring-gray-500',
-            danger: 'bg-red-600 text-white hover:bg-red-700 focus:ring-red-500',
-            ghost: 'bg-transparent text-gray-700 hover:bg-gray-100 focus:ring-gray-500',
-            outline: 'bg-transparent border border-gray-300 text-gray-700 hover:bg-gray-50 focus:ring-gray-500',
+    ({ className, variant = 'primary', size = 'md', isLoading, leftIcon, rightIcon, children, disabled, ...props }, ref) => {
+        const { darkMode, colors } = useTheme();
+
+        const getVariantStyles = () => {
+            switch (variant) {
+                case 'primary':
+                    return { 
+                        bg: colors.accent.primary, 
+                        text: '#FFFFFF', 
+                        hoverBg: colors.accent.hover,
+                        focusRing: colors.accent.primary
+                    };
+                case 'secondary':
+                    return { 
+                        bg: darkMode ? colors.border.light : '#E0E0E0', 
+                        text: colors.text.primary, 
+                        hoverBg: darkMode ? colors.border.default : '#D0D0D0',
+                        focusRing: colors.text.secondary
+                    };
+                case 'danger':
+                    return { 
+                        bg: colors.semantic.danger, 
+                        text: '#FFFFFF', 
+                        hoverBg: darkMode ? colors.accent.accent2 : '#C62828',
+                        focusRing: colors.semantic.danger
+                    };
+                case 'ghost':
+                    return { 
+                        bg: 'transparent', 
+                        text: colors.text.secondary, 
+                        hoverBg: darkMode ? colors.bg.card : colors.bg.primary,
+                        focusRing: colors.text.secondary
+                    };
+                case 'outline':
+                    return { 
+                        bg: 'transparent', 
+                        text: colors.accent.primary, 
+                        hoverBg: darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(67, 167, 139, 0.1)',
+                        border: colors.accent.primary,
+                        focusRing: colors.accent.primary
+                    };
+                default:
+                    return { 
+                        bg: colors.accent.primary, 
+                        text: '#FFFFFF', 
+                        hoverBg: colors.accent.hover,
+                        focusRing: colors.accent.primary
+                    };
+            }
         };
 
+        const variantStyles = getVariantStyles();
         const sizes = {
             sm: 'px-3 py-1.5 text-sm',
             md: 'px-4 py-2 text-base',
@@ -34,15 +80,35 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                 ref={ref}
                 className={cn(
                     'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
-                    variants[variant],
                     sizes[size],
                     className
                 )}
+                style={{
+                    backgroundColor: variantStyles.bg,
+                    color: variantStyles.text,
+                    border: variant === 'outline' ? `1px solid ${variantStyles.border}` : 'none',
+                    '--tw-ring-color': variantStyles.focusRing
+                } as React.CSSProperties}
+                onMouseEnter={(e) => {
+                    if (!disabled && !isLoading) {
+                        e.currentTarget.style.backgroundColor = variantStyles.hoverBg || variantStyles.bg;
+                    }
+                }}
+                onMouseLeave={(e) => {
+                    if (!disabled && !isLoading) {
+                        e.currentTarget.style.backgroundColor = variantStyles.bg;
+                    }
+                }}
                 disabled={disabled || isLoading}
                 {...props}
             >
-                {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                {children}
+                {isLoading ? (
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                ) : leftIcon ? (
+                    <span className="mr-2" aria-hidden="true">{leftIcon}</span>
+                ) : null}
+                <span>{children}</span>
+                {!isLoading && rightIcon && <span className="ml-2" aria-hidden="true">{rightIcon}</span>}
             </button>
         );
     }

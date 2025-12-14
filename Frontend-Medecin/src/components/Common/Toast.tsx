@@ -11,7 +11,7 @@ interface ToastItemProps {
 }
 
 const ToastItem: React.FC<ToastItemProps> = ({ id, type, message, onClose }) => {
-  const { darkMode } = useTheme();
+  const { darkMode, colors } = useTheme();
   
   const icons = {
     success: <CheckCircle className="w-5 h-5" style={{ color: darkMode ? '#4DB6AC' : '#43A78B' }} />,
@@ -39,7 +39,17 @@ const ToastItem: React.FC<ToastItemProps> = ({ id, type, message, onClose }) => 
       </p>
       <button
         onClick={() => onClose(id)}
-        className="p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 transition-colors"
+        className="p-1 rounded transition-colors"
+        style={{
+          backgroundColor: 'transparent',
+          color: colors.text.muted
+        }}
+        onMouseEnter={(e) => {
+          e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
+        }}
+        onMouseLeave={(e) => {
+          e.currentTarget.style.backgroundColor = 'transparent';
+        }}
         aria-label="Fermer la notification"
       >
         <X className="w-4 h-4 text-gray-500" />

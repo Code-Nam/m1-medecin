@@ -40,8 +40,8 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
         text: darkMode ? '#FACC15' : '#92400E' 
       },
       cancelled: { 
-        bg: darkMode ? '#374151' : '#F3F4F6', 
-        text: darkMode ? '#9CA3AF' : '#4B5563' 
+        bg: darkMode ? colors.bg.card : '#F3F4F6', 
+        text: colors.text.secondary 
       },
       doctor_created: { 
         bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE', 
@@ -98,7 +98,10 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
 
       {/* Contact info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+        <div 
+          className="flex items-center gap-3 p-3 rounded-lg"
+          style={{ backgroundColor: darkMode ? colors.bg.secondary : '#F9FAFB' }}
+        >
           <Phone className="w-5 h-5" style={{ color: darkMode ? '#4DB6AC' : '#43A78B' }} />
           <div>
             <p className="text-xs text-gray-500 dark:text-gray-400">Téléphone</p>
@@ -107,7 +110,10 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
             </p>
           </div>
         </div>
-        <div className="flex items-center gap-3 p-3 bg-gray-50 dark:bg-gray-900 rounded-lg">
+        <div 
+          className="flex items-center gap-3 p-3 rounded-lg"
+          style={{ backgroundColor: darkMode ? colors.bg.secondary : '#F9FAFB' }}
+        >
           <Mail className="w-5 h-5" style={{ color: darkMode ? '#4DB6AC' : '#43A78B' }} />
           <div>
             <p className="text-xs text-gray-500 dark:text-gray-400">Email</p>
@@ -139,13 +145,14 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
             sortedAppointments.map((appt) => (
               <div
                 key={appt.appointmentId}
-                className={`
-                  p-3 rounded-lg border transition-colors
-                  ${appt.status === 'cancelled'
-                    ? 'bg-gray-50 dark:bg-gray-900/50 border-gray-200 dark:border-gray-700 opacity-60'
-                    : 'bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700'
-                  }
-                `}
+                className="p-3 rounded-lg border transition-colors"
+                style={{
+                  backgroundColor: appt.status === 'cancelled'
+                    ? (darkMode ? 'rgba(30, 30, 30, 0.5)' : '#F9FAFB')
+                    : colors.bg.card,
+                  borderColor: colors.border.default,
+                  opacity: appt.status === 'cancelled' ? 0.6 : 1
+                }}
               >
                 <div className="flex items-center justify-between gap-4">
                   <div className="flex items-center gap-3 min-w-0">
@@ -175,7 +182,10 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
       </div>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div 
+        className="flex justify-end gap-3 pt-4 border-t"
+        style={{ borderColor: colors.border.default }}
+      >
         <Button
           type="button"
           variant="ghost"

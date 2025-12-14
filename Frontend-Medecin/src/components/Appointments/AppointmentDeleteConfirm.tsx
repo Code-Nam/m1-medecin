@@ -63,7 +63,10 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
       </div>
 
       {/* Appointment details */}
-      <div className="p-4 bg-gray-50 dark:bg-gray-900 rounded-lg space-y-2">
+      <div 
+        className="p-4 rounded-lg space-y-2"
+        style={{ backgroundColor: colors.bg.secondary }}
+      >
         <div className="flex justify-between text-sm">
           <span className="text-gray-500 dark:text-gray-400">Patient</span>
           <span className="font-medium text-gray-900 dark:text-white">
@@ -116,7 +119,10 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
       </label>
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div 
+        className="flex justify-end gap-3 pt-4 border-t"
+        style={{ borderColor: colors.border.default }}
+      >
         <Button
           type="button"
           variant="ghost"

@@ -1,8 +1,7 @@
 import React from 'react';
 import Sidebar from './Sidebar';
 import Header from './Header';
-import { ToastContainer } from '../Common/Toast';
-import { useUIStore } from '../../stores/uiStore';
+import { useUIStore } from '../../store/uiStore';
 import { useTheme } from '../../hooks/useTheme';
 
 interface MainLayoutProps {
@@ -45,39 +44,34 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
         backgroundColor: colors.bg.primary,
         color: colors.text.primary
       }}
-    >
-        <a
-          href="#main-content"
-          className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:text-white focus:rounded-lg"
-          style={{ backgroundColor: darkMode ? '#4DB6AC' : '#43A78B' }}
-        >
-          Aller au contenu principal
-        </a>
+      >
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:text-white focus:rounded-lg"
+        style={{ backgroundColor: colors.accent.primary }}
+      >
+        Aller au contenu principal
+      </a>
 
-        <div className="flex">
-          <Sidebar currentPage={currentPage} onNavigate={onNavigate} />
+      <div className="flex">
+        <Sidebar currentPage={currentPage} onNavigate={onNavigate} />
 
-          <div className="flex-1 flex flex-col min-h-screen">
-            <Header pageTitle={pageTitle} breadcrumb={breadcrumb} />
+        <div className="flex-1 flex flex-col min-h-screen">
+          <Header pageTitle={pageTitle} breadcrumb={breadcrumb} />
 
-            <main
-              id="main-content"
-              className="flex-1 p-4 lg:p-6 overflow-auto"
-              style={{
-                backgroundColor: colors.bg.primary,
-                color: colors.text.primary
-              }}
-              tabIndex={-1}
-            >
-              {children}
-            </main>
-          </div>
+          <main
+            id="main-content"
+            className="flex-1 p-4 lg:p-6 overflow-auto"
+            tabIndex={-1}
+          >
+            {children}
+          </main>
         </div>
-
-        <ToastContainer />
       </div>
+    </div>
   );
 };
 
 export default MainLayout;
+
 

@@ -3,6 +3,7 @@ import { User, Mail, Phone } from 'lucide-react';
 import { usePatientStore } from '../../stores/patientStore';
 import { useAuthStore } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
+import { useTheme } from '../../hooks/useTheme';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
 import { isValidName, isValidEmail, isValidPhone, validationMessages } from '../../utils/validation';
@@ -22,7 +23,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
   const { doctor } = useAuthStore();
   const { addPatient, updatePatient } = usePatientStore();
   const { addToast } = useUIStore();
-  const { darkMode } = useTheme();
+  const { darkMode, colors } = useTheme();
 
   const isEditing = !!patient;
 
@@ -171,7 +172,10 @@ export const PatientForm: React.FC<PatientFormProps> = ({
       )}
 
       {/* Actions */}
-      <div className="flex justify-end gap-3 pt-4 border-t border-gray-200 dark:border-gray-700">
+      <div 
+        className="flex justify-end gap-3 pt-4 border-t"
+        style={{ borderColor: colors.border.default }}
+      >
         <Button
           type="button"
           variant="ghost"

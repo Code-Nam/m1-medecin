@@ -40,22 +40,22 @@ export const AppointmentsPerDayChart: React.FC<AppointmentsPerDayChartProps> = (
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <BarChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.border.default} />
             <XAxis
               dataKey="day"
               tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
-              axisLine={{ stroke: darkMode ? '#374151' : '#E5E7EB' }}
+              axisLine={{ stroke: colors.border.default }}
             />
             <YAxis
               tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
-              axisLine={{ stroke: darkMode ? '#374151' : '#E5E7EB' }}
+              axisLine={{ stroke: colors.border.default }}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+                backgroundColor: colors.bg.card,
+                border: `1px solid ${colors.border.default}`,
                 borderRadius: '8px',
-                color: darkMode ? '#FFFFFF' : '#1F2937'
+                color: colors.text.primary
               }}
             />
             <Bar
@@ -120,10 +120,10 @@ export const ReasonsChart: React.FC<ReasonsChartProps> = ({ data }) => {
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+                backgroundColor: colors.bg.card,
+                border: `1px solid ${colors.border.default}`,
                 borderRadius: '8px',
-                color: darkMode ? '#FFFFFF' : '#1F2937'
+                color: colors.text.primary
               }}
             />
           </PieChart>
@@ -157,24 +157,24 @@ export const PresenceRateChart: React.FC<PresenceRateChartProps> = ({ data }) =>
       <div className="h-64">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 20, left: 0, bottom: 5 }}>
-            <CartesianGrid strokeDasharray="3 3" stroke={darkMode ? '#374151' : '#E5E7EB'} />
+            <CartesianGrid strokeDasharray="3 3" stroke={colors.border.default} />
             <XAxis
               dataKey="day"
               tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
-              axisLine={{ stroke: darkMode ? '#374151' : '#E5E7EB' }}
+              axisLine={{ stroke: colors.border.default }}
             />
             <YAxis
               tick={{ fill: darkMode ? '#9CA3AF' : '#6B7280', fontSize: 12 }}
-              axisLine={{ stroke: darkMode ? '#374151' : '#E5E7EB' }}
+              axisLine={{ stroke: colors.border.default }}
               domain={[0, 100]}
               tickFormatter={(value) => `${value}%`}
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: darkMode ? '#1F2937' : '#FFFFFF',
-                border: `1px solid ${darkMode ? '#374151' : '#E5E7EB'}`,
+                backgroundColor: colors.bg.card,
+                border: `1px solid ${colors.border.default}`,
                 borderRadius: '8px',
-                color: darkMode ? '#FFFFFF' : '#1F2937'
+                color: colors.text.primary
               }}
               formatter={(value: number) => [`${value}%`, 'Taux de présence']}
             />

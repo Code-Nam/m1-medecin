@@ -2,6 +2,7 @@ import React from 'react';
 import { Doctor } from '../../types';
 import { formatDate, formatTime } from '../../utils/dataFormater';
 import { Button } from '../Common/Button';
+import { useTheme } from '../../hooks/useTheme';
 
 interface BookingConfirmationProps {
     doctor: Doctor;
@@ -22,30 +23,93 @@ export const BookingConfirmation: React.FC<BookingConfirmationProps> = ({
     onBack,
     isLoading
 }) => {
+    const { darkMode, colors } = useTheme();
+
     return (
         <div className="space-y-6">
-            <div className="bg-green-50 border border-green-200 rounded-lg p-6">
-                <h3 className="text-lg font-medium text-green-800 mb-4">Confirmez votre rendez-vous</h3>
+            <div 
+                className="border rounded-lg p-6"
+                style={{
+                    backgroundColor: darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(67, 167, 139, 0.1)',
+                    borderColor: darkMode ? 'rgba(77, 182, 172, 0.4)' : 'rgba(67, 167, 139, 0.3)'
+                }}
+            >
+                <h3 
+                    className="text-lg font-medium mb-4"
+                    style={{ color: colors.accent.primary }}
+                >
+                    Confirmez votre rendez-vous
+                </h3>
                 <dl className="grid grid-cols-1 gap-x-4 gap-y-4 sm:grid-cols-2">
                     <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-green-700">Médecin</dt>
-                        <dd className="mt-1 text-sm text-green-900">Dr. {doctor.firstName} {doctor.surname}</dd>
+                        <dt 
+                            className="text-sm font-medium"
+                            style={{ color: colors.accent.primary }}
+                        >
+                            Médecin
+                        </dt>
+                        <dd 
+                            className="mt-1 text-sm"
+                            style={{ color: colors.text.primary }}
+                        >
+                            Dr. {doctor.firstName} {doctor.surname}
+                        </dd>
                     </div>
                     <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-green-700">Spécialité</dt>
-                        <dd className="mt-1 text-sm text-green-900">{doctor.specialization}</dd>
+                        <dt 
+                            className="text-sm font-medium"
+                            style={{ color: colors.accent.primary }}
+                        >
+                            Spécialité
+                        </dt>
+                        <dd 
+                            className="mt-1 text-sm"
+                            style={{ color: colors.text.primary }}
+                        >
+                            {doctor.specialization}
+                        </dd>
                     </div>
                     <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-green-700">Date</dt>
-                        <dd className="mt-1 text-sm text-green-900">{formatDate(date)}</dd>
+                        <dt 
+                            className="text-sm font-medium"
+                            style={{ color: colors.accent.primary }}
+                        >
+                            Date
+                        </dt>
+                        <dd 
+                            className="mt-1 text-sm"
+                            style={{ color: colors.text.primary }}
+                        >
+                            {formatDate(date)}
+                        </dd>
                     </div>
                     <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-green-700">Heure</dt>
-                        <dd className="mt-1 text-sm text-green-900">{formatTime(time)}</dd>
+                        <dt 
+                            className="text-sm font-medium"
+                            style={{ color: colors.accent.primary }}
+                        >
+                            Heure
+                        </dt>
+                        <dd 
+                            className="mt-1 text-sm"
+                            style={{ color: colors.text.primary }}
+                        >
+                            {formatTime(time)}
+                        </dd>
                     </div>
                     <div className="sm:col-span-2">
-                        <dt className="text-sm font-medium text-green-700">Motif</dt>
-                        <dd className="mt-1 text-sm text-green-900">{reason}</dd>
+                        <dt 
+                            className="text-sm font-medium"
+                            style={{ color: colors.accent.primary }}
+                        >
+                            Motif
+                        </dt>
+                        <dd 
+                            className="mt-1 text-sm"
+                            style={{ color: colors.text.primary }}
+                        >
+                            {reason}
+                        </dd>
                     </div>
                 </dl>
             </div>

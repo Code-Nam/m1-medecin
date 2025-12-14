@@ -1,0 +1,131 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  PATIENT
+  DOCTOR
+  SECRETARY
+  ADMIN
+}
+
+enum AppointmentStatus {
+  PENDING
+  CONFIRMED
+  CANCELLED
+  DOCTOR_CREATED
+  COMPLETED
+}
+
+model Patient {
+  id            String   @id @default(cuid())
+  firstName     String   @map("first_name")
+  surname       String
+  email         String   @unique
+  password      String
+  phone         String?
+  dateOfBirth   DateTime? @map("date_of_birth")
+  address       String?
+  medicalHistory String[] @default([]) @map("medical_history")
+  assignedDoctorId String? @map("assigned_doctor_id")
+  assignedDoctor Doctor?  @relation("PatientDoctor", fields: [assignedDoctorId], references: [id])
+  appointments  Appointment[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("patients")
+}
+
+model Doctor {
+  id            String   @id @default(cuid())
+  firstName     String   @map("first_name")
+  surname       String
+  email         String   @unique
+  password      String
+  phone         String?
+  title         String?  @default("Dr.") // Titre professionnel (Dr., Pr., etc.)
+  specialization String
+  openingTime   String   @default("09:00") @map("opening_time") // Heure d'ouverture (format HH:mm)
+  closingTime   String   @default("17:00") @map("closing_time") // Heure de fermeture (format HH:mm)
+  slotDuration  Int      @default(30) @map("slot_duration") // Durée d'un créneau en minutes
+  patients      Patient[] @relation("PatientDoctor")
+  appointments  Appointment[]
+  availabilitySlots AvailabilitySlot[]
+  secretaries   SecretaryDoctor[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("doctors")
+}
+
+
+model Secretary {
+  id            String   @id @default(cuid())
+  firstName     String   @map("first_name")
+  surname       String
+  email         String   @unique
+  password      String
+  phone         String?
+  doctors       SecretaryDoctor[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@map("secretaries")
+}
+
+model SecretaryDoctor {
+  id            String   @id @default(cuid())
+  secretaryId  String   @map("secretary_id")
+  doctorId     String   @map("doctor_id")
+  secretary    Secretary @relation(fields: [secretaryId], references: [id], onDelete: Cascade)
+  doctor        Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  createdAt     DateTime @default(now()) @map("created_at")
+
+  @@unique([secretaryId, doctorId])
+  @@map("secretary_doctors")
+}
+
+model Appointment {
+  id              String            @id @default(cuid())
+  appointedPatientId String          @map("appointed_patient_id")
+  appointedDoctorId String           @map("appointed_doctor_id")
+  availabilitySlotId String?         @map("availability_slot_id")
+  patient         Patient            @relation(fields: [appointedPatientId], references: [id])
+  doctor          Doctor            @relation(fields: [appointedDoctorId], references: [id])
+  availabilitySlot AvailabilitySlot? @relation(fields: [availabilitySlotId], references: [id])
+  date            DateTime
+  time            String
+  reason          String
+  status          AppointmentStatus  @default(PENDING)
+  notes           String?
+  createdAt       DateTime          @default(now()) @map("created_at")
+  updatedAt       DateTime          @updatedAt @map("updated_at")
+
+  @@map("appointments")
+}
+
+model AvailabilitySlot {
+  id            String   @id @default(cuid())
+  doctorId      String   @map("doctor_id")
+  doctor        Doctor   @relation(fields: [doctorId], references: [id], onDelete: Cascade)
+  date          DateTime
+  startTime     String   @map("start_time") // Format HH:mm (ex: "09:00", "09:30", "10:00")
+  endTime       String   @map("end_time")   // Format HH:mm (ex: "09:30", "10:00", "10:30")
+  isAvailable   Boolean  @default(true) @map("is_available")
+  isBooked      Boolean  @default(false) @map("is_booked")
+  appointments  Appointment[]
+  createdAt     DateTime @default(now()) @map("created_at")
+  updatedAt     DateTime @updatedAt @map("updated_at")
+
+  @@unique([doctorId, date, startTime])
+  @@map("availability_slots")
+}
+

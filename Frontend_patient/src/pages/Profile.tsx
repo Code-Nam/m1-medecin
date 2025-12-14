@@ -44,7 +44,6 @@ export const Profile = () => {
             await updatePatient(currentPatient.patientId, formData as PatientUpdatePayload);
             setIsEditing(false);
         } catch (error) {
-            console.error(error);
         }
     };
 

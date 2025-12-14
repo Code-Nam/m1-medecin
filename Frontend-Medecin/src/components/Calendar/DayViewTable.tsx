@@ -1,19 +1,19 @@
 import React from 'react';
 import { Clock, User, FileText, CheckCircle, XCircle, Edit2, Trash2 } from 'lucide-react';
 import { useAppointmentStore } from '../../stores/appointmentStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
 import { getPatientName } from '../../utils/mockData';
 import Button from '../Common/Button';
 
 export const DayViewTable: React.FC = () => {
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const { getTodayAppointments, selectAppointment, confirmAppointment, cancelAppointment } = useAppointmentStore();
   const { openModal, addToast } = useUIStore();
   const { darkMode, colors } = useTheme();
 
-  const todayAppointments = doctor ? getTodayAppointments(doctor.doctorId) : [];
+  const todayAppointments = doctor ? getTodayAppointments(doctor.id) : [];
 
   const getStatusBadge = (status: string) => {
     const styleMap: Record<string, { bg: string; text: string }> = {

@@ -7,14 +7,12 @@ interface AppointmentStore {
   isLoading: boolean;
   error: string | null;
   
-  // Actions
   fetchAppointments: (patientId: string) => Promise<void>;
   createAppointment: (appointment: Omit<Appointment, 'appointmentId' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateAppointment: (id: string, data: Partial<Appointment>) => Promise<void>;
   deleteAppointment: (id: string) => Promise<void>;
   setError: (error: string | null) => void;
   
-  // Selectors
   getAppointmentsByStatus: (status: AppointmentStatus) => Appointment[];
   getUpcomingAppointments: () => Appointment[];
   getPastAppointments: () => Appointment[];

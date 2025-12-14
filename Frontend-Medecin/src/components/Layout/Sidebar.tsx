@@ -7,7 +7,8 @@ import {
   Settings,
   LogOut,
   Menu,
-  Stethoscope
+  Stethoscope,
+  Building2
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -26,7 +27,7 @@ interface SidebarProps {
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
-  const { doctor, logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const { sidebarCollapsed, toggleSidebar, darkMode } = useUIStore();
   const { colors } = useTheme();
   
@@ -98,13 +99,19 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                 className="text-sm font-semibold truncate"
                 style={{ color: colors.text.primary }}
               >
-                Dr. {doctor?.FirstName} {doctor?.Surname}
+                {user?.role === 'DOCTOR' ? 'Dr. ' : ''}
+                {user?.firstName} {user?.surname}
               </p>
               <p 
                 className="text-xs truncate"
                 style={{ color: colors.text.secondary }}
               >
-                {doctor?.specialization}
+                {user?.role === 'DOCTOR' ? 'Médecin' : 'Secrétaire'}
+                {user?.role === 'SECRETARY' && user.doctors && user.doctors.length > 0 && (
+                  <span className="ml-1">
+                    • {user.doctors.length} médecin{user.doctors.length > 1 ? 's' : ''}
+                  </span>
+                )}
               </p>
             </div>
           )}

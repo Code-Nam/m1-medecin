@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { Menu, Sun, Moon, Bell, ChevronRight } from 'lucide-react';
 import { useUIStore } from '../../stores/uiStore';
 import { useAppointmentStore } from '../../stores/appointmentStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useTheme } from '../../hooks/useTheme';
+import { DoctorSelector } from '../Common/DoctorSelector';
 
 interface HeaderProps {
   pageTitle: string;
@@ -12,12 +13,12 @@ interface HeaderProps {
 
 export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) => {
   const { darkMode, toggleDarkMode, toggleSidebar } = useUIStore();
-  const { doctor } = useAuthStore();
   const { getPendingAppointments } = useAppointmentStore();
   const { colors } = useTheme();
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const pendingCount = doctor ? getPendingAppointments(doctor.doctorId).length : 0;
+  const doctor = useDoctor();
+  const pendingCount = doctor?.id ? getPendingAppointments(doctor.id).length : 0;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -106,8 +107,11 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
           </nav>
         </div>
 
-        {/* Right - Time, notifications, dark mode */}
+        {/* Right - Clinic selector, Time, notifications, dark mode */}
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Doctor Selector for Secretaries */}
+          <DoctorSelector />
+          
           {/* Date/Time */}
           <div className="hidden md:block text-right">
             <p 

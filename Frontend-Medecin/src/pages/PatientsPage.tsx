@@ -1,9 +1,20 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PatientList } from '../components/Patients/PatientList';
 import { PatientModal } from '../components/Patients/PatientModal';
 import { CalendarModal } from '../components/Calendar/CalendarModal';
+import { usePatientStore } from '../stores/patientStore';
+import { useDoctor } from '../stores/authStore';
 
 export const PatientsPage: React.FC = () => {
+  const doctor = useDoctor();
+  const { fetchPatients, patients, isLoading, error } = usePatientStore();
+
+  useEffect(() => {
+    if (doctor?.id) {
+      fetchPatients(doctor.id);
+    }
+  }, [doctor?.id, fetchPatients]);
+
   return (
     <div className="space-y-6">
       {/* Header */}

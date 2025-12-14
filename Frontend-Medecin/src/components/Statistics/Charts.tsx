@@ -78,7 +78,6 @@ interface ReasonsChartProps {
   }>;
 }
 
-// Palette IIM
 const COLORS_LIGHT = ['#43A78B', '#FFE082', '#E63946', '#FFD54F', '#4DB6AC']; /* Couleur secondaire, Accentuation 1, Accentuation 2, Jaune clair, Teal clair */
 const COLORS_DARK = ['#4DB6AC', '#FFD54F', '#EF5350', '#FFC107', '#26A69A']; /* Teal clair, Jaune clair, Rouge clair, Jaune, Teal moyen */
 

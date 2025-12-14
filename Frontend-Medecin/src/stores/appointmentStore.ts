@@ -1,5 +1,6 @@
 import { create } from 'zustand';
-import { mockAppointments, type Appointment } from '../utils/mockData';
+import { appointmentsService } from '../services/api';
+import type { Appointment } from '../utils/mockData';
 import { formatDateAPI, parseDateAPI } from '../utils/dateFormatter';
 
 interface AppointmentState {
@@ -7,7 +8,6 @@ interface AppointmentState {
   selectedAppointment: Appointment | null;
   selectedDate: Date;
   
-  // Actions
   setAppointments: (appointments: Appointment[]) => void;
   addAppointment: (appointment: Omit<Appointment, 'appointmentId'>) => void;
   updateAppointment: (appointmentId: string, updates: Partial<Appointment>) => void;
@@ -17,7 +17,6 @@ interface AppointmentState {
   confirmAppointment: (appointmentId: string) => void;
   cancelAppointment: (appointmentId: string) => void;
   
-  // Getters
   getAppointmentsByDoctor: (doctorId: string) => Appointment[];
   getAppointmentsByDate: (date: Date) => Appointment[];
   getAppointmentsByPatient: (patientId: string) => Appointment[];
@@ -27,28 +26,54 @@ interface AppointmentState {
 }
 
 export const useAppointmentStore = create<AppointmentState>((set, get) => ({
-  appointments: mockAppointments,
+  appointments: [],
   selectedAppointment: null,
   selectedDate: new Date(),
   
   setAppointments: (appointments) => set({ appointments }),
   
-  addAppointment: (appointmentData) => {
-    const newAppointment: Appointment = {
-      ...appointmentData,
-      appointmentId: `appt_${Date.now()}`
-    };
-    set((state) => ({
-      appointments: [...state.appointments, newAppointment]
-    }));
+  addAppointment: async (appointmentData) => {
+    try {
+      const response = await appointmentsService.create(appointmentData);
+      const newAppointment: Appointment = {
+        appointmentId: response.id || response.appointmentId || `appt_${Date.now()}`,
+        appointedPatient: response.appointedPatient || appointmentData.appointedPatient,
+        appointedDoctor: response.appointedDoctor || appointmentData.appointedDoctor,
+        date: response.date || appointmentData.date,
+        time: response.time || appointmentData.time,
+        reason: response.reason || appointmentData.reason,
+        status: (response.status || (appointmentData as any).status || 'pending') as Appointment['status'],
+        createdBy: (appointmentData as any).createdBy || 'doctor',
+      };
+      set((state) => ({
+        appointments: [...state.appointments, newAppointment]
+      }));
+    } catch (error) {
+      throw error;
+    }
   },
   
-  updateAppointment: (appointmentId, updates) => {
-    set((state) => ({
-      appointments: state.appointments.map(a =>
-        a.appointmentId === appointmentId ? { ...a, ...updates } : a
-      )
-    }));
+  updateAppointment: async (appointmentId, updates) => {
+    try {
+      const updatedAppointment = await appointmentsService.update(appointmentId, updates);
+      const transformedAppointment: Appointment = {
+        appointmentId: updatedAppointment.id || updatedAppointment.appointmentId || appointmentId,
+        appointedPatient: updatedAppointment.appointedPatient || updates.appointedPatient || '',
+        appointedDoctor: updatedAppointment.appointedDoctor || updates.appointedDoctor || '',
+        date: updatedAppointment.date || updates.date || '',
+        time: updatedAppointment.time || updates.time || '',
+        reason: updatedAppointment.reason || updates.reason || '',
+        status: (updatedAppointment.status || updates.status || 'pending') as Appointment['status'],
+        createdBy: (updates as any).createdBy || 'doctor',
+      };
+      set((state) => ({
+        appointments: state.appointments.map(a =>
+          a.appointmentId === appointmentId ? transformedAppointment : a
+        )
+      }));
+    } catch (error) {
+      throw error;
+    }
   },
   
   deleteAppointment: (appointmentId) => {
@@ -117,11 +142,9 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
     return appointments
       .filter(a => a.appointedDoctor === doctorId)
       .map(a => {
-        // Convertir date de dd-MM-yyyy à yyyy-MM-dd
         const dateParts = a.date.split('-');
         const isoDate = `${dateParts[2]}-${dateParts[1]}-${dateParts[0]}`;
         
-        // Couleur selon statut
         let backgroundColor = '#22c55e'; // vert - confirmé
         let borderColor = '#16a34a';
         
@@ -151,7 +174,6 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   }
 }));
 
-// Helper pour ajouter des minutes à une heure
 function addMinutes(time: string, minutes: number): string {
   const [h, m] = time.split(':').map(Number);
   const totalMinutes = h * 60 + m + minutes;

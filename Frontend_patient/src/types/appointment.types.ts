@@ -22,4 +22,5 @@ export interface AppointmentSlot {
   time: string;
   available: boolean;
   doctorId: string;
+  slotId?: string; // ID du créneau pour la réservation
 }

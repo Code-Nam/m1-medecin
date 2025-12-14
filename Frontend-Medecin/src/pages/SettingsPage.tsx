@@ -1,13 +1,13 @@
 import React from 'react';
 import { User, Bell, Shield, Palette, Clock, Save } from 'lucide-react';
-import { useAuthStore } from '../stores/authStore';
+import { useDoctor } from '../stores/authStore';
 import { useUIStore } from '../stores/uiStore';
 import { useTheme } from '../hooks/useTheme';
 import Button from '../components/Common/Button';
 import Input from '../components/Common/Input';
 
 export const SettingsPage: React.FC = () => {
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const { darkMode, toggleDarkMode, addToast } = useUIStore();
   const { colors } = useTheme();
 

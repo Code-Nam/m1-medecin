@@ -1,104 +1,65 @@
-import { MOCK_PATIENTS, MOCK_DOCTORS, MOCK_APPOINTMENTS } from '../mocks/data';
-import type { Appointment, Patient, Doctor } from '../types';
+const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) 
+  || (typeof process !== 'undefined' && process.env?.VITE_API_URL)
+  || 'http://localhost:3002/v1';
 
-const USE_MOCKS = true; // Force use of mocks as API does not exist
-
-export class ApiClient {
-  private static async simulateDelay<T>(data: T, ms = 500): Promise<T> {
-    return new Promise((resolve) => setTimeout(() => resolve(data), ms));
+class ApiClient {
+  private getAuthToken(): string | null {
+    return localStorage.getItem('token');
   }
 
-  static async get<T>(endpoint: string): Promise<T> {
-    if (USE_MOCKS) {
-      console.log(`[MOCK API] GET ${endpoint}`);
-      
-      // Appointments
-      if (endpoint.startsWith('/appointments/')) {
-        // Get appointments for a patient
-        const patientId = endpoint.split('/').pop();
-        const appointments = MOCK_APPOINTMENTS.filter(a => a.appointedPatient === patientId);
-        return this.simulateDelay({ appointments } as T);
-      }
-      
-      // Patients
-      if (endpoint.startsWith('/patients/')) {
-        const patientId = endpoint.split('/').pop();
-        const patient = MOCK_PATIENTS.find(p => p.patientId === patientId);
-        if (!patient) throw new Error('Patient not found');
-        return this.simulateDelay(patient as T);
-      }
+  private async request<T>(
+    endpoint: string,
+    options: RequestInit = {}
+  ): Promise<T> {
+    const headers: HeadersInit = {
+      'Content-Type': 'application/json',
+      ...options.headers,
+    };
 
-      // Doctors
-      if (endpoint === '/doctors') {
-        return this.simulateDelay(MOCK_DOCTORS as T);
-      }
-      if (endpoint.startsWith('/doctors/')) {
-        const doctorId = endpoint.split('/').pop();
-        const doctor = MOCK_DOCTORS.find(d => d.doctorId === doctorId);
-        if (!doctor) throw new Error('Doctor not found');
-        return this.simulateDelay(doctor as T);
-      }
+    const token = this.getAuthToken();
+    if (token) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
     }
 
-    // Fallback to real fetch if we were not forcing mocks (unreachable code currently)
-    throw new Error(`Endpoint ${endpoint} not mocked and API is disabled.`);
-  }
+    const response = await fetch(`${API_BASE_URL}${endpoint}`, {
+      ...options,
+      headers,
+    });
 
-  static async post<T>(endpoint: string, body: any): Promise<T> {
-    if (USE_MOCKS) {
-       console.log(`[MOCK API] POST ${endpoint}`, body);
-
-       if (endpoint === '/appointments') {
-         const newAppointment = {
-           ...body,
-           appointmentId: Math.random().toString(36).substr(2, 9),
-           createdAt: new Date(),
-           updatedAt: new Date(),
-         };
-         MOCK_APPOINTMENTS.push(newAppointment);
-         return this.simulateDelay(newAppointment as T);
-       }
-    }
-    throw new Error(`Endpoint ${endpoint} not mocked and API is disabled.`);
-  }
-
-  static async put<T>(endpoint: string, body: any): Promise<T> {
-    if (USE_MOCKS) {
-      console.log(`[MOCK API] PUT ${endpoint}`, body);
-
-      if (endpoint.startsWith('/patients/')) {
-        const patientId = endpoint.split('/').pop();
-        const index = MOCK_PATIENTS.findIndex(p => p.patientId === patientId);
-        if (index !== -1) {
-          MOCK_PATIENTS[index] = { ...MOCK_PATIENTS[index], ...body };
-          return this.simulateDelay(MOCK_PATIENTS[index] as T);
-        }
+    if (!response.ok) {
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
       }
-      
-      if (endpoint.startsWith('/appointments/')) {
-         const appointmentId = endpoint.split('/').pop();
-         const index = MOCK_APPOINTMENTS.findIndex(a => a.appointmentId === appointmentId);
-         if (index !== -1) {
-           MOCK_APPOINTMENTS[index] = { ...MOCK_APPOINTMENTS[index], ...body };
-           return this.simulateDelay(MOCK_APPOINTMENTS[index] as T);
-         }
-      }
+      const error = await response.json().catch(() => ({ message: 'Erreur réseau' }));
+      throw new Error(error.message || `HTTP error! status: ${response.status}`);
     }
-    throw new Error(`Endpoint ${endpoint} not mocked and API is disabled.`);
+
+    return response.json();
   }
 
-  static async delete<T>(endpoint: string): Promise<T> {
-     if (USE_MOCKS) {
-       console.log(`[MOCK API] DELETE ${endpoint}`);
-       if (endpoint.startsWith('/appointments/')) {
-         const appointmentId = endpoint.split('/').pop();
-         const index = MOCK_APPOINTMENTS.findIndex(a => a.appointmentId === appointmentId);
-         if (index !== -1) {
-           MOCK_APPOINTMENTS.splice(index, 1);
-           return this.simulateDelay(undefined as T);
-         }
-       }
-     }
-     throw new Error(`Endpoint ${endpoint} not mocked and API is disabled.`);
+  async get<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'GET' });
+  }
+
+  async post<T>(endpoint: string, body: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'POST',
+      body: JSON.stringify(body),
+    });
+  }
+
+  async put<T>(endpoint: string, body: any): Promise<T> {
+    return this.request<T>(endpoint, {
+      method: 'PUT',
+      body: JSON.stringify(body),
+    });
+  }
+
+  async delete<T>(endpoint: string): Promise<T> {
+    return this.request<T>(endpoint, { method: 'DELETE' });
   }
 }
+
+export default new ApiClient();

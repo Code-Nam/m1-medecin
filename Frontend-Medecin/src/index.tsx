@@ -4,11 +4,8 @@ import index from "./index.html";
 const server = serve({
   port: 3000,
   routes: {
-    // Serve index.html for root
     "/": index,
-    // Serve frontend.tsx
     "/src/frontend.tsx": Bun.file("./src/frontend.tsx"),
-    // Serve index.html for all unmatched routes (SPA routing)
     "/*": index,
 
     "/api/hello": {
@@ -35,12 +32,8 @@ const server = serve({
   },
 
   development: process.env.NODE_ENV !== "production" && {
-    // Enable browser hot reloading in development
     hmr: true,
 
-    // Echo console logs from the browser to the server
     console: true,
   },
 });
-
-console.log(`🚀 Server running at ${server.url}`);

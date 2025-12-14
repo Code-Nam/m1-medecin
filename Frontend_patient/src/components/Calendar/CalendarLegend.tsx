@@ -9,7 +9,6 @@ export const CalendarLegend = () => {
         { label: 'Confirmé', color: colors.semantic.success, status: AppointmentStatus.CONFIRMED },
         { label: 'En attente', color: colors.semantic.warning, status: AppointmentStatus.PENDING },
         { label: 'Proposé', color: colors.semantic.success, status: AppointmentStatus.DOCTOR_CREATED },
-        // Cancelled often not shown or shown in red
         { label: 'Annulé', color: colors.semantic.danger, status: AppointmentStatus.CANCELLED },
     ];
 

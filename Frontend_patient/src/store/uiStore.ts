@@ -13,9 +13,7 @@ export const useUIStore = create<UIState>()(
     (set, get) => ({
       darkMode: false,
       toggleDarkMode: () => {
-        const currentMode = get().darkMode;
-        const newDarkMode = !currentMode;
-        console.log(`🔄 Toggle dark mode: ${currentMode} → ${newDarkMode}`);
+        const newDarkMode = !get().darkMode;
         set({ darkMode: newDarkMode });
         const htmlElement = document.documentElement;
         const body = document.body;
@@ -30,7 +28,6 @@ export const useUIStore = create<UIState>()(
             root.style.backgroundColor = '#0F0F0F';
             root.style.color = '#FFFFFF';
           }
-          console.log('🌙 Dark mode activé avec styles inline');
         } else {
           htmlElement.classList.remove('dark');
           htmlElement.style.colorScheme = 'light';
@@ -40,7 +37,6 @@ export const useUIStore = create<UIState>()(
             root.style.backgroundColor = '#FCFCF7';
             root.style.color = '#263238';
           }
-          console.log('☀️ Light mode activé avec styles inline');
         }
       },
       sidebarCollapsed: false,

@@ -1,12 +1,13 @@
 import React, { useState, useEffect } from 'react';
 import { useDoctorStore } from '../../store/doctorStore';
 import { useAppointmentStore } from '../../store/appointmentStore';
+import { doctorService } from '../../services/doctorService';
 import { DoctorSelector } from './DoctorSelector';
 import { TimeSlotSelector } from './TimeSlotSelector';
 import { BookingConfirmation } from './BookingConfirmation';
 import { Button } from '../Common/Button';
 import { useTheme } from '../../hooks/useTheme';
-import { Doctor } from '../../types';
+import { Doctor, AppointmentSlot } from '../../types';
 
 interface BookingFormProps {
     patientId: string;
@@ -23,14 +24,46 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
     const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]); // Default today
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [reason, setReason] = useState('');
+    const [availableSlots, setAvailableSlots] = useState<AppointmentSlot[]>([]);
+    const [loadingSlots, setLoadingSlots] = useState(false);
 
     useEffect(() => {
         fetchAllDoctors();
     }, [fetchAllDoctors]);
 
+    useEffect(() => {
+        if (selectedDoctor && selectedDate) {
+            fetchAvailableSlots(selectedDoctor.doctorId, selectedDate);
+        } else {
+            setAvailableSlots([]);
+        }
+    }, [selectedDoctor, selectedDate]);
+
+    const fetchAvailableSlots = async (doctorId: string, date: string) => {
+        setLoadingSlots(true);
+        try {
+            const response = await doctorService.getAvailableSlots(doctorId, date);
+            const slots: AppointmentSlot[] = (response.slots || []).map((slot: any) => ({
+                time: slot.startTime,
+                available: slot.isAvailable && !slot.isBooked,
+                slotId: slot.slotId,
+            }));
+            setAvailableSlots(slots);
+        } catch (error) {
+            setAvailableSlots([]);
+        } finally {
+            setLoadingSlots(false);
+        }
+    };
+
     const handleDoctorSelect = (doctor: Doctor) => {
         setSelectedDoctor(doctor);
         setStep(2);
+    };
+
+    const handleDateChange = (date: string) => {
+        setSelectedDate(date);
+        setSelectedTime(''); // Réinitialiser l'heure sélectionnée quand la date change
     };
 
     const handleTimeSelect = (time: string) => {
@@ -48,16 +81,14 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
 
         try {
             await createAppointment({
-                appointedPatient: patientId,
-                appointedDoctor: selectedDoctor.doctorId,
+                appointedPatientId: patientId,
+                appointedDoctorId: selectedDoctor.doctorId,
                 date: selectedDate,
                 time: selectedTime,
                 reason: reason,
-                status: 'pending' as any, // Using string literal or import Enum
             });
             onSuccess();
         } catch (error) {
-            console.error('Booking failed', error);
         }
     };
 
@@ -118,7 +149,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                                 borderColor: colors.border.default
                             }}
                             value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
+                            onChange={(e) => handleDateChange(e.target.value)}
                             min={new Date().toISOString().split('T')[0]}
                             onFocus={(e) => {
                                 e.currentTarget.style.borderColor = colors.accent.primary;
@@ -132,14 +163,29 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                         />
                     </div>
 
-                    {/* Ideally we fetch slots for this date here. For now using doctor.availableSlots from store if static, 
-              or we assume slots are daily repetitive for this simple version. 
-              In real app, we'd fetch slots by doctor and date. */}
-                    <TimeSlotSelector
-                        slots={selectedDoctor.availableSlots || []}
-                        selectedTime={selectedTime}
-                        onSelect={handleTimeSelect}
-                    />
+                    <div>
+                        <label 
+                            className="block text-sm font-medium mb-1"
+                            style={{ color: colors.text.secondary }}
+                        >
+                            2. Choisissez un créneau
+                        </label>
+                        {loadingSlots ? (
+                            <div className="text-sm italic" style={{ color: colors.text.secondary }}>
+                                Chargement des créneaux...
+                            </div>
+                        ) : availableSlots.length === 0 ? (
+                            <div className="text-sm italic" style={{ color: colors.text.secondary }}>
+                                Aucun créneau disponible.
+                            </div>
+                        ) : (
+                            <TimeSlotSelector
+                                slots={availableSlots}
+                                selectedTime={selectedTime}
+                                onSelect={handleTimeSelect}
+                            />
+                        )}
+                    </div>
 
                     <div className="pt-4">
                         <label 

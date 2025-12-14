@@ -1,7 +1,7 @@
 import React from 'react';
 import { Search, Plus, Phone, Mail, ChevronLeft, ChevronRight, Eye, UserMinus } from 'lucide-react';
 import { usePatientStore } from '../../stores/patientStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
 import Button from '../Common/Button';
@@ -9,8 +9,9 @@ import Input from '../Common/Input';
 import { formatPhoneDisplay } from '../../utils/validation';
 
 export const PatientList: React.FC = () => {
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const {
+    patients: allPatients,
     searchTerm,
     setSearchTerm,
     getPaginatedPatients,
@@ -18,7 +19,9 @@ export const PatientList: React.FC = () => {
     currentPage,
     setCurrentPage,
     selectPatient,
-    updatePatient
+    updatePatient,
+    isLoading,
+    error
   } = usePatientStore();
   const { openModal, addToast } = useUIStore();
   const { darkMode, colors } = useTheme();
@@ -31,9 +34,13 @@ export const PatientList: React.FC = () => {
     openModal('patientDetail', patient);
   };
 
-  const handleRemoveFromDoctor = (patient: any) => {
-    updatePatient(patient.patientId, { assigned_doctor: '' });
-    addToast('success', `${patient.FirstName} ${patient.Surname} retiré de vos patients`);
+  const handleRemoveFromDoctor = async (patient: any) => {
+    try {
+      await updatePatient(patient.patientId, { assigned_doctor: '' });
+      addToast('success', `${patient.FirstName} ${patient.Surname} retiré de vos patients`);
+    } catch (error: any) {
+      addToast('error', error.message || 'Erreur lors de la suppression du patient');
+    }
   };
 
   return (
@@ -93,10 +100,27 @@ export const PatientList: React.FC = () => {
               </tr>
             </thead>
             <tbody style={{ borderColor: colors.border.default }}>
-              {patients.length === 0 ? (
+              {isLoading ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center" style={{ color: colors.text.muted }}>
+                    Chargement des patients...
+                  </td>
+                </tr>
+              ) : error ? (
+                <tr>
+                  <td colSpan={4} className="px-4 py-8 text-center" style={{ color: '#ef4444' }}>
+                    Erreur: {error}
+                  </td>
+                </tr>
+              ) : patients.length === 0 ? (
                 <tr>
                   <td colSpan={4} className="px-4 py-8 text-center" style={{ color: colors.text.muted }}>
                     Aucun patient trouvé
+                    {allPatients.length > 0 && (
+                      <div className="text-xs mt-2" style={{ color: colors.text.muted }}>
+                        ({allPatients.length} patient(s) au total, filtré par: "{searchTerm}")
+                      </div>
+                    )}
                   </td>
                 </tr>
               ) : (

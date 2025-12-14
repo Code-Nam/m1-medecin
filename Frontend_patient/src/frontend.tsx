@@ -30,7 +30,6 @@ const initializeTheme = () => {
           root.style.backgroundColor = '#0F0F0F';
           root.style.color = '#FFFFFF';
         }
-        console.log('🌙 Dark mode activé depuis localStorage');
       } else {
         htmlElement.classList.remove('dark');
         htmlElement.style.colorScheme = 'light';
@@ -40,7 +39,6 @@ const initializeTheme = () => {
           root.style.backgroundColor = '#FCFCF7';
           root.style.color = '#263238';
         }
-        console.log('☀️ Light mode activé depuis localStorage');
       }
     } catch (e) {
       htmlElement.classList.remove('dark');
@@ -51,7 +49,6 @@ const initializeTheme = () => {
         root.style.backgroundColor = '#FCFCF7';
         root.style.color = '#263238';
       }
-      console.log('☀️ Light mode par défaut (erreur localStorage)');
     }
   } else {
     htmlElement.classList.remove('dark');
@@ -62,7 +59,6 @@ const initializeTheme = () => {
       root.style.backgroundColor = '#FCFCF7';
       root.style.color = '#263238';
     }
-    console.log('☀️ Light mode par défaut (pas de localStorage)');
   }
 };
 

@@ -8,7 +8,6 @@ interface DoctorStore {
   isLoading: boolean;
   error: string | null;
 
-  // Actions
   fetchAllDoctors: () => Promise<void>;
   fetchDoctorById: (id: string) => Promise<void>;
   selectDoctor: (doctor: Doctor | null) => void;

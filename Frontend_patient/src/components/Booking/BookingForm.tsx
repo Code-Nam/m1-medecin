@@ -137,7 +137,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                             }}
                             aria-label="Modifier la sélection du médecin"
                         >
-                            Modifier
+                            <span aria-hidden="true">Modifier</span>
                         </button>
                     </div>
 

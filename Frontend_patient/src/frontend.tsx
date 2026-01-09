@@ -1,6 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { App } from "./App";
 import './index.css';
+import { initZoomControl } from './utils/zoomControl';
 
 const initializeTheme = () => {
   const htmlElement = document.documentElement;
@@ -10,10 +11,10 @@ const initializeTheme = () => {
   htmlElement.classList.remove('dark');
   htmlElement.style.colorScheme = 'light';
   body.style.backgroundColor = '#FCFCF7';
-  body.style.color = '#263238';
+  body.style.color = '#1A1A1A';
   if (root) {
     root.style.backgroundColor = '#FCFCF7';
-    root.style.color = '#263238';
+    root.style.color = '#1A1A1A';
   }
   
   const stored = localStorage.getItem('ui-storage');
@@ -35,10 +36,10 @@ const initializeTheme = () => {
         htmlElement.classList.remove('dark');
         htmlElement.style.colorScheme = 'light';
         body.style.backgroundColor = '#FCFCF7';
-        body.style.color = '#263238';
+        body.style.color = '#1A1A1A';
         if (root) {
           root.style.backgroundColor = '#FCFCF7';
-          root.style.color = '#263238';
+          root.style.color = '#1A1A1A';
         }
         console.log('☀️ Light mode activé depuis localStorage');
       }
@@ -46,10 +47,10 @@ const initializeTheme = () => {
       htmlElement.classList.remove('dark');
       htmlElement.style.colorScheme = 'light';
       body.style.backgroundColor = '#FCFCF7';
-      body.style.color = '#263238';
+      body.style.color = '#1A1A1A';
       if (root) {
         root.style.backgroundColor = '#FCFCF7';
-        root.style.color = '#263238';
+        root.style.color = '#1A1A1A';
       }
       console.log('☀️ Light mode par défaut (erreur localStorage)');
     }
@@ -57,16 +58,19 @@ const initializeTheme = () => {
     htmlElement.classList.remove('dark');
     htmlElement.style.colorScheme = 'light';
     body.style.backgroundColor = '#FCFCF7';
-    body.style.color = '#263238';
+    body.style.color = '#1A1A1A';
     if (root) {
       root.style.backgroundColor = '#FCFCF7';
-      root.style.color = '#263238';
+      root.style.color = '#1A1A1A';
     }
     console.log('☀️ Light mode par défaut (pas de localStorage)');
   }
 };
 
 initializeTheme();
+
+// Limiter le zoom à 150% maximum
+initZoomControl();
 
 function start() {
   const root = createRoot(document.getElementById("root")!);

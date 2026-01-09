@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Menu, Sun, Moon, Bell, ChevronRight } from 'lucide-react';
+import { Sun, Moon, Bell, ChevronRight } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useAppointmentStore } from '../../store/appointmentStore';
 import { usePatientStore } from '../../store/patientStore';
@@ -11,7 +11,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) => {
-  const { darkMode, toggleDarkMode, toggleSidebar } = useUIStore();
+  const { darkMode, toggleDarkMode } = useUIStore();
   const { currentPatient } = usePatientStore();
   const { appointments } = useAppointmentStore();
   const { colors } = useTheme();
@@ -56,27 +56,9 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
       aria-label="En-tête de l'application"
     >
       <div className="flex items-center justify-between px-4 lg:px-6 py-4">
-        {/* Left - Menu toggle + Breadcrumb */}
+        {/* Left - Breadcrumb */}
         <div className="flex items-center gap-4">
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-lg transition-colors lg:hidden"
-            style={{
-              color: colors.text.secondary,
-              backgroundColor: 'transparent'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-            aria-label="Ouvrir le menu de navigation"
-          >
-            <Menu className="w-5 h-5" />
-          </button>
-
-          <nav aria-label="Fil d'Ariane" className="hidden sm:block">
+          <nav aria-label="Fil d'Ariane">
             <ol className="flex items-center gap-2 text-sm">
               {breadcrumb.length > 0 ? (
                 breadcrumb.map((item, index) => (
@@ -143,11 +125,12 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
             }}
             aria-label={`Notifications${pendingCount > 0 ? ` (${pendingCount} en attente)` : ''}`}
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-5 h-5" aria-hidden="true" />
             {pendingCount > 0 && (
               <span 
                 className="absolute top-1 right-1 w-4 h-4 text-white text-xs font-bold rounded-full flex items-center justify-center"
                 style={{ backgroundColor: colors.semantic.danger }}
+                aria-hidden="true"
               >
                 {pendingCount > 9 ? '9+' : pendingCount}
               </span>
@@ -171,9 +154,9 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
             aria-label={darkMode ? 'Activer le mode clair' : 'Activer le mode sombre'}
           >
             {darkMode ? (
-              <Sun className="w-5 h-5" style={{ color: colors.semantic.warning }} />
+              <Sun className="w-5 h-5" style={{ color: colors.semantic.warning }} aria-hidden="true" />
             ) : (
-              <Moon className="w-5 h-5" />
+              <Moon className="w-5 h-5" aria-hidden="true" />
             )}
           </button>
         </div>

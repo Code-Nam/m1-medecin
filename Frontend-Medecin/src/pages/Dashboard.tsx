@@ -36,17 +36,17 @@ export const Dashboard: React.FC = () => {
     <div className="space-y-6">
       {/* Welcome */}
       <div 
-        className="rounded-2xl p-6 text-white shadow-lg"
+        className="dashboard-welcome rounded-2xl p-6 text-white shadow-lg"
         style={{ 
           background: darkMode 
             ? 'linear-gradient(to right, #4DB6AC, #26A69A)' 
             : 'linear-gradient(to right, #43A78B, #2E7D6B)' 
         }}
       >
-        <h1 className="text-2xl font-bold mb-2">
+        <h1 className="text-2xl font-bold mb-2 text-white">
           Bonjour, Dr. {doctor?.FirstName} {doctor?.Surname} 👋
         </h1>
-        <p className="text-cyan-100">
+        <p className="text-white">
           {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}
         </p>
         <div className="mt-4 flex flex-wrap gap-3">
@@ -165,6 +165,7 @@ export const Dashboard: React.FC = () => {
                     <button
                       onClick={() => handleConfirmAppointment(appointment.appointmentId)}
                       className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors"
+                      style={{ color: 'rgba(255, 255, 255, 1)' }}
                       aria-label="Confirmer ce rendez-vous"
                     >
                       Confirmer

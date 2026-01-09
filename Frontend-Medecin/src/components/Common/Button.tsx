@@ -9,6 +9,7 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   children: React.ReactNode;
+  loadingText?: string;
 }
 
 export const Button: React.FC<ButtonProps> = ({
@@ -20,10 +21,14 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   className = '',
   disabled,
+  loadingText,
+  type = 'button',
   ...props
 }) => {
   const { darkMode, colors } = useTheme();
   const baseClasses = 'inline-flex items-center justify-center font-medium rounded-lg transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed';
+  
+  const isDisabled = disabled || isLoading;
 
   const getVariantStyles = () => {
     switch (variant) {
@@ -52,31 +57,39 @@ export const Button: React.FC<ButtonProps> = ({
 
   return (
     <button
+      type={type}
       className={`${baseClasses} ${sizeClasses[size]} ${className}`}
       style={{
         backgroundColor: variantStyles.bg,
         color: variantStyles.text,
-        border: variant === 'outline' ? `2px solid ${variantStyles.border}` : 'none'
-      }}
+        border: variant === 'outline' ? `2px solid ${variantStyles.border}` : 'none',
+        '--tw-ring-color': variantStyles.hoverBg
+      } as React.CSSProperties}
       onMouseEnter={(e) => {
-        if (!disabled && !isLoading) {
+        if (!isDisabled) {
           e.currentTarget.style.backgroundColor = variantStyles.hoverBg || variantStyles.bg;
         }
       }}
       onMouseLeave={(e) => {
-        if (!disabled && !isLoading) {
+        if (!isDisabled) {
           e.currentTarget.style.backgroundColor = variantStyles.bg;
         }
       }}
-      disabled={disabled || isLoading}
+      disabled={isDisabled}
+      aria-busy={isLoading}
+      aria-disabled={isDisabled}
+      aria-live={isLoading ? "polite" : undefined}
       {...props}
     >
       {isLoading ? (
-        <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+        <>
+          <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
+          <span className="sr-only">Chargement en cours</span>
+        </>
       ) : leftIcon ? (
         <span aria-hidden="true">{leftIcon}</span>
       ) : null}
-      <span>{children}</span>
+      <span>{isLoading && loadingText ? loadingText : children}</span>
       {!isLoading && rightIcon && <span aria-hidden="true">{rightIcon}</span>}
     </button>
   );

@@ -27,10 +27,25 @@ const ToastItem: React.FC<ToastItemProps> = ({ id, type, message, onClose }) => 
     info: darkMode ? 'bg-[rgba(77,182,172,0.2)] border-[rgba(77,182,172,0.5)]' : 'bg-[rgba(67,167,139,0.1)] border-[rgba(67,167,139,0.3)]'
   };
 
+  const roleMapping = {
+    success: 'status',
+    error: 'alert',
+    warning: 'alert',
+    info: 'status'
+  };
+
+  const liveMapping = {
+    success: 'polite' as const,
+    error: 'assertive' as const,
+    warning: 'assertive' as const,
+    info: 'polite' as const
+  };
+
   return (
     <div
-      role="alert"
-      aria-live="polite"
+      role={roleMapping[type]}
+      aria-live={liveMapping[type]}
+      aria-atomic="true"
       className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-slide-in ${bgClasses[type]}`}
     >
       <span aria-hidden="true">{icons[type]}</span>
@@ -39,20 +54,22 @@ const ToastItem: React.FC<ToastItemProps> = ({ id, type, message, onClose }) => 
       </p>
       <button
         onClick={() => onClose(id)}
-        className="p-1 rounded transition-colors"
+        type="button"
+        className="p-1 rounded transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
         style={{
           backgroundColor: 'transparent',
-          color: colors.text.muted
-        }}
+          color: colors.text.muted,
+          '--tw-ring-color': colors.accent.primary
+        } as React.CSSProperties}
         onMouseEnter={(e) => {
           e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
         }}
         onMouseLeave={(e) => {
           e.currentTarget.style.backgroundColor = 'transparent';
         }}
-        aria-label="Fermer la notification"
+        aria-label={`Fermer la notification : ${message}`}
       >
-        <X className="w-4 h-4 text-gray-500" />
+        <X className="w-4 h-4 text-gray-500" aria-hidden="true" />
       </button>
     </div>
   );

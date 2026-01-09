@@ -19,14 +19,21 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
     return (
         <div className="space-y-4">
             <h3 
+                id="doctor-selector-heading"
                 className="text-lg font-medium"
                 style={{ color: colors.text.primary }}
             >
-                1. Choisissez un médecin
+                Première étape : Choisissez un médecin
             </h3>
-            <div className="grid gap-4 sm:grid-cols-2">
+            <div 
+                className="grid gap-4 sm:grid-cols-2"
+                role="radiogroup"
+                aria-labelledby="doctor-selector-heading"
+                aria-required="true"
+            >
                 {doctors.map((doctor) => {
                     const isSelected = selectedDoctorId === doctor.doctorId;
+                    const doctorLabel = `Docteur ${doctor.firstName} ${doctor.surname}, ${doctor.specialization}`;
                     return (
                         <div
                             key={doctor.doctorId}
@@ -45,9 +52,13 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
                             }}
                             role="radio"
                             aria-checked={isSelected}
-                            tabIndex={0}
+                            aria-label={doctorLabel}
+                            tabIndex={isSelected ? 0 : -1}
                             onKeyDown={(e) => {
-                                if (e.key === 'Enter' || e.key === ' ') onSelect(doctor);
+                                if (e.key === 'Enter' || e.key === ' ') {
+                                    e.preventDefault();
+                                    onSelect(doctor);
+                                }
                             }}
                             onMouseEnter={(e) => {
                                 if (!isSelected) {
@@ -63,7 +74,7 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
                             }}
                         >
                             <div className="flex items-center space-x-3">
-                                <div className="flex-shrink-0">
+                                <div className="flex-shrink-0" aria-hidden="true">
                                     <div 
                                         className="h-10 w-10 rounded-full flex items-center justify-center"
                                         style={{
@@ -78,15 +89,22 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
                                     <p 
                                         className="font-medium"
                                         style={{ color: colors.text.primary }}
+                                        aria-hidden="true"
                                     >
                                         Dr. {doctor.firstName} {doctor.surname}
                                     </p>
                                     <p 
                                         className="text-sm"
                                         style={{ color: colors.text.secondary }}
+                                        aria-hidden="true"
                                     >
                                         {doctor.specialization}
                                     </p>
+                                    {isSelected && (
+                                        <span className="sr-only">
+                                            Médecin actuellement sélectionné
+                                        </span>
+                                    )}
                                 </div>
                             </div>
                         </div>

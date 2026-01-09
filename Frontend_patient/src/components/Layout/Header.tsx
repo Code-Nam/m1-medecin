@@ -47,11 +47,13 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
 
   return (
     <header 
+      role="banner"
       className="sticky top-0 z-30 backdrop-blur-md border-b"
       style={{
         backgroundColor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
         borderColor: colors.border.default
       }}
+      aria-label="En-tête de l'application"
     >
       <div className="flex items-center justify-between px-4 lg:px-6 py-4">
         {/* Left - Menu toggle + Breadcrumb */}

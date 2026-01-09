@@ -78,6 +78,9 @@
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color-scheme: light;
+    /* Empêche le zoom du navigateur de déclencher le responsive */
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
   }
   
   html.dark {
@@ -90,6 +93,9 @@
     margin: 0;
     padding: 0;
     min-height: 100vh;
+    /* Force la version desktop sur PC même en zoom */
+    min-width: 1280px !important;
+    overflow-x: auto;
   }
   
   html.dark body {
@@ -102,11 +108,28 @@
     background-color: #FCFCF7 !important; /* Fond - Palette IIM */
     color: #263238 !important; /* Couleur Texte - Palette IIM */
     min-height: 100vh;
+    min-width: 1280px !important;
   }
   
   html.dark #root {
     background-color: #0F0F0F !important; /* Fond sombre */
     color: #FFFFFF !important; /* Texte blanc */
+  }
+
+  /* Force version desktop sur les appareils avec souris (PC) */
+  @media (pointer: fine) {
+    body, #root {
+      min-width: 1280px !important;
+    }
+    
+    /* Désactive tous les breakpoints responsive sur PC */
+    .lg\:hidden, .md\:hidden, .sm\:hidden {
+      display: block !important;
+    }
+    
+    .hidden {
+      display: none !important;
+    }
   }
 }
 

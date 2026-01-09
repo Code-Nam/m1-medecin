@@ -1,10 +1,24 @@
 <!doctype html>
-<html lang="en">
+<html lang="fr">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=1280, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
     <link rel="icon" type="image/svg+xml" href="./logo.svg" />
-    <title>Bun + React</title>
+    <title>Patient - Plateforme Médicale</title>
+    <style>
+      /* Force la largeur minimale pour garder la version desktop */
+      body {
+        min-width: 1280px !important;
+        overflow-x: auto;
+      }
+      
+      /* Empêche le responsive sur desktop */
+      @media (pointer: fine) {
+        body {
+          min-width: 1280px !important;
+        }
+      }
+    </style>
   </head>
   <body>
     <div id="root"></div>

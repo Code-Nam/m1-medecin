@@ -45,7 +45,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
     <>
       <aside
         id="navigation"
-        className="static inset-y-0 left-0 z-50 flex flex-col border-r w-64"
+        className={`
+          fixed lg:static inset-y-0 left-0 z-50
+          flex flex-col border-r
+          transition-all duration-300 ease-in-out
+          ${isCollapsed ? '-translate-x-full lg:translate-x-0' : 'translate-x-0'} w-64
+        `}
         style={{
           backgroundColor: colors.bg.sidebar,
           borderColor: colors.border.default

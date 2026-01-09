@@ -135,9 +135,9 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.textDecoration = 'none';
                             }}
-                            aria-label="Modifier la sélection du médecin"
+                            aria-label={`Changer de médecin. Actuellement : Dr. ${selectedDoctor.surname}`}
                         >
-                            Modifier
+                            <span aria-hidden="true">Modifier</span>
                         </button>
                     </div>
 

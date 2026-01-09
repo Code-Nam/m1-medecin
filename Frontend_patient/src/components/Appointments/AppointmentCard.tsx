@@ -83,9 +83,9 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                             variant="outline"
                             size="sm"
                             onClick={() => onEdit(appointment.appointmentId)}
-                            aria-label={`Modifier le rendez-vous du ${formatDate(appointment.date)}`}
+                            aria-label={`Modifier le rendez-vous : ${appointment.reason} du ${formatDate(appointment.date)}`}
                         >
-                            Modifier
+                            <span aria-hidden="true">Modifier</span>
                         </Button>
                     )}
                     {onCancel && (
@@ -93,9 +93,9 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                             variant="danger"
                             size="sm"
                             onClick={() => onCancel(appointment.appointmentId)}
-                            aria-label={`Annuler le rendez-vous du ${formatDate(appointment.date)}`}
+                            aria-label={`Annuler le rendez-vous : ${appointment.reason} du ${formatDate(appointment.date)}`}
                         >
-                            Annuler
+                            <span aria-hidden="true">Annuler</span>
                         </Button>
                     )}
                 </div>

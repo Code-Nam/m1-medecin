@@ -67,6 +67,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
       )}
 
       <aside
+        id="navigation"
         className={`
           fixed lg:static inset-y-0 left-0 z-50
           flex flex-col border-r
@@ -77,6 +78,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           backgroundColor: colors.bg.sidebar,
           borderColor: colors.border.default
         }}
+        role="complementary"
         aria-label="Menu de navigation principal"
       >
         <div 

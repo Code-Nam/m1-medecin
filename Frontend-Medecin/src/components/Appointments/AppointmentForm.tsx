@@ -141,66 +141,70 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
   };
 
   return (
-    <form onSubmit={handleSubmit} className="space-y-5">
-      {/* Patient */}
-      <Select
-        label="Patient"
-        options={patientOptions}
-        value={formData.patientId}
-        onChange={(e) => handleChange('patientId', e.target.value)}
-        error={errors.patientId}
-        required
-        disabled={isEditing}
-        aria-label="Sélectionner un patient"
-      />
-
-      {/* Date et Heure */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <Input
-          type="date"
-          label="Date"
-          value={formData.date}
-          onChange={(e) => handleChange('date', e.target.value)}
-          error={errors.date}
+    <form onSubmit={handleSubmit} className="space-y-5" aria-label={isEditing ? "Modifier le rendez-vous" : "Créer un nouveau rendez-vous"}>
+      <fieldset>
+        <legend className="sr-only">Informations du rendez-vous</legend>
+        
+        {/* Patient */}
+        <Select
+          label="Patient"
+          options={patientOptions}
+          value={formData.patientId}
+          onChange={(e) => handleChange('patientId', e.target.value)}
+          error={errors.patientId}
           required
-          min={new Date().toISOString().split('T')[0]}
-          leftIcon={<Calendar className="w-4 h-4" />}
-          aria-label="Sélectionner la date du rendez-vous"
+          disabled={isEditing}
+          aria-label="Sélectionner un patient"
         />
 
-        <Input
-          type="time"
-          label="Heure"
-          value={formData.time}
-          onChange={(e) => handleChange('time', e.target.value)}
-          error={errors.time}
-          required
-          min="08:00"
-          max="19:00"
-          step="900"
-          leftIcon={<Clock className="w-4 h-4" />}
-          aria-label="Sélectionner l'heure du rendez-vous"
-        />
-      </div>
+        {/* Date et Heure */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
+          <Input
+            type="date"
+            label="Date"
+            value={formData.date}
+            onChange={(e) => handleChange('date', e.target.value)}
+            error={errors.date}
+            required
+            min={new Date().toISOString().split('T')[0]}
+            leftIcon={<Calendar className="w-4 h-4" />}
+            aria-label="Sélectionner la date du rendez-vous"
+          />
 
-      {/* Motif */}
-      <Textarea
-        label="Motif de la consultation"
-        value={formData.reason}
-        onChange={(e) => handleChange('reason', e.target.value)}
-        error={errors.reason}
-        required
-        placeholder="Ex: Consultation générale, Suivi tension, Renouvellement ordonnance..."
-        aria-label="Saisir le motif de la consultation"
-      />
+          <Input
+            type="time"
+            label="Heure"
+            value={formData.time}
+            onChange={(e) => handleChange('time', e.target.value)}
+            error={errors.time}
+            required
+            min="08:00"
+            max="19:00"
+            step="900"
+            leftIcon={<Clock className="w-4 h-4" />}
+            aria-label="Sélectionner l'heure du rendez-vous"
+          />
+        </div>
+
+        {/* Motif */}
+        <Textarea
+          label="Motif de la consultation"
+          value={formData.reason}
+          onChange={(e) => handleChange('reason', e.target.value)}
+          error={errors.reason}
+          required
+          placeholder="Ex: Consultation générale, Suivi tension, Renouvellement ordonnance..."
+          aria-label="Saisir le motif de la consultation"
+        />
+      </fieldset>
 
       {/* Type de RDV */}
       {!isEditing && (
-        <div>
-          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+        <fieldset>
+          <legend className="block text-sm font-medium mb-2" style={{ color: colors.text.secondary }}>
             Type de rendez-vous
-          </label>
-          <div className="flex gap-4">
+          </legend>
+          <div className="flex gap-4" role="radiogroup" aria-label="Type de rendez-vous">
             <label className="flex items-center gap-2 cursor-pointer">
               <input
                 type="radio"
@@ -208,9 +212,14 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 value="doctor"
                 checked={formData.createdBy === 'doctor'}
                 onChange={(e) => handleChange('createdBy', e.target.value)}
-                className="w-4 h-4 text-cyan-600 border-gray-300 focus:ring-cyan-500"
+                className="w-4 h-4 focus:ring-2 focus:ring-offset-2"
+                style={{ 
+                  accentColor: colors.accent.primary,
+                  '--tw-ring-color': colors.accent.primary
+                } as React.CSSProperties}
+                aria-checked={formData.createdBy === 'doctor'}
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
+              <span className="text-sm" style={{ color: colors.text.primary }}>
                 Créé par médecin (confirmé)
               </span>
             </label>
@@ -221,14 +230,19 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 value="patient"
                 checked={formData.createdBy === 'patient'}
                 onChange={(e) => handleChange('createdBy', e.target.value)}
-                className="w-4 h-4 text-cyan-600 border-gray-300 focus:ring-cyan-500"
+                className="w-4 h-4 focus:ring-2 focus:ring-offset-2"
+                style={{ 
+                  accentColor: colors.accent.primary,
+                  '--tw-ring-color': colors.accent.primary
+                } as React.CSSProperties}
+                aria-checked={formData.createdBy === 'patient'}
               />
-              <span className="text-sm text-gray-700 dark:text-gray-300">
+              <span className="text-sm" style={{ color: colors.text.primary }}>
                 Demande patient (en attente)
               </span>
             </label>
           </div>
-        </div>
+        </fieldset>
       )}
 
       {/* Actions */}

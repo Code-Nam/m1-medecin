@@ -54,6 +54,8 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
                 backgroundColor: colors.bg.card,
                 borderColor: colors.border.default
             }}
+            role="region"
+            aria-label="Calendrier des rendez-vous"
         >
             <FullCalendar
                 plugins={[dayGridPlugin, timeGridPlugin, interactionPlugin]}
@@ -69,7 +71,8 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
                     today: "Aujourd'hui",
                     month: 'Mois',
                     week: 'Semaine',
-                    day: 'Jour'
+                    day: 'Jour',
+                    list: 'Liste'
                 }}
                 events={events}
                 dateClick={(info) => {
@@ -102,8 +105,22 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
                 }}
                 height="auto"
                 aspectRatio={1.8}
-                eventClassNames="cursor-pointer transition-transform hover:scale-[1.02]"
+                eventClassNames="cursor-pointer transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2"
                 dayCellClassNames="hover:bg-gray-50 dark:hover:bg-gray-700/50 cursor-pointer transition-colors"
+                navLinks={true}
+                navLinkDayClick="timeGridDay"
+                dayMaxEventRows={true}
+                views={{
+                    dayGridMonth: {
+                        titleFormat: { year: 'numeric', month: 'long' }
+                    },
+                    timeGridWeek: {
+                        titleFormat: { year: 'numeric', month: 'long', day: 'numeric' }
+                    },
+                    timeGridDay: {
+                        titleFormat: { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }
+                    }
+                }}
             />
         </div>
     );

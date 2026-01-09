@@ -1,6 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import { X } from 'lucide-react';
 import { useTheme } from '../../hooks/useTheme';
+import { trapFocus, focusFirstElement } from '../../utils/focusTrap';
 
 interface ModalProps {
   isOpen: boolean;
@@ -8,6 +9,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   size?: 'sm' | 'md' | 'lg' | 'xl';
+  description?: string;
 }
 
 export const Modal: React.FC<ModalProps> = ({
@@ -15,31 +17,48 @@ export const Modal: React.FC<ModalProps> = ({
   onClose,
   title,
   children,
-  size = 'md'
+  size = 'md',
+  description
 }) => {
   const { colors, darkMode } = useTheme();
   const modalRef = useRef<HTMLDivElement>(null);
   const previousActiveElement = useRef<HTMLElement | null>(null);
+  const closeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
     if (isOpen) {
       previousActiveElement.current = document.activeElement as HTMLElement;
-      modalRef.current?.focus();
       document.body.style.overflow = 'hidden';
+      // Annoncer l'ouverture de la modale au lecteur d'écran
+      document.body.setAttribute('aria-hidden', 'true');
+      
+      // Focus sur le premier élément focusable après un court délai
+      setTimeout(() => {
+        if (modalRef.current) {
+          focusFirstElement(modalRef.current);
+        }
+      }, 50);
     } else {
       document.body.style.overflow = 'unset';
+      document.body.removeAttribute('aria-hidden');
       previousActiveElement.current?.focus();
     }
 
     return () => {
       document.body.style.overflow = 'unset';
+      document.body.removeAttribute('aria-hidden');
     };
   }, [isOpen]);
 
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      if (e.key === 'Escape' && isOpen) {
+      if (!isOpen || !modalRef.current) return;
+
+      if (e.key === 'Escape') {
+        e.preventDefault();
         onClose();
+      } else if (e.key === 'Tab') {
+        trapFocus(modalRef.current, e);
       }
     };
 
@@ -62,6 +81,7 @@ export const Modal: React.FC<ModalProps> = ({
       role="dialog"
       aria-modal="true"
       aria-labelledby="modal-title"
+      aria-describedby={description ? "modal-description" : undefined}
     >
       {/* Overlay */}
       <div
@@ -78,23 +98,39 @@ export const Modal: React.FC<ModalProps> = ({
         style={{
           backgroundColor: colors.bg.secondary
         }}
+        role="document"
       >
         {/* Header */}
         <div 
           className="flex items-center justify-between px-6 py-4 border-b"
           style={{ borderColor: colors.border.default }}
         >
-          <h2
-            id="modal-title"
-            className="text-lg font-semibold"
-            style={{ color: colors.text.primary }}
-          >
-            {title}
-          </h2>
+          <div className="flex-1">
+            <h2
+              id="modal-title"
+              className="text-lg font-semibold"
+              style={{ color: colors.text.primary }}
+            >
+              {title}
+            </h2>
+            {description && (
+              <p 
+                id="modal-description" 
+                className="text-sm mt-1"
+                style={{ color: colors.text.secondary }}
+              >
+                {description}
+              </p>
+            )}
+          </div>
           <button
+            ref={closeButtonRef}
             onClick={onClose}
-            className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2"
-            style={{ color: colors.text.muted }}
+            className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
+            style={{ 
+              color: colors.text.muted,
+              '--tw-ring-color': colors.accent.primary 
+            } as React.CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
               e.currentTarget.style.color = colors.text.secondary;
@@ -103,14 +139,15 @@ export const Modal: React.FC<ModalProps> = ({
               e.currentTarget.style.backgroundColor = 'transparent';
               e.currentTarget.style.color = colors.text.muted;
             }}
-            aria-label="Fermer la fenêtre"
+            aria-label="Fermer la fenêtre de dialogue"
+            type="button"
           >
-            <X className="w-5 h-5" />
+            <X className="w-5 h-5" aria-hidden="true" />
           </button>
         </div>
 
         {/* Content */}
-        <div className="px-6 py-4 max-h-[70vh] overflow-y-auto">
+        <div className="px-6 py-4 max-h-[70vh] overflow-y-auto" role="region" aria-label="Contenu de la fenêtre">
           {children}
         </div>
       </div>

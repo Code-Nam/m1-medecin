@@ -14,11 +14,14 @@ interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
     isLoading?: boolean;
     leftIcon?: React.ReactNode;
     rightIcon?: React.ReactNode;
+    loadingText?: string;
 }
 
 export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
-    ({ className, variant = 'primary', size = 'md', isLoading, leftIcon, rightIcon, children, disabled, ...props }, ref) => {
+    ({ className, variant = 'primary', size = 'md', isLoading, leftIcon, rightIcon, children, disabled, loadingText, type = 'button', ...props }, ref) => {
         const { darkMode, colors } = useTheme();
+        
+        const isDisabled = disabled || isLoading;
 
         const getVariantStyles = () => {
             switch (variant) {
@@ -78,6 +81,7 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
         return (
             <button
                 ref={ref}
+                type={type}
                 className={cn(
                     'inline-flex items-center justify-center rounded-md font-medium transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none',
                     sizes[size],
@@ -90,24 +94,30 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
                     '--tw-ring-color': variantStyles.focusRing
                 } as React.CSSProperties}
                 onMouseEnter={(e) => {
-                    if (!disabled && !isLoading) {
+                    if (!isDisabled) {
                         e.currentTarget.style.backgroundColor = variantStyles.hoverBg || variantStyles.bg;
                     }
                 }}
                 onMouseLeave={(e) => {
-                    if (!disabled && !isLoading) {
+                    if (!isDisabled) {
                         e.currentTarget.style.backgroundColor = variantStyles.bg;
                     }
                 }}
-                disabled={disabled || isLoading}
+                disabled={isDisabled}
+                aria-busy={isLoading}
+                aria-disabled={isDisabled}
+                aria-live={isLoading ? "polite" : undefined}
                 {...props}
             >
                 {isLoading ? (
-                    <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                    <>
+                        <Loader2 className="mr-2 h-4 w-4 animate-spin" aria-hidden="true" />
+                        <span className="sr-only">Chargement en cours</span>
+                    </>
                 ) : leftIcon ? (
                     <span className="mr-2" aria-hidden="true">{leftIcon}</span>
                 ) : null}
-                <span>{children}</span>
+                <span>{isLoading && loadingText ? loadingText : children}</span>
                 {!isLoading && rightIcon && <span className="ml-2" aria-hidden="true">{rightIcon}</span>}
             </button>
         );

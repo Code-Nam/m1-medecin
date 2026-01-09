@@ -61,11 +61,43 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
         }
     };
 
-    if (doctorsLoading) return <div>Chargement des médecins...</div>;
+    if (doctorsLoading) return (
+        <div role="status" aria-live="polite" aria-busy="true">
+            Chargement des médecins...
+        </div>
+    );
 
     return (
         <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-            {/* Progress Indicator could go here */}
+            {/* Progress Indicator */}
+            <nav aria-label="Progression de la prise de rendez-vous">
+                <ol className="flex items-center justify-center gap-2 mb-6">
+                    <li className={`px-3 py-1 rounded ${step >= 1 ? 'font-semibold' : ''}`}
+                        style={{ 
+                            backgroundColor: step >= 1 ? colors.accent.primary : colors.bg.secondary,
+                            color: step >= 1 ? '#FFFFFF' : colors.text.secondary
+                        }}
+                        aria-current={step === 1 ? 'step' : undefined}>
+                        1. Médecin
+                    </li>
+                    <li className={`px-3 py-1 rounded ${step >= 2 ? 'font-semibold' : ''}`}
+                        style={{ 
+                            backgroundColor: step >= 2 ? colors.accent.primary : colors.bg.secondary,
+                            color: step >= 2 ? '#FFFFFF' : colors.text.secondary
+                        }}
+                        aria-current={step === 2 ? 'step' : undefined}>
+                        2. Date & Heure
+                    </li>
+                    <li className={`px-3 py-1 rounded ${step >= 3 ? 'font-semibold' : ''}`}
+                        style={{ 
+                            backgroundColor: step >= 3 ? colors.accent.primary : colors.bg.secondary,
+                            color: step >= 3 ? '#FFFFFF' : colors.text.secondary
+                        }}
+                        aria-current={step === 3 ? 'step' : undefined}>
+                        3. Confirmation
+                    </li>
+                </ol>
+            </nav>
 
             {step === 1 && (
                 <DoctorSelector
@@ -76,10 +108,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
             )}
 
             {step === 2 && selectedDoctor && (
-                <div className="space-y-6">
+                <form className="space-y-6" aria-label="Sélection de la date et de l'heure du rendez-vous">
                     <div 
                         className="p-4 rounded-md mb-4"
                         style={{ backgroundColor: colors.bg.secondary }}
+                        role="status"
+                        aria-live="polite"
                     >
                         <p 
                             className="text-sm"
@@ -88,49 +122,61 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                             Médecin sélectionné: <strong>Dr. {selectedDoctor.surname}</strong>
                         </p>
                         <button 
+                            type="button"
                             onClick={() => setStep(1)} 
-                            className="text-xs transition-colors"
-                            style={{ color: colors.accent.primary }}
+                            className="text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-2 py-1"
+                            style={{ 
+                                color: colors.accent.primary,
+                                '--tw-ring-color': colors.accent.primary
+                            } as React.CSSProperties}
                             onMouseEnter={(e) => {
                                 e.currentTarget.style.textDecoration = 'underline';
                             }}
                             onMouseLeave={(e) => {
                                 e.currentTarget.style.textDecoration = 'none';
                             }}
+                            aria-label="Modifier la sélection du médecin"
                         >
                             Modifier
                         </button>
                     </div>
 
-                    <div>
-                        <label 
-                            className="block text-sm font-medium mb-1"
-                            style={{ color: colors.text.secondary }}
-                        >
-                            Date du rendez-vous
-                        </label>
-                        <input
-                            type="date"
-                            className="block w-full rounded-md shadow-sm sm:text-sm p-2 border"
-                            style={{
-                                backgroundColor: colors.bg.card,
-                                color: colors.text.primary,
-                                borderColor: colors.border.default
-                            }}
-                            value={selectedDate}
-                            onChange={(e) => setSelectedDate(e.target.value)}
-                            min={new Date().toISOString().split('T')[0]}
-                            onFocus={(e) => {
-                                e.currentTarget.style.borderColor = colors.accent.primary;
-                                e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
-                                e.currentTarget.style.outlineOffset = '2px';
-                            }}
-                            onBlur={(e) => {
-                                e.currentTarget.style.borderColor = colors.border.default;
-                                e.currentTarget.style.outline = 'none';
-                            }}
-                        />
-                    </div>
+                    <fieldset>
+                        <legend className="sr-only">Informations de rendez-vous</legend>
+                        <div>
+                            <label 
+                                htmlFor="appointment-date"
+                                className="block text-sm font-medium mb-1"
+                                style={{ color: colors.text.secondary }}
+                            >
+                                Date du rendez-vous <span className="text-red-500" aria-hidden="true">*</span>
+                            </label>
+                            <input
+                                id="appointment-date"
+                                type="date"
+                                required
+                                className="block w-full rounded-md shadow-sm sm:text-sm p-2 border"
+                                style={{
+                                    backgroundColor: colors.bg.card,
+                                    color: colors.text.primary,
+                                    borderColor: colors.border.default
+                                }}
+                                value={selectedDate}
+                                onChange={(e) => setSelectedDate(e.target.value)}
+                                min={new Date().toISOString().split('T')[0]}
+                                onFocus={(e) => {
+                                    e.currentTarget.style.borderColor = colors.accent.primary;
+                                    e.currentTarget.style.outline = `2px solid ${colors.accent.primary}`;
+                                    e.currentTarget.style.outlineOffset = '2px';
+                                }}
+                                onBlur={(e) => {
+                                    e.currentTarget.style.borderColor = colors.border.default;
+                                    e.currentTarget.style.outline = 'none';
+                                }}
+                                aria-required="true"
+                            />
+                        </div>
+                    </fieldset>
 
                     {/* Ideally we fetch slots for this date here. For now using doctor.availableSlots from store if static, 
               or we assume slots are daily repetitive for this simple version. 
@@ -143,12 +189,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
 
                     <div className="pt-4">
                         <label 
+                            htmlFor="appointment-reason"
                             className="block text-sm font-medium mb-1"
                             style={{ color: colors.text.secondary }}
                         >
-                            Motif du rendez-vous
+                            Motif du rendez-vous <span className="text-red-500" aria-hidden="true">*</span>
                         </label>
                         <textarea
+                            id="appointment-reason"
+                            required
                             className="block w-full rounded-md shadow-sm sm:text-sm p-2 border"
                             style={{
                                 backgroundColor: colors.bg.card,
@@ -168,18 +217,25 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                                 e.currentTarget.style.borderColor = colors.border.default;
                                 e.currentTarget.style.outline = 'none';
                             }}
+                            aria-required="true"
+                            aria-describedby="reason-help"
                         />
+                        <p id="reason-help" className="text-xs mt-1" style={{ color: colors.text.muted }}>
+                            Décrivez brièvement la raison de votre consultation
+                        </p>
                     </div>
 
                     <div className="flex justify-end pt-4">
                         <Button
+                            type="button"
                             onClick={handleNextToConfirm}
                             disabled={!selectedTime || !reason}
+                            aria-label="Continuer vers la confirmation"
                         >
                             Continuer
                         </Button>
                     </div>
-                </div>
+                </form>
             )}
 
             {step === 3 && selectedDoctor && (

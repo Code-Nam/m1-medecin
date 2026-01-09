@@ -6,11 +6,11 @@ interface AppointmentStatusProps {
     status: StatusEnum;
 }
 
-export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }) => {
+export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }: AppointmentStatusProps) => {
     const { darkMode, colors } = useTheme();
 
-    const getStatusStyles = (status: StatusEnum) => {
-        switch (status) {
+    const getStatusStyles = (statusParam: StatusEnum) => {
+        switch (statusParam) {
             case StatusEnum.CONFIRMED:
                 return {
                     backgroundColor: darkMode ? 'rgba(77, 182, 172, 0.3)' : 'rgba(67, 167, 139, 0.2)',
@@ -59,6 +59,21 @@ export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }) 
         }
     };
 
+    const getStatusAriaLabel = (status: StatusEnum) => {
+        switch (status) {
+            case StatusEnum.CONFIRMED:
+                return 'Statut du rendez-vous : Confirmé';
+            case StatusEnum.PENDING:
+                return 'Statut du rendez-vous : En attente de confirmation';
+            case StatusEnum.CANCELLED:
+                return 'Statut du rendez-vous : Annulé';
+            case StatusEnum.DOCTOR_CREATED:
+                return 'Statut du rendez-vous : Proposé par le médecin';
+            default:
+                return `Statut du rendez-vous : ${status}`;
+        }
+    };
+
     const statusStyles = getStatusStyles(status);
 
     return (
@@ -66,8 +81,9 @@ export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }) 
             className="px-3 py-1 rounded-full text-xs font-semibold border"
             style={statusStyles}
             role="status"
+            aria-label={getStatusAriaLabel(status)}
         >
-            {getStatusLabel(status)}
+            <span aria-hidden="true">{getStatusLabel(status)}</span>
         </span>
     );
 };

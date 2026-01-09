@@ -133,3 +133,21 @@ Le schéma Prisma est défini dans `prisma/schema.prisma`. Pour visualiser la ba
 ```bash
 bun run db:studio
 ```
+## To Do
+
+- [ ] Tests unitaires et d'intégration
+- [ ] Séparer routes du fichier app
+- [ ] Documentation Swagger
+- [ ] email de confirmation prise de rendez-vous
+- [ ] email de rappel de rendez-vous
+- [x] Refactorisation architecture
+- [ ] Ajouter collection Bruno
+- [ ] Support i18n
+- [ ] Lint & formatage du code
+- [x] Data Access Layer à ajouter pour isoler Prisma du reste de l'application
+- [ ] JSDoc pour documenter les fonctions et classes
+- [ ] Typesafe API sur les controllers
+- [x] Replace logger with winston
+- [ ] Appliquer le logger sur l'ensemble du projet
+- [ ] Rate limiting pour prévenir les abus
+- [ ] Sécurité renforcée (Helmet, CSP, etc.)

@@ -2,40 +2,31 @@ import type { Response } from "express";
 import { doctorService } from "../../services/doctor/DoctorService";
 import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IDoctorController } from "./IDoctorController";
-import { logger } from "../../config/logger";
-import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import { LogOperation } from "../../errors";
+import { ResponseHandler } from "../../utils/responseHandler";
 import {
-    ResponseHandler,
-    NotFoundError,
-    ForbiddenError,
-    BadRequestError,
-} from "../../utils/responseHandler";
+    validateRequiredParam,
+    getPaginationParams,
+    checkOwnership,
+    logOperationWithRequest,
+    logSuccess,
+    logOperation,
+} from "../helpers";
 
 export class DoctorController implements IDoctorController {
     async getDoctor(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `doctor by id=${id} user=${req.user?.id}`,
-                ),
+            logOperationWithRequest(
+                req,
+                LogOperation.GET,
+                `doctor by id=${id}`,
             );
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+
+            if (!validateRequiredParam(res, "id", id)) return;
+
             const doctor = await doctorService.getDoctor(id as string);
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Retrieved doctor ${id}`,
-                ),
-            );
+            logSuccess(`Retrieved doctor ${id}`, req.user?.id);
             ResponseHandler.success(res, doctor);
         } catch (error: any) {
             ResponseHandler.handle(error, res, "getting doctor", req.user?.id);
@@ -44,24 +35,14 @@ export class DoctorController implements IDoctorController {
 
     async getDoctors(req: AuthRequest, res: Response): Promise<void> {
         try {
-            const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.pageSize as string) || 10;
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `doctors page=${page} pageSize=${pageSize}`,
-                ),
+            const { page, pageSize } = getPaginationParams(req.query);
+            logOperation(
+                LogOperation.GET,
+                `doctors page=${page} pageSize=${pageSize}`,
             );
 
             const result = await doctorService.getDoctors(page, pageSize);
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Retrieved ${result.doctors.length} doctors`,
-                ),
-            );
+            logSuccess(`Retrieved ${result.doctors.length} doctors`);
             ResponseHandler.success(res, result);
         } catch (error: any) {
             ResponseHandler.handle(error, res, "getting doctors", req.user?.id);
@@ -70,21 +51,9 @@ export class DoctorController implements IDoctorController {
 
     async getAllDoctors(req: AuthRequest, res: Response): Promise<void> {
         try {
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `all doctors`,
-                ),
-            );
+            logOperation(LogOperation.GET, "all doctors");
             const doctors = await doctorService.getAllDoctors();
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Retrieved ${doctors.length} doctors`,
-                ),
-            );
+            logSuccess(`Retrieved ${doctors.length} doctors`);
             ResponseHandler.success(res, { doctors });
         } catch (error: any) {
             ResponseHandler.handle(
@@ -98,21 +67,9 @@ export class DoctorController implements IDoctorController {
 
     async createDoctor(req: any, res: Response): Promise<void> {
         try {
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.CREATE,
-                    `doctor email=${req.body.email}`,
-                ),
-            );
+            logOperation(LogOperation.CREATE, `doctor email=${req.body.email}`);
             const doctor = await doctorService.createDoctor(req.body as any);
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Created doctor ${doctor.id}`,
-                ),
-            );
+            logSuccess(`Created doctor ${doctor.id}`);
             ResponseHandler.created(res, {
                 message:
                     "Doctor creation request received and is under review.",
@@ -126,24 +83,15 @@ export class DoctorController implements IDoctorController {
     async updateDoctor(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "id", id)) return;
 
-            if (req.user?.role === "DOCTOR" && req.user.id !== id) {
-                return ResponseHandler.forbidden(
-                    res,
-                    "You can only update your own profile",
-                );
-            }
+            if (!checkOwnership(req, res, id as string, "doctor")) return;
 
             const doctor = await doctorService.updateDoctor(
                 id as string,
                 req.body as any,
             );
+            logSuccess(`Updated doctor ${id}`, req.user?.id);
             ResponseHandler.success(res, doctor);
         } catch (error: any) {
             ResponseHandler.handle(error, res, "updating doctor", req.user?.id);
@@ -153,21 +101,12 @@ export class DoctorController implements IDoctorController {
     async deleteDoctor(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "id", id)) return;
 
-            if (req.user?.role === "DOCTOR" && req.user.id !== id) {
-                return ResponseHandler.forbidden(
-                    res,
-                    "You can only delete your own account",
-                );
-            }
+            if (!checkOwnership(req, res, id as string, "doctor")) return;
 
             await doctorService.deleteDoctor(id as string);
+            logSuccess(`Deleted doctor ${id}`, req.user?.id);
             ResponseHandler.success(res, {
                 message:
                     "Doctor deletion request received and is under review.",

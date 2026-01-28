@@ -2,44 +2,37 @@ import type { Response } from "express";
 import { secretaryService } from "../../services/secretary/SecretaryService";
 import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { ISecretaryController } from "./ISecretaryController";
-import { logger } from "../../config/logger";
-import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import { ResponseHandler } from "../../utils/responseHandler";
 import {
-    ResponseHandler,
-    NotFoundError,
-    ForbiddenError,
-    BadRequestError,
-} from "../../utils/responseHandler";
+    validateRequiredParam,
+    getPaginationParams,
+    checkRoles,
+    logOperation,
+    logSuccess,
+} from "../helpers";
+import { LogOperation } from "../../errors";
 
 export class SecretaryController implements ISecretaryController {
     async getSecretary(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `secretary by id=${id} user=${req.user?.id}`,
-                ),
+            logOperation(
+                LogOperation.GET,
+                `secretary by id=${id}`,
+                req.user?.id,
             );
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "id", id)) return;
+
             const secretaryId = id as string;
 
+            // Check secretary-specific ownership (using secretaryId from user)
             if (
                 req.user?.role === "SECRETARY" &&
                 (req.user as any).secretaryId !== secretaryId
             ) {
-                logger.warn(
-                    formatLogMessage(
-                        LogLayer.CONTROLLER,
-                        LogOperation.FORBIDDEN,
-                        `Secretary ${req.user.id} tried to access secretary ${secretaryId}`,
-                    ),
+                logOperation(
+                    LogOperation.FORBIDDEN,
+                    `Secretary ${req.user.id} tried to access secretary ${secretaryId}`,
                 );
                 return ResponseHandler.forbidden(
                     res,
@@ -48,13 +41,7 @@ export class SecretaryController implements ISecretaryController {
             }
 
             const secretary = await secretaryService.getSecretary(secretaryId);
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Retrieved secretary ${secretaryId}`,
-                ),
-            );
+            logSuccess(`Retrieved secretary ${secretaryId}`);
             ResponseHandler.success(res, secretary);
         } catch (error: any) {
             ResponseHandler.handle(
@@ -68,41 +55,28 @@ export class SecretaryController implements ISecretaryController {
 
     async getSecretaries(req: AuthRequest, res: Response): Promise<void> {
         try {
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `secretaries user=${req.user?.id} role=${req.user?.role}`,
-                ),
+            logOperation(
+                LogOperation.GET,
+                `secretaries role=${req.user?.role}`,
+                req.user?.id,
             );
-            if (req.user?.role !== "ADMIN" && req.user?.role !== "SECRETARY") {
-                logger.warn(
-                    formatLogMessage(
-                        LogLayer.CONTROLLER,
-                        LogOperation.FORBIDDEN,
-                        `User ${req.user?.id} with role ${req.user?.role} tried to access secretaries`,
-                    ),
-                );
-                return ResponseHandler.forbidden(
+            if (
+                !checkRoles(
+                    req,
                     res,
+                    ["ADMIN", "SECRETARY"],
                     "Only admins and secretaries can view secretaries",
-                );
-            }
+                )
+            )
+                return;
 
-            const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.pageSize as string) || 10;
+            const { page, pageSize } = getPaginationParams(req.query);
 
             const result = await secretaryService.getSecretaries(
                 page,
                 pageSize,
             );
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Retrieved ${result.secretaries.length} secretaries`,
-                ),
-            );
+            logSuccess(`Retrieved ${result.secretaries.length} secretaries`);
             ResponseHandler.success(res, result);
         } catch (error: any) {
             ResponseHandler.handle(
@@ -116,35 +90,23 @@ export class SecretaryController implements ISecretaryController {
 
     async createSecretary(req: AuthRequest, res: Response): Promise<void> {
         try {
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.CREATE,
-                    `secretary user=${req.user?.id} email=${req.body.email}`,
-                ),
+            logOperation(
+                LogOperation.CREATE,
+                `secretary email=${req.body.email}`,
+                req.user?.id,
             );
-            if (req.user?.role !== "ADMIN") {
-                logger.warn(
-                    formatLogMessage(
-                        LogLayer.CONTROLLER,
-                        LogOperation.FORBIDDEN,
-                        `User ${req.user?.id} with role ${req.user?.role} tried to create secretary`,
-                    ),
-                );
-                return ResponseHandler.forbidden(
+            if (
+                !checkRoles(
+                    req,
                     res,
+                    ["ADMIN"],
                     "Only admins can create secretaries",
-                );
-            }
+                )
+            )
+                return;
 
             const secretary = await secretaryService.createSecretary(req.body);
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Created secretary ${secretary.id}`,
-                ),
-            );
+            logSuccess(`Created secretary ${secretary.id}`);
             ResponseHandler.created(res, secretary);
         } catch (error: any) {
             ResponseHandler.handle(
@@ -159,14 +121,11 @@ export class SecretaryController implements ISecretaryController {
     async updateSecretary(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "id", id)) return;
+
             const secretaryId = id as string;
 
+            // Check secretary-specific ownership (using secretaryId from user)
             if (
                 req.user?.role === "SECRETARY" &&
                 (req.user as any).secretaryId !== secretaryId
@@ -195,18 +154,16 @@ export class SecretaryController implements ISecretaryController {
     async deleteSecretary(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            if (!id) {
-                return ResponseHandler.badRequest(
+            if (!validateRequiredParam(res, "id", id)) return;
+            if (
+                !checkRoles(
+                    req,
                     res,
-                    "id parameter is required",
-                );
-            }
-            if (req.user?.role !== "ADMIN") {
-                return ResponseHandler.forbidden(
-                    res,
+                    ["ADMIN"],
                     "Only admins can delete secretaries",
-                );
-            }
+                )
+            )
+                return;
 
             const secretaryId = id as string;
             await secretaryService.deleteSecretary(secretaryId);

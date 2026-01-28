@@ -2,77 +2,37 @@ import type { Response } from "express";
 import { appointmentService } from "../../services/appointment/AppointmentService";
 import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IAppointmentController } from "./IAppointmentController";
-import { logger } from "../../config/logger";
-import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import { LogOperation } from "../../errors";
+import { ResponseHandler } from "../../utils/responseHandler";
 import {
-    ResponseHandler,
-    NotFoundError,
-    ForbiddenError,
-    BadRequestError,
-} from "../../utils/responseHandler";
+    validateRequiredParam,
+    getPaginationParams,
+    checkAppointmentAccess,
+    checkRoles,
+    logOperationWithRequest,
+    logSuccess,
+} from "../helpers";
 
 export class AppointmentController implements IAppointmentController {
     async getAppointmentById(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { appointmentId } = req.params;
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `appointment by id=${appointmentId} user=${req.user?.id} role=${req.user?.role}`,
-                ),
+            logOperationWithRequest(
+                req,
+                LogOperation.GET,
+                `appointment by id=${appointmentId}`,
             );
-            if (!appointmentId) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "appointmentId parameter is required",
-                );
-            }
+
+            if (!validateRequiredParam(res, "appointmentId", appointmentId))
+                return;
+
             const appointment = await appointmentService.getAppointmentById(
                 appointmentId as string,
             );
 
-            if (
-                req.user?.role === "PATIENT" &&
-                appointment.appointedPatient !== req.user.id
-            ) {
-                logger.warn(
-                    formatLogMessage(
-                        LogLayer.CONTROLLER,
-                        LogOperation.FORBIDDEN,
-                        `Patient ${req.user.id} tried to access appointment ${appointmentId}`,
-                    ),
-                );
-                return ResponseHandler.forbidden(
-                    res,
-                    "You can only view your own appointments",
-                );
-            }
+            if (!checkAppointmentAccess(req, res, appointment)) return;
 
-            if (
-                req.user?.role === "DOCTOR" &&
-                appointment.appointedDoctor !== req.user.id
-            ) {
-                logger.warn(
-                    formatLogMessage(
-                        LogLayer.CONTROLLER,
-                        LogOperation.FORBIDDEN,
-                        `Doctor ${req.user.id} tried to access appointment ${appointmentId}`,
-                    ),
-                );
-                return ResponseHandler.forbidden(
-                    res,
-                    "You can only view your own appointments",
-                );
-            }
-
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Retrieved appointment ${appointmentId}`,
-                ),
-            );
+            logSuccess(`Retrieved appointment ${appointmentId}`, req.user?.id);
             ResponseHandler.success(res, appointment);
         } catch (error: any) {
             ResponseHandler.handle(
@@ -90,8 +50,7 @@ export class AppointmentController implements IAppointmentController {
     ): Promise<void> {
         try {
             const { patientId, doctorId } = req.query;
-            const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.pageSize as string) || 10;
+            const { page, pageSize } = getPaginationParams(req.query);
 
             if (patientId) {
                 if (req.user?.role === "PATIENT" && req.user.id === patientId) {
@@ -101,8 +60,7 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    ResponseHandler.success(res, result);
-                    return;
+                    return ResponseHandler.success(res, result);
                 }
 
                 if (
@@ -115,8 +73,7 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    ResponseHandler.success(res, result);
-                    return;
+                    return ResponseHandler.success(res, result);
                 }
 
                 return ResponseHandler.forbidden(
@@ -133,8 +90,7 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    ResponseHandler.success(res, result);
-                    return;
+                    return ResponseHandler.success(res, result);
                 }
 
                 if (req.user?.role === "SECRETARY") {
@@ -144,8 +100,7 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    ResponseHandler.success(res, result);
-                    return;
+                    return ResponseHandler.success(res, result);
                 }
 
                 return ResponseHandler.forbidden(
@@ -171,8 +126,7 @@ export class AppointmentController implements IAppointmentController {
     async getAppointments(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            const page = parseInt(req.query.page as string) || 1;
-            const pageSize = parseInt(req.query.pageSize as string) || 10;
+            const { page, pageSize } = getPaginationParams(req.query);
 
             if (req.user?.role === "PATIENT" && req.user.id === id) {
                 const result =
@@ -181,8 +135,7 @@ export class AppointmentController implements IAppointmentController {
                         page,
                         pageSize,
                     );
-                ResponseHandler.success(res, result);
-                return;
+                return ResponseHandler.success(res, result);
             }
 
             if (req.user?.role === "DOCTOR" && req.user.id === id) {
@@ -191,8 +144,7 @@ export class AppointmentController implements IAppointmentController {
                     page,
                     pageSize,
                 );
-                ResponseHandler.success(res, result);
-                return;
+                return ResponseHandler.success(res, result);
             }
 
             if (req.user?.role === "SECRETARY") {
@@ -201,8 +153,7 @@ export class AppointmentController implements IAppointmentController {
                     page,
                     pageSize,
                 );
-                ResponseHandler.success(res, result);
-                return;
+                return ResponseHandler.success(res, result);
             }
 
             return ResponseHandler.forbidden(
@@ -221,9 +172,11 @@ export class AppointmentController implements IAppointmentController {
 
     async createAppointment(req: AuthRequest, res: Response): Promise<void> {
         try {
+            logOperationWithRequest(req, LogOperation.CREATE, "appointment");
             const appointment = await appointmentService.createAppointment(
                 req.body,
             );
+            logSuccess(`Created appointment ${appointment.id}`, req.user?.id);
             ResponseHandler.created(res, appointment);
         } catch (error: any) {
             ResponseHandler.handle(
@@ -238,24 +191,24 @@ export class AppointmentController implements IAppointmentController {
     async updateAppointment(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { appointmentId } = req.params;
-            if (!appointmentId) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "appointmentId parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "appointmentId", appointmentId))
+                return;
 
-            if (req.user?.role !== "DOCTOR" && req.user?.role !== "SECRETARY") {
-                return ResponseHandler.forbidden(
+            if (
+                !checkRoles(
+                    req,
                     res,
+                    ["DOCTOR", "SECRETARY"],
                     "Only doctors and secretaries can update appointments",
-                );
-            }
+                )
+            )
+                return;
 
             const appointment = await appointmentService.updateAppointment(
                 appointmentId as string,
                 req.body,
             );
+            logSuccess(`Updated appointment ${appointmentId}`, req.user?.id);
             ResponseHandler.success(res, appointment);
         } catch (error: any) {
             ResponseHandler.handle(
@@ -270,14 +223,11 @@ export class AppointmentController implements IAppointmentController {
     async deleteAppointment(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { appointmentId } = req.params;
-            if (!appointmentId) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "appointmentId parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "appointmentId", appointmentId))
+                return;
 
             await appointmentService.deleteAppointment(appointmentId as string);
+            logSuccess(`Deleted appointment ${appointmentId}`, req.user?.id);
             ResponseHandler.noContent(res);
         } catch (error: any) {
             ResponseHandler.handle(

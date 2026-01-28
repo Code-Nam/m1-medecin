@@ -2,40 +2,36 @@ import type { Response } from "express";
 import { availabilityService } from "../../services/availability/AvailabilityService";
 import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IAvailabilityController } from "./IAvailabilityController";
-import { logger } from "../../config/logger";
-import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import { ResponseHandler } from "../../utils/responseHandler";
 import {
-    ResponseHandler,
-    NotFoundError,
-    ForbiddenError,
-    BadRequestError,
-} from "../../utils/responseHandler";
+    validateRequiredParam,
+    validateRequiredParams,
+    checkRoles,
+    logOperation,
+    logSuccess,
+} from "../helpers";
+import { LogOperation } from "../../errors";
 
 export class AvailabilityController implements IAvailabilityController {
     async generateSlots(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { id } = req.params;
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GENERATE,
-                    `slots for doctor id=${id} user=${req.user?.id}`,
-                ),
+            logOperation(
+                LogOperation.GENERATE,
+                `slots for doctor id=${id}`,
+                req.user?.id,
             );
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "id", id)) return;
+
             const { startDate, endDate } = req.body;
 
-            if (!startDate || !endDate) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "startDate and endDate are required",
-                );
-            }
+            if (
+                !validateRequiredParams(res, [
+                    { name: "startDate", value: startDate },
+                    { name: "endDate", value: endDate },
+                ])
+            )
+                return;
 
             const count = await availabilityService.generateSlotsForDoctor(
                 id as string,
@@ -43,13 +39,7 @@ export class AvailabilityController implements IAvailabilityController {
                 new Date(endDate),
             );
 
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Generated ${count} slots for doctor ${id}`,
-                ),
-            );
+            logSuccess(`Generated ${count} slots for doctor ${id}`);
             ResponseHandler.success(res, {
                 message: `Generated ${count} availability slots`,
                 count,
@@ -71,39 +61,23 @@ export class AvailabilityController implements IAvailabilityController {
         try {
             const { id } = req.params;
             const { date } = req.query;
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.GET,
-                    `available slots for doctor id=${id} date=${date}`,
-                ),
+            logOperation(
+                LogOperation.GET,
+                `available slots for doctor id=${id} date=${date}`,
             );
-            if (!id) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "id parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "id", id)) return;
+
             const doctorId = id as string;
 
-            if (!date) {
-                return ResponseHandler.badRequest(
-                    res,
-                    "date query parameter is required",
-                );
-            }
+            if (!validateRequiredParam(res, "date", date)) return;
 
             const slots = await availabilityService.getAvailableSlots(
                 doctorId,
                 new Date(date as string),
             );
 
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Found ${slots.length} available slots for doctor ${id}`,
-                ),
+            logSuccess(
+                `Found ${slots.length} available slots for doctor ${id}`,
             );
             ResponseHandler.success(res, {
                 slots: slots.map((slot: any) => ({
@@ -127,35 +101,23 @@ export class AvailabilityController implements IAvailabilityController {
 
     async cleanupPastSlots(req: AuthRequest, res: Response): Promise<void> {
         try {
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.CLEANUP,
-                    `past slots user=${req.user?.id} role=${req.user?.role}`,
-                ),
+            logOperation(
+                LogOperation.CLEANUP,
+                `past slots role=${req.user?.role}`,
+                req.user?.id,
             );
-            if (req.user?.role !== "ADMIN" && req.user?.role !== "DOCTOR") {
-                logger.warn(
-                    formatLogMessage(
-                        LogLayer.CONTROLLER,
-                        LogOperation.FORBIDDEN,
-                        `User ${req.user?.id} with role ${req.user?.role} tried to cleanup slots`,
-                    ),
-                );
-                return ResponseHandler.forbidden(
+            if (
+                !checkRoles(
+                    req,
                     res,
+                    ["ADMIN", "DOCTOR"],
                     "Only admins and doctors can cleanup slots",
-                );
-            }
+                )
+            )
+                return;
 
             const count = await availabilityService.cleanupPastSlots();
-            logger.info(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.SUCCESS,
-                    `Cleaned up ${count} past slots`,
-                ),
-            );
+            logSuccess(`Cleaned up ${count} past slots`);
             ResponseHandler.success(res, {
                 message: `Cleaned up ${count} past slots`,
                 count,

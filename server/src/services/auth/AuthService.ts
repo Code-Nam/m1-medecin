@@ -7,17 +7,18 @@ import { generateToken } from "../../utils/jwt";
 import { logger } from "../../config/logger";
 import { authRepository } from "../../repositories/auth/AuthRepository";
 import type { IAuthService } from "./IAuthService";
+import { ConflictError, UnauthorizedError } from "../../utils/responseHandler";
 
 export class AuthService implements IAuthService {
     constructor() {}
 
     async registerPatient(patientData: any) {
         const existingPatient = await authRepository.findPatientByEmail(
-            patientData.email
+            patientData.email,
         );
 
         if (existingPatient) {
-            throw new Error("Email already registered");
+            throw new ConflictError("Email already registered");
         }
 
         const hashedPassword = await hashPassword(patientData.password);
@@ -56,12 +57,12 @@ export class AuthService implements IAuthService {
         const patient = await authRepository.findPatientByEmail(email);
 
         if (!patient) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
 
         const isValid = await comparePassword(password, patient.password);
         if (!isValid) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
 
         const token = generateToken({
@@ -86,12 +87,12 @@ export class AuthService implements IAuthService {
         const doctor = await authRepository.findDoctorByEmail(email);
 
         if (!doctor) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
 
         const isValid = await comparePassword(password, doctor.password);
         if (!isValid) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
 
         const token = generateToken({
@@ -118,12 +119,12 @@ export class AuthService implements IAuthService {
         const secretary = await authRepository.findSecretaryByEmail(email);
 
         if (!secretary) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
 
         const isValid = await comparePassword(password, secretary.password);
         if (!isValid) {
-            throw new Error("Invalid credentials");
+            throw new UnauthorizedError("Invalid credentials");
         }
 
         const token = generateToken({

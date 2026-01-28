@@ -4,8 +4,8 @@ export type AppointmentListItem = {
     appointedDoctorId: string;
     date: Date;
     time: string;
-    reason?: string | null;
-    status?: string | null;
+    reason: string;
+    status: string;
     notes?: string | null;
 };
 
@@ -23,9 +23,9 @@ export type CreateAppointmentDTO = {
     availabilitySlotId?: string | null;
     date: Date;
     time: string;
-    reason?: string | null;
+    reason: string;
     notes?: string | null;
-    status?: string | null;
+    status?: string;
 };
 
 export type UpdateAppointmentDTO = Partial<CreateAppointmentDTO>;

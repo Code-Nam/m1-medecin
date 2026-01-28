@@ -44,7 +44,7 @@ export class SecretaryController implements ISecretaryController {
 
             const result = await secretaryService.getSecretaries(
                 page,
-                pageSize
+                pageSize,
             );
             res.json(result);
         } catch (error: any) {
@@ -93,7 +93,7 @@ export class SecretaryController implements ISecretaryController {
 
             const secretary = await secretaryService.updateSecretary(
                 secretaryId,
-                req.body
+                req.body,
             );
             res.json(secretary);
         } catch (error: any) {
@@ -123,24 +123,6 @@ export class SecretaryController implements ISecretaryController {
         } catch (error: any) {
             res.status(400).json({
                 error: error.message || "Failed to delete secretary",
-            });
-        }
-    }
-
-    async getSecretariesByDoctor(
-        req: AuthRequest,
-        res: Response
-    ): Promise<void> {
-        try {
-            const { doctorId } = req.query;
-            const doctorIdStr = doctorId as string;
-            const secretaries = await secretaryService.getSecretariesByDoctor(
-                doctorIdStr
-            );
-            res.json(secretaries);
-        } catch (error: any) {
-            res.status(404).json({
-                error: error.message || "Doctor not found",
             });
         }
     }

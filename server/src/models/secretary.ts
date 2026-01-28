@@ -13,7 +13,6 @@ export type UpdateSecretaryDTO = Partial<CreateSecretaryDTO> & {
 
 export type SecretaryListItem = {
     id: string;
-    secretaryId: string;
     firstName: string;
     surname: string;
     email: string;
@@ -24,5 +23,7 @@ export type SecretaryListItem = {
 export type SecretaryDetail = SecretaryListItem & {
     createdAt: Date;
     updatedAt: Date;
-    doctors?: Array<{ doctor: { doctorId: string; firstName: string; surname: string } }>;
+    doctors?: Array<{
+        doctor: { id: string; firstName: string; surname: string };
+    }>;
 };

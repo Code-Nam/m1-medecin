@@ -1,32 +1,14 @@
 import prisma from "../../config/database";
-import type { CreateSecretaryDTO, UpdateSecretaryDTO, SecretaryListItem, SecretaryDetail } from "../../models/secretary";
+import type {
+    CreateSecretaryDTO,
+    UpdateSecretaryDTO,
+    SecretaryListItem,
+    SecretaryDetail,
+} from "../../models/secretary";
 import { logger } from "../../config/logger";
 import type { ISecretaryRepository } from "./ISecretaryRepository";
 
 export class SecretaryRepository implements ISecretaryRepository {
-    async findSecretaryByExternalId(secretaryId: string): Promise<SecretaryDetail | null> {
-        return prisma.secretary.findUnique({
-            where: { secretaryId },
-            include: {
-                doctors: {
-                    include: {
-                        doctor: {
-                            select: {
-                                doctorId: true,
-                                firstName: true,
-                                surname: true,
-                                title: true,
-                                specialization: true,
-                                email: true,
-                                phone: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-    }
-
     async findSecretaryById(id: string): Promise<SecretaryDetail | null> {
         return prisma.secretary.findUnique({
             where: { id },
@@ -35,7 +17,7 @@ export class SecretaryRepository implements ISecretaryRepository {
                     include: {
                         doctor: {
                             select: {
-                                doctorId: true,
+                                id: true,
                                 firstName: true,
                                 surname: true,
                                 title: true,
@@ -50,14 +32,17 @@ export class SecretaryRepository implements ISecretaryRepository {
         });
     }
 
-    async findSecretaries(page = 1, pageSize = 10): Promise<{ secretaries: SecretaryListItem[]; total: number }> {
+    async findSecretaries(
+        page = 1,
+        pageSize = 10,
+    ): Promise<{ secretaries: SecretaryListItem[]; total: number }> {
         const skip = (page - 1) * pageSize;
         const [secretaries, total] = await Promise.all([
             prisma.secretary.findMany({
                 skip,
                 take: pageSize,
                 select: {
-                    secretaryId: true,
+                    id: true,
                     firstName: true,
                     surname: true,
                     email: true,
@@ -66,7 +51,7 @@ export class SecretaryRepository implements ISecretaryRepository {
                         include: {
                             doctor: {
                                 select: {
-                                    doctorId: true,
+                                    id: true,
                                     firstName: true,
                                     surname: true,
                                     title: true,
@@ -100,7 +85,7 @@ export class SecretaryRepository implements ISecretaryRepository {
                     include: {
                         doctor: {
                             select: {
-                                doctorId: true,
+                                id: true,
                                 firstName: true,
                                 surname: true,
                                 title: true,
@@ -113,21 +98,24 @@ export class SecretaryRepository implements ISecretaryRepository {
         });
 
         logger.info(
-            `REPOSITORY CREATE secretary id=${secretary.id} email=${secretary.email}`
+            `REPOSITORY CREATE secretary id=${secretary.id} email=${secretary.email}`,
         );
         return secretary;
     }
 
-    async updateSecretary(secretaryId: string, data: UpdateSecretaryDTO): Promise<SecretaryDetail> {
+    async updateSecretary(
+        id: string,
+        data: UpdateSecretaryDTO,
+    ): Promise<SecretaryDetail> {
         const updated = await prisma.secretary.update({
-            where: { secretaryId },
+            where: { id },
             data: data as any,
             include: {
                 doctors: {
                     include: {
                         doctor: {
                             select: {
-                                doctorId: true,
+                                id: true,
                                 firstName: true,
                                 surname: true,
                                 title: true,
@@ -143,43 +131,16 @@ export class SecretaryRepository implements ISecretaryRepository {
         return updated;
     }
 
-    async deleteSecretaryByExternalId(secretaryId: string): Promise<SecretaryDetail> {
+    async deleteSecretaryById(id: string): Promise<SecretaryDetail> {
         const deleted = await prisma.secretary.delete({
-            where: { secretaryId },
+            where: { id },
         });
         logger.info(`REPOSITORY DELETE secretary id=${deleted.id}`);
         return deleted;
     }
 
-    async findSecretariesByDoctorExternalId(doctorId: string): Promise<SecretaryListItem[] | null> {
-        const doctor = await prisma.doctor.findUnique({
-            where: { doctorId },
-            include: {
-                secretaries: {
-                    include: {
-                        secretary: {
-                            select: {
-                                secretaryId: true,
-                                firstName: true,
-                                surname: true,
-                                email: true,
-                                phone: true,
-                            },
-                        },
-                    },
-                },
-            },
-        });
-
-        return doctor?.secretaries.map((sd: any) => sd.secretary) || null;
-    }
-
     async countSecretaries() {
         return prisma.secretary.count();
-    }
-
-    async findDoctorByExternalId(doctorId: string) {
-        return prisma.doctor.findUnique({ where: { doctorId } });
     }
 
     async removeDoctorRelationsForSecretary(secretaryInternalId: string) {
@@ -187,7 +148,7 @@ export class SecretaryRepository implements ISecretaryRepository {
             where: { secretaryId: secretaryInternalId },
         });
         logger.info(
-            `REPOSITORY UPDATE secretary relations cleared for id=${secretaryInternalId}`
+            `REPOSITORY UPDATE secretary relations cleared for id=${secretaryInternalId}`,
         );
         return res;
     }

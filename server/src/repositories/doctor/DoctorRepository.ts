@@ -1,7 +1,12 @@
 import prisma from "../../config/database";
 import { logger } from "../../config/logger";
 import type { IDoctorRepository } from "../doctor/IDoctorRepository";
-import type { DoctorListItem, DoctorDetail, CreateDoctorDTO, UpdateDoctorDTO } from "../../models/doctor";
+import type {
+    DoctorListItem,
+    DoctorDetail,
+    CreateDoctorDTO,
+    UpdateDoctorDTO,
+} from "../../models/doctor";
 
 const selectCommon = {
     id: true,
@@ -36,7 +41,10 @@ export class DoctorRepository implements IDoctorRepository {
         });
     }
 
-    async findDoctors(page = 1, pageSize = 10): Promise<{ doctors: DoctorDetail[]; total: number }> {
+    async findDoctors(
+        page = 1,
+        pageSize = 10,
+    ): Promise<{ doctors: DoctorDetail[]; total: number }> {
         const skip = (page - 1) * pageSize;
         const [doctors, total] = await Promise.all([
             prisma.doctor.findMany({
@@ -67,20 +75,23 @@ export class DoctorRepository implements IDoctorRepository {
                 phone: data.phone,
                 title: data.title,
                 specialization: data.specialization,
-                openingTime: data.openingTime,
-                closingTime: data.closingTime,
-                slotDuration: data.slotDuration,
+                openingTime: data.openingTime || undefined,
+                closingTime: data.closingTime || undefined,
+                slotDuration: data.slotDuration || undefined,
             },
             select: selectDetailed,
         });
 
         logger.info(
-            `REPOSITORY CREATE doctor id=${created.id} email=${created.email}`
+            `REPOSITORY CREATE doctor id=${created.id} email=${created.email}`,
         );
         return created;
     }
 
-    async updateDoctor(id: string, data: UpdateDoctorDTO): Promise<DoctorDetail> {
+    async updateDoctor(
+        id: string,
+        data: UpdateDoctorDTO,
+    ): Promise<DoctorDetail> {
         const updated = await prisma.doctor.update({
             where: { id },
             data: data as any,
@@ -96,14 +107,10 @@ export class DoctorRepository implements IDoctorRepository {
         return deleted;
     }
 
-    async findDoctorByExternalId(doctorId: string) {
-        return prisma.doctor.findUnique({ where: { doctorId } });
-    }
-
     async findPatientsByDoctorInternalId(
         internalDoctorId: string,
         page = 1,
-        pageSize = 10
+        pageSize = 10,
     ): Promise<{ patients: any[]; total: number }> {
         const skip = (page - 1) * pageSize;
         const [patients, total] = await Promise.all([
@@ -112,7 +119,7 @@ export class DoctorRepository implements IDoctorRepository {
                 skip,
                 take: pageSize,
                 select: {
-                    patientId: true,
+                    id: true,
                     firstName: true,
                     surname: true,
                     email: true,

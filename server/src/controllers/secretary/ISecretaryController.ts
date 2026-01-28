@@ -7,5 +7,4 @@ export interface ISecretaryController {
     createSecretary(req: AuthRequest, res: Response): Promise<void>;
     updateSecretary(req: AuthRequest, res: Response): Promise<void>;
     deleteSecretary(req: AuthRequest, res: Response): Promise<void>;
-    getSecretariesByDoctor(req: AuthRequest, res: Response): Promise<void>;
 }

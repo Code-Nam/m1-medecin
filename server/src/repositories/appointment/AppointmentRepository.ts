@@ -1,10 +1,19 @@
 import prisma from "../../config/database";
 import { logger } from "../../config/logger";
 import type { IAppointmentRepository } from "./IAppointmentRepository";
-import type { AppointmentListItem, AppointmentDetail, CreateAppointmentDTO, UpdateAppointmentDTO } from "../../models/appointment";
+import type {
+    AppointmentListItem,
+    AppointmentDetail,
+    CreateAppointmentDTO,
+    UpdateAppointmentDTO,
+} from "../../models/appointment";
 
 export class AppointmentRepository implements IAppointmentRepository {
-    async findAppointmentsByPatient(patientId: string, page = 1, pageSize = 10): Promise<{ appointments: AppointmentListItem[]; total: number }> {
+    async findAppointmentsByPatient(
+        patientId: string,
+        page = 1,
+        pageSize = 10,
+    ): Promise<{ appointments: AppointmentListItem[]; total: number }> {
         const skip = (page - 1) * pageSize;
         const [appointments, total] = await Promise.all([
             prisma.appointment.findMany({
@@ -30,7 +39,11 @@ export class AppointmentRepository implements IAppointmentRepository {
         return { appointments, total };
     }
 
-    async findAppointmentsByDoctor(doctorId: string, page = 1, pageSize = 10): Promise<{ appointments: AppointmentListItem[]; total: number }> {
+    async findAppointmentsByDoctor(
+        doctorId: string,
+        page = 1,
+        pageSize = 10,
+    ): Promise<{ appointments: AppointmentListItem[]; total: number }> {
         const skip = (page - 1) * pageSize;
         const [appointments, total] = await Promise.all([
             prisma.appointment.findMany({
@@ -57,29 +70,55 @@ export class AppointmentRepository implements IAppointmentRepository {
         return { appointments, total };
     }
 
-    async createAppointment(data: CreateAppointmentDTO): Promise<AppointmentDetail> {
+    async createAppointment(
+        data: CreateAppointmentDTO,
+    ): Promise<AppointmentDetail> {
         const created = await prisma.appointment.create({
-            data,
+            data: {
+                appointedPatientId: data.appointedPatientId,
+                appointedDoctorId: data.appointedDoctorId,
+                availabilitySlotId: data.availabilitySlotId,
+                date: data.date,
+                time: data.time,
+                reason: data.reason,
+                notes: data.notes,
+                status: (data.status as any) || "PENDING",
+            },
             include: { patient: true, doctor: true },
         });
         logger.info(`REPOSITORY CREATE appointment id=${created.id}`);
-        return created;
+        return created as any;
     }
 
-    async updateAppointment(id: string, data: UpdateAppointmentDTO): Promise<AppointmentDetail> {
+    async updateAppointment(
+        id: string,
+        data: UpdateAppointmentDTO,
+    ): Promise<AppointmentDetail> {
+        const updateData: any = {};
+        if (data.date !== undefined) updateData.date = data.date;
+        if (data.time !== undefined) updateData.time = data.time;
+        if (data.reason !== undefined) updateData.reason = data.reason;
+        if (data.notes !== undefined) updateData.notes = data.notes;
+        if (data.status !== undefined) updateData.status = data.status;
+        if (data.availabilitySlotId !== undefined)
+            updateData.availabilitySlotId = data.availabilitySlotId;
+
         const updated = await prisma.appointment.update({
             where: { id },
-            data,
+            data: updateData,
             include: { patient: true, doctor: true },
         });
         logger.info(`REPOSITORY UPDATE appointment id=${id}`);
-        return updated;
+        return updated as any;
     }
 
     async deleteAppointmentById(id: string): Promise<AppointmentDetail> {
-        const deleted = await prisma.appointment.delete({ where: { id } });
+        const deleted = await prisma.appointment.delete({
+            where: { id },
+            include: { patient: true, doctor: true },
+        });
         logger.info(`REPOSITORY DELETE appointment id=${id}`);
-        return deleted;
+        return deleted as any;
     }
 
     async findAppointmentById(id: string): Promise<AppointmentDetail | null> {
@@ -106,7 +145,7 @@ export class AppointmentRepository implements IAppointmentRepository {
         doctorId: string,
         dateStart: Date,
         dateEnd: Date,
-        startTime: string
+        startTime: string,
     ) {
         return prisma.availabilitySlot.findFirst({
             where: {

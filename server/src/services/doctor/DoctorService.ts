@@ -21,7 +21,7 @@ export class DoctorService implements IDoctorService {
     async getDoctors(page: number = 1, pageSize: number = 10) {
         const { doctors, total } = await this.repository.findDoctors(
             page,
-            pageSize
+            pageSize,
         );
 
         return {
@@ -84,7 +84,7 @@ export class DoctorService implements IDoctorService {
             openingTime?: string;
             closingTime?: string;
             slotDuration?: number;
-        }
+        },
     ) {
         const updateData: any = {};
 
@@ -117,17 +117,14 @@ export class DoctorService implements IDoctorService {
     async getPatientsByDoctor(
         doctorId: string,
         page: number = 1,
-        pageSize: number = 10
+        pageSize: number = 10,
     ) {
-        const doctor = await this.repository.findDoctorByExternalId(doctorId);
-
-        if (!doctor) throw new Error("Doctor not found");
-
+        // doctorId is the actual database ID
         const { patients, total } =
             await this.repository.findPatientsByDoctorInternalId(
-                doctor.id,
+                doctorId,
                 page,
-                pageSize
+                pageSize,
             );
         return {
             patients,

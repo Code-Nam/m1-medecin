@@ -11,9 +11,8 @@ export class SecretaryService implements ISecretaryService {
     constructor() {}
 
     async getSecretary(secretaryId: string) {
-        const secretary = await secretaryRepository.findSecretaryByExternalId(
-            secretaryId
-        );
+        const secretary =
+            await secretaryRepository.findSecretaryById(secretaryId);
 
         if (!secretary) {
             throw new Error("Secretary not found");
@@ -42,15 +41,9 @@ export class SecretaryService implements ISecretaryService {
 
         const doctorConnections: Array<{ doctorId: string }> = [];
         if (data.doctorIds && data.doctorIds.length > 0) {
+            // doctorIds are the actual database IDs, so use them directly
             for (const doctorId of data.doctorIds) {
-                const doctor = await secretaryRepository.findDoctorByExternalId(
-                    doctorId
-                );
-                if (!doctor)
-                    throw new Error(
-                        `Médecin avec doctorId "${doctorId}" introuvable`
-                    );
-                doctorConnections.push({ doctorId: doctor.id });
+                doctorConnections.push({ doctorId });
             }
         }
 
@@ -65,7 +58,7 @@ export class SecretaryService implements ISecretaryService {
 
         const secretary = await secretaryRepository.createSecretary(payload);
         const { password: _, ...secretaryWithoutPassword } = secretary;
-        logger.info(`Secretary created: ${secretary.secretaryId}`);
+        logger.info(`Secretary created: ${secretary.id}`);
         return secretaryWithoutPassword;
     }
 
@@ -81,27 +74,17 @@ export class SecretaryService implements ISecretaryService {
         if (data.phone !== undefined) updateData.phone = data.phone;
 
         if (data.doctorIds !== undefined) {
-            const sec = await secretaryRepository.findSecretaryByExternalId(
-                secretaryId
-            );
+            const sec =
+                await secretaryRepository.findSecretaryById(secretaryId);
             if (!sec) throw new Error("Secretary not found");
 
             await secretaryRepository.removeDoctorRelationsForSecretary(sec.id);
 
             if (data.doctorIds.length > 0) {
-                const doctors = await Promise.all(
-                    data.doctorIds.map((doctorId: string) =>
-                        secretaryRepository.findDoctorByExternalId(doctorId)
-                    )
-                );
-
-                const invalidDoctor = doctors.find((d) => !d);
-                if (invalidDoctor)
-                    throw new Error("One or more doctors not found");
-
+                // doctorIds are the actual database IDs, so use them directly
                 updateData.doctors = {
-                    create: doctors.map((doctor: any) => ({
-                        doctorId: doctor.id,
+                    create: data.doctorIds.map((doctorId: string) => ({
+                        doctorId,
                     })),
                 };
             }
@@ -110,7 +93,7 @@ export class SecretaryService implements ISecretaryService {
         const payload: UpdateSecretaryDTO = updateData;
         const secretary = await secretaryRepository.updateSecretary(
             secretaryId,
-            payload
+            payload,
         );
         const { password, ...secretaryWithoutPassword } = secretary;
         logger.info(`Secretary updated: ${secretaryId}`);
@@ -118,17 +101,8 @@ export class SecretaryService implements ISecretaryService {
     }
 
     async deleteSecretary(secretaryId: string) {
-        await secretaryRepository.deleteSecretaryByExternalId(secretaryId);
+        await secretaryRepository.deleteSecretaryById(secretaryId);
         logger.info(`Secretary deleted: ${secretaryId}`);
-    }
-
-    async getSecretariesByDoctor(doctorId: string) {
-        const secretaries =
-            await secretaryRepository.findSecretariesByDoctorExternalId(
-                doctorId
-            );
-        if (secretaries === null) throw new Error("Doctor not found");
-        return secretaries;
     }
 }
 

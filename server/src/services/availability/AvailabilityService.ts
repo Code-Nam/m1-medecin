@@ -9,7 +9,7 @@ export class AvailabilityService implements IAvailabilityService {
     async generateSlotsForDoctor(
         doctorId: string,
         startDate: Date,
-        endDate: Date
+        endDate: Date,
     ) {
         const doctor = await availabilityRepository.findDoctorById(doctorId);
 
@@ -29,11 +29,21 @@ export class AvailabilityService implements IAvailabilityService {
             .map(Number);
         const slotDuration = doctor.slotDuration || 30;
 
+        // Validate time values
+        if (
+            openingHour === undefined ||
+            openingMinute === undefined ||
+            closingHour === undefined ||
+            closingMinute === undefined
+        ) {
+            throw new Error("Invalid doctor opening or closing time format");
+        }
+
         while (currentDate <= endDate) {
             const date = new Date(currentDate);
 
-            let currentHour = openingHour;
-            let currentMin = openingMinute;
+            let currentHour: number = openingHour;
+            let currentMin: number = openingMinute;
 
             while (
                 currentHour < closingHour ||
@@ -41,17 +51,17 @@ export class AvailabilityService implements IAvailabilityService {
             ) {
                 const startTime = `${String(currentHour).padStart(
                     2,
-                    "0"
+                    "0",
                 )}:${String(currentMin).padStart(2, "0")}`;
 
-                let endHour = currentHour;
-                let endMin = currentMin + slotDuration;
+                let endHour: number = currentHour;
+                let endMin: number = currentMin + slotDuration;
                 if (endMin >= 60) {
                     endHour += Math.floor(endMin / 60);
                     endMin = endMin % 60;
                 }
                 const endTime = `${String(endHour).padStart(2, "0")}:${String(
-                    endMin
+                    endMin,
                 ).padStart(2, "0")}`;
 
                 if (
@@ -65,7 +75,7 @@ export class AvailabilityService implements IAvailabilityService {
                     await availabilityRepository.findAvailabilitySlotByUnique(
                         doctor.id,
                         date,
-                        startTime
+                        startTime,
                     );
 
                 if (!existingSlot) {
@@ -92,7 +102,7 @@ export class AvailabilityService implements IAvailabilityService {
         if (slots.length > 0) {
             await availabilityRepository.createAvailabilitySlots(slots);
             logger.info(
-                `Generated ${slots.length} availability slots for doctor ${doctorId}`
+                `Generated ${slots.length} availability slots for doctor ${doctorId}`,
             );
         }
 
@@ -111,7 +121,7 @@ export class AvailabilityService implements IAvailabilityService {
         }
 
         logger.info(
-            `✅ Médecin trouvé: ${doctor.firstName} ${doctor.surname} (ID: ${doctor.id})`
+            `✅ Médecin trouvé: ${doctor.firstName} ${doctor.surname} (ID: ${doctor.id})`,
         );
 
         const dateStart = new Date(date);
@@ -124,7 +134,7 @@ export class AvailabilityService implements IAvailabilityService {
                 await availabilityRepository.findAvailabilitySlotsForDoctorInRange(
                     doctor.id,
                     dateStart,
-                    dateEnd
+                    dateEnd,
                 )
             )[0] || null;
 
@@ -136,7 +146,7 @@ export class AvailabilityService implements IAvailabilityService {
             await availabilityRepository.findAvailabilitySlotsForDoctorInRange(
                 doctor.id,
                 dateStart,
-                dateEnd
+                dateEnd,
             );
 
         return slots;

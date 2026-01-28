@@ -4,6 +4,12 @@ import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IDoctorController } from "./IDoctorController";
 import { logger } from "../../config/logger";
 import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import {
+    ResponseHandler,
+    NotFoundError,
+    ForbiddenError,
+    BadRequestError,
+} from "../../utils/responseHandler";
 
 export class DoctorController implements IDoctorController {
     async getDoctor(req: AuthRequest, res: Response): Promise<void> {
@@ -17,8 +23,10 @@ export class DoctorController implements IDoctorController {
                 ),
             );
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             const doctor = await doctorService.getDoctor(id as string);
             logger.info(
@@ -28,18 +36,9 @@ export class DoctorController implements IDoctorController {
                     `Retrieved doctor ${id}`,
                 ),
             );
-            res.json(doctor);
+            ResponseHandler.success(res, doctor);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting doctor: ${error.message}`,
-                ),
-            );
-            res.status(404).json({
-                error: error.message || "Doctor not found",
-            });
+            ResponseHandler.handle(error, res, "getting doctor", req.user?.id);
         }
     }
 
@@ -63,18 +62,9 @@ export class DoctorController implements IDoctorController {
                     `Retrieved ${result.doctors.length} doctors`,
                 ),
             );
-            res.json(result);
+            ResponseHandler.success(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting doctors: ${error.message}`,
-                ),
-            );
-            res.status(500).json({
-                error: error.message || "Failed to fetch doctors",
-            });
+            ResponseHandler.handle(error, res, "getting doctors", req.user?.id);
         }
     }
 
@@ -95,18 +85,14 @@ export class DoctorController implements IDoctorController {
                     `Retrieved ${doctors.length} doctors`,
                 ),
             );
-            res.json({ doctors });
+            ResponseHandler.success(res, { doctors });
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting all doctors: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "getting all doctors",
+                req.user?.id,
             );
-            res.status(500).json({
-                error: error.message || "Failed to fetch doctors",
-            });
         }
     }
 
@@ -127,22 +113,13 @@ export class DoctorController implements IDoctorController {
                     `Created doctor ${doctor.id}`,
                 ),
             );
-            res.status(201).json({
+            ResponseHandler.created(res, {
                 message:
                     "Doctor creation request received and is under review.",
                 doctor,
             });
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `creating doctor: ${error.message}`,
-                ),
-            );
-            res.status(400).json({
-                error: error.message || "Failed to create doctor",
-            });
+            ResponseHandler.handle(error, res, "creating doctor", req.user?.id);
         }
     }
 
@@ -150,26 +127,26 @@ export class DoctorController implements IDoctorController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
 
             if (req.user?.role === "DOCTOR" && req.user.id !== id) {
-                res.status(403).json({
-                    error: "Forbidden: You can only update your own profile",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only update your own profile",
+                );
             }
 
             const doctor = await doctorService.updateDoctor(
                 id as string,
                 req.body as any,
             );
-            res.json(doctor);
+            ResponseHandler.success(res, doctor);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to update doctor",
-            });
+            ResponseHandler.handle(error, res, "updating doctor", req.user?.id);
         }
     }
 
@@ -177,26 +154,26 @@ export class DoctorController implements IDoctorController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
 
             if (req.user?.role === "DOCTOR" && req.user.id !== id) {
-                res.status(403).json({
-                    error: "Forbidden: You can only delete your own account",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only delete your own account",
+                );
             }
 
             await doctorService.deleteDoctor(id as string);
-            res.json({
+            ResponseHandler.success(res, {
                 message:
                     "Doctor deletion request received and is under review.",
             });
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to delete doctor",
-            });
+            ResponseHandler.handle(error, res, "deleting doctor", req.user?.id);
         }
     }
 }

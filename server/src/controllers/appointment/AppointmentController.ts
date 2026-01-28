@@ -4,6 +4,12 @@ import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IAppointmentController } from "./IAppointmentController";
 import { logger } from "../../config/logger";
 import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import {
+    ResponseHandler,
+    NotFoundError,
+    ForbiddenError,
+    BadRequestError,
+} from "../../utils/responseHandler";
 
 export class AppointmentController implements IAppointmentController {
     async getAppointmentById(req: AuthRequest, res: Response): Promise<void> {
@@ -17,10 +23,10 @@ export class AppointmentController implements IAppointmentController {
                 ),
             );
             if (!appointmentId) {
-                res.status(400).json({
-                    error: "appointmentId parameter is required",
-                });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "appointmentId parameter is required",
+                );
             }
             const appointment = await appointmentService.getAppointmentById(
                 appointmentId as string,
@@ -37,10 +43,10 @@ export class AppointmentController implements IAppointmentController {
                         `Patient ${req.user.id} tried to access appointment ${appointmentId}`,
                     ),
                 );
-                res.status(403).json({
-                    error: "Forbidden: You can only view your own appointments",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only view your own appointments",
+                );
             }
 
             if (
@@ -54,8 +60,10 @@ export class AppointmentController implements IAppointmentController {
                         `Doctor ${req.user.id} tried to access appointment ${appointmentId}`,
                     ),
                 );
-                res.status(403).json({ error: "Forbidden" });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only view your own appointments",
+                );
             }
 
             logger.info(
@@ -65,18 +73,14 @@ export class AppointmentController implements IAppointmentController {
                     `Retrieved appointment ${appointmentId}`,
                 ),
             );
-            res.json(appointment);
+            ResponseHandler.success(res, appointment);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting appointment: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "getting appointment",
+                req.user?.id,
             );
-            res.status(404).json({
-                error: error.message || "Appointment not found",
-            });
         }
     }
 
@@ -97,7 +101,7 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    res.json(result);
+                    ResponseHandler.success(res, result);
                     return;
                 }
 
@@ -111,14 +115,14 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    res.json(result);
+                    ResponseHandler.success(res, result);
                     return;
                 }
 
-                res.status(403).json({
-                    error: "Forbidden: You can only view your own appointments",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only view your own appointments",
+                );
             }
 
             if (doctorId) {
@@ -129,7 +133,7 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    res.json(result);
+                    ResponseHandler.success(res, result);
                     return;
                 }
 
@@ -140,21 +144,27 @@ export class AppointmentController implements IAppointmentController {
                             page,
                             pageSize,
                         );
-                    res.json(result);
+                    ResponseHandler.success(res, result);
                     return;
                 }
 
-                res.status(403).json({ error: "Forbidden" });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only view your own appointments",
+                );
             }
 
-            res.status(400).json({
-                error: "Missing patientId or doctorId parameter",
-            });
+            return ResponseHandler.badRequest(
+                res,
+                "Missing patientId or doctorId parameter",
+            );
         } catch (error: any) {
-            res.status(500).json({
-                error: error.message || "Failed to fetch appointments",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "fetching appointments",
+                req.user?.id,
+            );
         }
     }
 
@@ -171,7 +181,7 @@ export class AppointmentController implements IAppointmentController {
                         page,
                         pageSize,
                     );
-                res.json(result);
+                ResponseHandler.success(res, result);
                 return;
             }
 
@@ -181,7 +191,7 @@ export class AppointmentController implements IAppointmentController {
                     page,
                     pageSize,
                 );
-                res.json(result);
+                ResponseHandler.success(res, result);
                 return;
             }
 
@@ -191,15 +201,21 @@ export class AppointmentController implements IAppointmentController {
                     page,
                     pageSize,
                 );
-                res.json(result);
+                ResponseHandler.success(res, result);
                 return;
             }
 
-            res.status(403).json({ error: "Forbidden" });
+            return ResponseHandler.forbidden(
+                res,
+                "You can only view your own appointments",
+            );
         } catch (error: any) {
-            res.status(500).json({
-                error: error.message || "Failed to fetch appointments",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "fetching appointments",
+                req.user?.id,
+            );
         }
     }
 
@@ -208,11 +224,14 @@ export class AppointmentController implements IAppointmentController {
             const appointment = await appointmentService.createAppointment(
                 req.body,
             );
-            res.status(201).json(appointment);
+            ResponseHandler.created(res, appointment);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to create appointment",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "creating appointment",
+                req.user?.id,
+            );
         }
     }
 
@@ -220,28 +239,31 @@ export class AppointmentController implements IAppointmentController {
         try {
             const { appointmentId } = req.params;
             if (!appointmentId) {
-                res.status(400).json({
-                    error: "appointmentId parameter is required",
-                });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "appointmentId parameter is required",
+                );
             }
 
             if (req.user?.role !== "DOCTOR" && req.user?.role !== "SECRETARY") {
-                res.status(403).json({
-                    error: "Forbidden: Only doctors and secretaries can update appointments",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "Only doctors and secretaries can update appointments",
+                );
             }
 
             const appointment = await appointmentService.updateAppointment(
                 appointmentId as string,
                 req.body,
             );
-            res.json(appointment);
+            ResponseHandler.success(res, appointment);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to update appointment",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "updating appointment",
+                req.user?.id,
+            );
         }
     }
 
@@ -249,18 +271,21 @@ export class AppointmentController implements IAppointmentController {
         try {
             const { appointmentId } = req.params;
             if (!appointmentId) {
-                res.status(400).json({
-                    error: "appointmentId parameter is required",
-                });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "appointmentId parameter is required",
+                );
             }
 
             await appointmentService.deleteAppointment(appointmentId as string);
-            res.status(204).send();
+            ResponseHandler.noContent(res);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to delete appointment",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "deleting appointment",
+                req.user?.id,
+            );
         }
     }
 }

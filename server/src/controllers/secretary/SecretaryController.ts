@@ -4,6 +4,12 @@ import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { ISecretaryController } from "./ISecretaryController";
 import { logger } from "../../config/logger";
 import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import {
+    ResponseHandler,
+    NotFoundError,
+    ForbiddenError,
+    BadRequestError,
+} from "../../utils/responseHandler";
 
 export class SecretaryController implements ISecretaryController {
     async getSecretary(req: AuthRequest, res: Response): Promise<void> {
@@ -17,8 +23,10 @@ export class SecretaryController implements ISecretaryController {
                 ),
             );
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             const secretaryId = id as string;
 
@@ -33,10 +41,10 @@ export class SecretaryController implements ISecretaryController {
                         `Secretary ${req.user.id} tried to access secretary ${secretaryId}`,
                     ),
                 );
-                res.status(403).json({
-                    error: "Forbidden: You can only view your own profile",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only view your own profile",
+                );
             }
 
             const secretary = await secretaryService.getSecretary(secretaryId);
@@ -47,18 +55,14 @@ export class SecretaryController implements ISecretaryController {
                     `Retrieved secretary ${secretaryId}`,
                 ),
             );
-            res.json(secretary);
+            ResponseHandler.success(res, secretary);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting secretary: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "getting secretary",
+                req.user?.id,
             );
-            res.status(404).json({
-                error: error.message || "Secretary not found",
-            });
         }
     }
 
@@ -79,8 +83,10 @@ export class SecretaryController implements ISecretaryController {
                         `User ${req.user?.id} with role ${req.user?.role} tried to access secretaries`,
                     ),
                 );
-                res.status(403).json({ error: "Forbidden" });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "Only admins and secretaries can view secretaries",
+                );
             }
 
             const page = parseInt(req.query.page as string) || 1;
@@ -97,18 +103,14 @@ export class SecretaryController implements ISecretaryController {
                     `Retrieved ${result.secretaries.length} secretaries`,
                 ),
             );
-            res.json(result);
+            ResponseHandler.success(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting secretaries: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "getting secretaries",
+                req.user?.id,
             );
-            res.status(500).json({
-                error: error.message || "Failed to fetch secretaries",
-            });
         }
     }
 
@@ -129,10 +131,10 @@ export class SecretaryController implements ISecretaryController {
                         `User ${req.user?.id} with role ${req.user?.role} tried to create secretary`,
                     ),
                 );
-                res.status(403).json({
-                    error: "Forbidden: Only admins can create secretaries",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "Only admins can create secretaries",
+                );
             }
 
             const secretary = await secretaryService.createSecretary(req.body);
@@ -143,18 +145,14 @@ export class SecretaryController implements ISecretaryController {
                     `Created secretary ${secretary.id}`,
                 ),
             );
-            res.status(201).json(secretary);
+            ResponseHandler.created(res, secretary);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `creating secretary: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "creating secretary",
+                req.user?.id,
             );
-            res.status(400).json({
-                error: error.message || "Failed to create secretary",
-            });
         }
     }
 
@@ -162,8 +160,10 @@ export class SecretaryController implements ISecretaryController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             const secretaryId = id as string;
 
@@ -171,21 +171,24 @@ export class SecretaryController implements ISecretaryController {
                 req.user?.role === "SECRETARY" &&
                 (req.user as any).secretaryId !== secretaryId
             ) {
-                res.status(403).json({
-                    error: "Forbidden: You can only update your own profile",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only update your own profile",
+                );
             }
 
             const secretary = await secretaryService.updateSecretary(
                 secretaryId,
                 req.body,
             );
-            res.json(secretary);
+            ResponseHandler.success(res, secretary);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to update secretary",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "updating secretary",
+                req.user?.id,
+            );
         }
     }
 
@@ -193,23 +196,28 @@ export class SecretaryController implements ISecretaryController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             if (req.user?.role !== "ADMIN") {
-                res.status(403).json({
-                    error: "Forbidden: Only admins can delete secretaries",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "Only admins can delete secretaries",
+                );
             }
 
             const secretaryId = id as string;
             await secretaryService.deleteSecretary(secretaryId);
-            res.status(204).send();
+            ResponseHandler.noContent(res);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to delete secretary",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "deleting secretary",
+                req.user?.id,
+            );
         }
     }
 }

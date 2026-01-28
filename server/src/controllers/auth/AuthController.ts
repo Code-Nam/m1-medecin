@@ -1,10 +1,9 @@
 import type { Request, Response } from "express";
 import { authService } from "../../services/auth/AuthService";
-import { loginSchema } from "../../utils/validators";
-import { validate } from "../../middlewares/validate-middleware";
 import type { IAuthController } from "./IAuthController";
 import { logger } from "../../config/logger";
 import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import { ResponseHandler } from "../../utils/responseHandler";
 
 export class AuthController implements IAuthController {
     async loginPatient(req: Request, res: Response): Promise<void> {
@@ -25,16 +24,9 @@ export class AuthController implements IAuthController {
                     `Patient ${email} logged in`,
                 ),
             );
-            res.json(result);
+            ResponseHandler.success(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `patient login: ${error.message}`,
-                ),
-            );
-            res.status(401).json({ error: error.message || "Login failed" });
+            ResponseHandler.handle(error, res, "patient login");
         }
     }
 
@@ -56,18 +48,9 @@ export class AuthController implements IAuthController {
                     `Patient ${patientData.email} registered`,
                 ),
             );
-            res.status(201).json(result);
+            ResponseHandler.created(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `patient registration: ${error.message}`,
-                ),
-            );
-            res.status(400).json({
-                error: error.message || "Registration failed",
-            });
+            ResponseHandler.handle(error, res, "patient registration");
         }
     }
 
@@ -89,16 +72,9 @@ export class AuthController implements IAuthController {
                     `Doctor ${email} logged in`,
                 ),
             );
-            res.json(result);
+            ResponseHandler.success(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `doctor login: ${error.message}`,
-                ),
-            );
-            res.status(401).json({ error: error.message || "Login failed" });
+            ResponseHandler.handle(error, res, "doctor login");
         }
     }
 
@@ -120,16 +96,9 @@ export class AuthController implements IAuthController {
                     `Secretary ${email} logged in`,
                 ),
             );
-            res.json(result);
+            ResponseHandler.success(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `secretary login: ${error.message}`,
-                ),
-            );
-            res.status(401).json({ error: error.message || "Login failed" });
+            ResponseHandler.handle(error, res, "secretary login");
         }
     }
 }

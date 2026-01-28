@@ -151,3 +151,5 @@ bun run db:studio
 - [x] Appliquer le logger sur l'ensemble du projet
 - [ ] Rate limiting pour prévenir les abus
 - [ ] Sécurité renforcée (Helmet, CSP, etc.)
+- [ ] Monitoring et alerting
+- [x] Erreurs personnalisées pour la gestion des exceptions

@@ -4,6 +4,12 @@ import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IAvailabilityController } from "./IAvailabilityController";
 import { logger } from "../../config/logger";
 import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import {
+    ResponseHandler,
+    NotFoundError,
+    ForbiddenError,
+    BadRequestError,
+} from "../../utils/responseHandler";
 
 export class AvailabilityController implements IAvailabilityController {
     async generateSlots(req: AuthRequest, res: Response): Promise<void> {
@@ -17,16 +23,18 @@ export class AvailabilityController implements IAvailabilityController {
                 ),
             );
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             const { startDate, endDate } = req.body;
 
             if (!startDate || !endDate) {
-                res.status(400).json({
-                    error: "startDate and endDate are required",
-                });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "startDate and endDate are required",
+                );
             }
 
             const count = await availabilityService.generateSlotsForDoctor(
@@ -42,21 +50,17 @@ export class AvailabilityController implements IAvailabilityController {
                     `Generated ${count} slots for doctor ${id}`,
                 ),
             );
-            res.json({
+            ResponseHandler.success(res, {
                 message: `Generated ${count} availability slots`,
                 count,
             });
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `generating slots: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "generating slots",
+                req.user?.id,
             );
-            res.status(400).json({
-                error: error.message || "Failed to generate slots",
-            });
         }
     }
 
@@ -75,16 +79,18 @@ export class AvailabilityController implements IAvailabilityController {
                 ),
             );
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             const doctorId = id as string;
 
             if (!date) {
-                res.status(400).json({
-                    error: "date query parameter is required",
-                });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "date query parameter is required",
+                );
             }
 
             const slots = await availabilityService.getAvailableSlots(
@@ -99,7 +105,7 @@ export class AvailabilityController implements IAvailabilityController {
                     `Found ${slots.length} available slots for doctor ${id}`,
                 ),
             );
-            res.json({
+            ResponseHandler.success(res, {
                 slots: slots.map((slot: any) => ({
                     slotId: slot.id,
                     date: slot.date,
@@ -110,16 +116,12 @@ export class AvailabilityController implements IAvailabilityController {
                 })),
             });
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting available slots: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "getting available slots",
+                req.user?.id,
             );
-            res.status(400).json({
-                error: error.message || "Failed to get available slots",
-            });
         }
     }
 
@@ -140,8 +142,10 @@ export class AvailabilityController implements IAvailabilityController {
                         `User ${req.user?.id} with role ${req.user?.role} tried to cleanup slots`,
                     ),
                 );
-                res.status(403).json({ error: "Forbidden" });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "Only admins and doctors can cleanup slots",
+                );
             }
 
             const count = await availabilityService.cleanupPastSlots();
@@ -152,18 +156,17 @@ export class AvailabilityController implements IAvailabilityController {
                     `Cleaned up ${count} past slots`,
                 ),
             );
-            res.json({ message: `Cleaned up ${count} past slots`, count });
-        } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `cleaning up slots: ${error.message}`,
-                ),
-            );
-            res.status(500).json({
-                error: error.message || "Failed to cleanup slots",
+            ResponseHandler.success(res, {
+                message: `Cleaned up ${count} past slots`,
+                count,
             });
+        } catch (error: any) {
+            ResponseHandler.handle(
+                error,
+                res,
+                "cleaning up slots",
+                req.user?.id,
+            );
         }
     }
 }

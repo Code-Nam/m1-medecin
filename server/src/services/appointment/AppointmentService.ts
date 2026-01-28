@@ -9,13 +9,13 @@ export class AppointmentService implements IAppointmentService {
     async getAppointmentsByPatient(
         patientId: string,
         page: number = 1,
-        pageSize: number = 10
+        pageSize: number = 10,
     ) {
         const { appointments, total } =
             await appointmentRepository.findAppointmentsByPatient(
                 patientId,
                 page,
-                pageSize
+                pageSize,
             );
 
         return {
@@ -40,13 +40,13 @@ export class AppointmentService implements IAppointmentService {
     async getAppointmentsByDoctor(
         doctorId: string,
         page: number = 1,
-        pageSize: number = 10
+        pageSize: number = 10,
     ) {
         const { appointments, total } =
             await appointmentRepository.findAppointmentsByDoctor(
                 doctorId,
                 page,
-                pageSize
+                pageSize,
             );
 
         return {
@@ -82,7 +82,7 @@ export class AppointmentService implements IAppointmentService {
 
         if (data.slotId) {
             const slot = await appointmentRepository.findAvailabilitySlotById(
-                data.slotId as string
+                data.slotId as string,
             );
             if (!slot) throw new Error("Availability slot not found");
             if (slot.isBooked || !slot.isAvailable)
@@ -107,7 +107,7 @@ export class AppointmentService implements IAppointmentService {
             const hour = parseInt(timeParts[0] || "0");
             const minute = parseInt(timeParts[1] || "0");
             const normalizedTime = `${String(hour).padStart(2, "0")}:${String(
-                minute
+                minute,
             ).padStart(2, "0")}`;
 
             let slot =
@@ -115,24 +115,23 @@ export class AppointmentService implements IAppointmentService {
                     doctor.id,
                     dateStart,
                     dateEnd,
-                    normalizedTime
+                    normalizedTime,
                 );
 
             if (!slot) {
-                const { availabilityService } = await import(
-                    "../availability-service"
-                );
+                const { availabilityService } =
+                    await import("../availability/AvailabilityService");
                 await availabilityService.generateSlotsForDoctor(
                     doctor.id,
                     dateStart,
-                    dateEnd
+                    dateEnd,
                 );
                 slot =
                     await appointmentRepository.findAvailabilitySlotForDoctorAtTime(
                         doctor.id,
                         dateStart,
                         dateEnd,
-                        normalizedTime
+                        normalizedTime,
                     );
             }
 
@@ -186,7 +185,7 @@ export class AppointmentService implements IAppointmentService {
         if (data.status === "CANCELLED" && appointment.availabilitySlotId) {
             await appointmentRepository.updateAvailabilitySlot(
                 appointment.availabilitySlotId,
-                { isBooked: false, isAvailable: true }
+                { isBooked: false, isAvailable: true },
             );
         }
 
@@ -194,13 +193,13 @@ export class AppointmentService implements IAppointmentService {
             if (appointment.availabilitySlotId) {
                 await appointmentRepository.updateAvailabilitySlot(
                     appointment.availabilitySlotId,
-                    { isBooked: false, isAvailable: true }
+                    { isBooked: false, isAvailable: true },
                 );
             }
 
             const newSlot =
                 await appointmentRepository.findAvailabilitySlotById(
-                    data.slotId as string
+                    data.slotId as string,
                 );
             if (!newSlot) throw new Error("Availability slot not found");
             if (newSlot.isBooked || !newSlot.isAvailable)
@@ -248,7 +247,7 @@ export class AppointmentService implements IAppointmentService {
         if (appointment.availabilitySlotId)
             await appointmentRepository.updateAvailabilitySlot(
                 appointment.availabilitySlotId,
-                { isBooked: false, isAvailable: true }
+                { isBooked: false, isAvailable: true },
             );
         await appointmentRepository.deleteAppointmentById(id);
         logger.info(`Appointment deleted: ${id}`);

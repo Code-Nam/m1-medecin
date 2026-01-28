@@ -4,6 +4,12 @@ import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IPatientController } from "./IPatientController";
 import { logger } from "../../config/logger";
 import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
+import {
+    ResponseHandler,
+    NotFoundError,
+    ForbiddenError,
+    BadRequestError,
+} from "../../utils/responseHandler";
 
 export class PatientController implements IPatientController {
     async getPatient(req: AuthRequest, res: Response): Promise<void> {
@@ -17,8 +23,10 @@ export class PatientController implements IPatientController {
                 ),
             );
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
             const patient = await patientService.getPatient(id as string);
             logger.info(
@@ -28,18 +36,9 @@ export class PatientController implements IPatientController {
                     `Retrieved patient ${id}`,
                 ),
             );
-            res.json(patient);
+            ResponseHandler.success(res, patient);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting patient: ${error.message}`,
-                ),
-            );
-            res.status(404).json({
-                error: error.message || "Patient not found",
-            });
+            ResponseHandler.handle(error, res, "getting patient", req.user?.id);
         }
     }
 
@@ -68,18 +67,14 @@ export class PatientController implements IPatientController {
                     `Retrieved ${result.patients.length} patients`,
                 ),
             );
-            res.json(result);
+            ResponseHandler.success(res, result);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `getting patients: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "getting patients",
+                req.user?.id,
             );
-            res.status(500).json({
-                error: error.message || "Failed to fetch patients",
-            });
         }
     }
 
@@ -100,18 +95,14 @@ export class PatientController implements IPatientController {
                     `Created patient ${patient.id}`,
                 ),
             );
-            res.status(201).json(patient);
+            ResponseHandler.created(res, patient);
         } catch (error: any) {
-            logger.error(
-                formatLogMessage(
-                    LogLayer.CONTROLLER,
-                    LogOperation.ERROR,
-                    `creating patient: ${error.message}`,
-                ),
+            ResponseHandler.handle(
+                error,
+                res,
+                "creating patient",
+                req.user?.id,
             );
-            res.status(400).json({
-                error: error.message || "Failed to create patient",
-            });
         }
     }
 
@@ -119,26 +110,31 @@ export class PatientController implements IPatientController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
 
             if (req.user?.role === "PATIENT" && req.user.id !== id) {
-                res.status(403).json({
-                    error: "Forbidden: You can only update your own profile",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only update your own profile",
+                );
             }
 
             const patient = await patientService.updatePatient(
                 id as string,
                 req.body,
             );
-            res.json(patient);
+            ResponseHandler.success(res, patient);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to update patient",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "updating patient",
+                req.user?.id,
+            );
         }
     }
 
@@ -146,23 +142,28 @@ export class PatientController implements IPatientController {
         try {
             const { id } = req.params;
             if (!id) {
-                res.status(400).json({ error: "id parameter is required" });
-                return;
+                return ResponseHandler.badRequest(
+                    res,
+                    "id parameter is required",
+                );
             }
 
             if (req.user?.role === "PATIENT" && req.user.id !== id) {
-                res.status(403).json({
-                    error: "Forbidden: You can only delete your own account",
-                });
-                return;
+                return ResponseHandler.forbidden(
+                    res,
+                    "You can only delete your own account",
+                );
             }
 
             await patientService.deletePatient(id as string);
-            res.status(204).send();
+            ResponseHandler.noContent(res);
         } catch (error: any) {
-            res.status(400).json({
-                error: error.message || "Failed to delete patient",
-            });
+            ResponseHandler.handle(
+                error,
+                res,
+                "deleting patient",
+                req.user?.id,
+            );
         }
     }
 }

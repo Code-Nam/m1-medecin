@@ -1,5 +1,6 @@
 import prisma from "../../config/database";
 import { logger } from "../../config/logger";
+import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
 import type { IAppointmentRepository } from "./IAppointmentRepository";
 import type {
     AppointmentListItem,
@@ -14,6 +15,13 @@ export class AppointmentRepository implements IAppointmentRepository {
         page = 1,
         pageSize = 10,
     ): Promise<{ appointments: AppointmentListItem[]; total: number }> {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `appointments by patient id=${patientId} page=${page} pageSize=${pageSize}`,
+            ),
+        );
         const skip = (page - 1) * pageSize;
         const [appointments, total] = await Promise.all([
             prisma.appointment.findMany({
@@ -36,6 +44,13 @@ export class AppointmentRepository implements IAppointmentRepository {
                 where: { appointedPatientId: patientId },
             }),
         ]);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FOUND,
+                `${appointments.length} appointments for patient id=${patientId}`,
+            ),
+        );
         return { appointments, total };
     }
 
@@ -44,6 +59,13 @@ export class AppointmentRepository implements IAppointmentRepository {
         page = 1,
         pageSize = 10,
     ): Promise<{ appointments: AppointmentListItem[]; total: number }> {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `appointments by doctor id=${doctorId} page=${page} pageSize=${pageSize}`,
+            ),
+        );
         const skip = (page - 1) * pageSize;
         const [appointments, total] = await Promise.all([
             prisma.appointment.findMany({
@@ -67,6 +89,13 @@ export class AppointmentRepository implements IAppointmentRepository {
                 where: { appointedDoctorId: doctorId },
             }),
         ]);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FOUND,
+                `${appointments.length} appointments for doctor id=${doctorId}`,
+            ),
+        );
         return { appointments, total };
     }
 
@@ -86,7 +115,13 @@ export class AppointmentRepository implements IAppointmentRepository {
             },
             include: { patient: true, doctor: true },
         });
-        logger.info(`REPOSITORY CREATE appointment id=${created.id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.CREATE,
+                `appointment id=${created.id}`,
+            ),
+        );
         return created as any;
     }
 
@@ -108,7 +143,13 @@ export class AppointmentRepository implements IAppointmentRepository {
             data: updateData,
             include: { patient: true, doctor: true },
         });
-        logger.info(`REPOSITORY UPDATE appointment id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.UPDATE,
+                `appointment id=${id}`,
+            ),
+        );
         return updated as any;
     }
 
@@ -117,18 +158,56 @@ export class AppointmentRepository implements IAppointmentRepository {
             where: { id },
             include: { patient: true, doctor: true },
         });
-        logger.info(`REPOSITORY DELETE appointment id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.DELETE,
+                `appointment id=${id}`,
+            ),
+        );
         return deleted as any;
     }
 
     async findAppointmentById(id: string): Promise<AppointmentDetail | null> {
-        return prisma.appointment.findUnique({
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `appointment by id=${id}`,
+            ),
+        );
+        const appointment = await prisma.appointment.findUnique({
             where: { id },
             include: { patient: true, doctor: true },
         });
+        if (appointment) {
+            logger.info(
+                formatLogMessage(
+                    LogLayer.REPOSITORY,
+                    LogOperation.FOUND,
+                    `appointment id=${id}`,
+                ),
+            );
+        } else {
+            logger.warn(
+                formatLogMessage(
+                    LogLayer.REPOSITORY,
+                    LogOperation.NOT_FOUND,
+                    `appointment id=${id}`,
+                ),
+            );
+        }
+        return appointment;
     }
 
     async findAvailabilitySlotById(id: string) {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `availabilitySlot by id=${id}`,
+            ),
+        );
         return prisma.availabilitySlot.findUnique({ where: { id } });
     }
 
@@ -137,7 +216,13 @@ export class AppointmentRepository implements IAppointmentRepository {
             where: { id },
             data,
         });
-        logger.info(`REPOSITORY UPDATE availabilitySlot id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.UPDATE,
+                `availabilitySlot id=${id}`,
+            ),
+        );
         return updated;
     }
 
@@ -147,6 +232,13 @@ export class AppointmentRepository implements IAppointmentRepository {
         dateEnd: Date,
         startTime: string,
     ) {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `availabilitySlot for doctor id=${doctorId} time=${startTime}`,
+            ),
+        );
         return prisma.availabilitySlot.findFirst({
             where: {
                 doctorId,

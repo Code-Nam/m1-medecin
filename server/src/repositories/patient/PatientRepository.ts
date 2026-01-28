@@ -1,11 +1,24 @@
 import prisma from "../../config/database";
 import { logger } from "../../config/logger";
+import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
 import type { IPatientRepository } from "./IPatientRepository";
-import type { PatientDetail, PatientListItem, CreatePatientDTO, UpdatePatientDTO } from "../../models/patient";
+import type {
+    PatientDetail,
+    PatientListItem,
+    CreatePatientDTO,
+    UpdatePatientDTO,
+} from "../../models/patient";
 
 export class PatientRepository implements IPatientRepository {
     async findPatientById(id: string): Promise<PatientDetail | null> {
-        return prisma.patient.findUnique({
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `patient by id=${id}`,
+            ),
+        );
+        const patient = await prisma.patient.findUnique({
             where: { id },
             include: {
                 assignedDoctor: {
@@ -18,9 +31,38 @@ export class PatientRepository implements IPatientRepository {
                 },
             },
         });
+        if (patient) {
+            logger.info(
+                formatLogMessage(
+                    LogLayer.REPOSITORY,
+                    LogOperation.FOUND,
+                    `patient id=${id}`,
+                ),
+            );
+        } else {
+            logger.warn(
+                formatLogMessage(
+                    LogLayer.REPOSITORY,
+                    LogOperation.NOT_FOUND,
+                    `patient id=${id}`,
+                ),
+            );
+        }
+        return patient;
     }
 
-    async findPatients(page = 1, pageSize = 10, where: any = {}): Promise<{ patients: PatientListItem[]; total: number }> {
+    async findPatients(
+        page = 1,
+        pageSize = 10,
+        where: any = {},
+    ): Promise<{ patients: PatientListItem[]; total: number }> {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `patients page=${page} pageSize=${pageSize}`,
+            ),
+        );
         const skip = (page - 1) * pageSize;
         const [patients, total] = await Promise.all([
             prisma.patient.findMany({
@@ -43,7 +85,13 @@ export class PatientRepository implements IPatientRepository {
             }),
             prisma.patient.count({ where }),
         ]);
-
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FOUND,
+                `${patients.length} patients`,
+            ),
+        );
         return { patients, total };
     }
 
@@ -67,12 +115,19 @@ export class PatientRepository implements IPatientRepository {
         });
 
         logger.info(
-            `REPOSITORY CREATE patient id=${created.id} email=${created.email}`
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.CREATE,
+                `patient id=${created.id} email=${created.email}`,
+            ),
         );
         return created;
     }
 
-    async updatePatient(id: string, data: UpdatePatientDTO): Promise<PatientDetail> {
+    async updatePatient(
+        id: string,
+        data: UpdatePatientDTO,
+    ): Promise<PatientDetail> {
         const updated = await prisma.patient.update({
             where: { id },
             data,
@@ -82,13 +137,25 @@ export class PatientRepository implements IPatientRepository {
                 },
             },
         });
-        logger.info(`REPOSITORY UPDATE patient id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.UPDATE,
+                `patient id=${id}`,
+            ),
+        );
         return updated;
     }
 
     async deletePatientById(id: string): Promise<PatientDetail> {
         const deleted = await prisma.patient.delete({ where: { id } });
-        logger.info(`REPOSITORY DELETE patient id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.DELETE,
+                `patient id=${id}`,
+            ),
+        );
         return deleted;
     }
 }

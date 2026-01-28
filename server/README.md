@@ -136,7 +136,7 @@ bun run db:studio
 ## To Do
 
 - [ ] Tests unitaires et d'intégration
-- [ ] Séparer routes du fichier app
+- [x] Séparer routes du fichier app
 - [ ] Documentation Swagger
 - [ ] email de confirmation prise de rendez-vous
 - [ ] email de rappel de rendez-vous
@@ -148,6 +148,6 @@ bun run db:studio
 - [ ] JSDoc pour documenter les fonctions et classes
 - [ ] Typesafe API sur les controllers
 - [x] Replace logger with winston
-- [ ] Appliquer le logger sur l'ensemble du projet
+- [x] Appliquer le logger sur l'ensemble du projet
 - [ ] Rate limiting pour prévenir les abus
 - [ ] Sécurité renforcée (Helmet, CSP, etc.)

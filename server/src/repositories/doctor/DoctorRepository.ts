@@ -1,5 +1,6 @@
 import prisma from "../../config/database";
 import { logger } from "../../config/logger";
+import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
 import type { IDoctorRepository } from "../doctor/IDoctorRepository";
 import type {
     DoctorListItem,
@@ -35,16 +36,48 @@ const selectDetailed = {
 
 export class DoctorRepository implements IDoctorRepository {
     async findDoctorById(id: string): Promise<DoctorDetail | null> {
-        return prisma.doctor.findUnique({
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `doctor by id=${id}`,
+            ),
+        );
+        const doctor = await prisma.doctor.findUnique({
             where: { id },
             select: selectDetailed,
         });
+        if (doctor) {
+            logger.info(
+                formatLogMessage(
+                    LogLayer.REPOSITORY,
+                    LogOperation.FOUND,
+                    `doctor id=${id}`,
+                ),
+            );
+        } else {
+            logger.warn(
+                formatLogMessage(
+                    LogLayer.REPOSITORY,
+                    LogOperation.NOT_FOUND,
+                    `doctor id=${id}`,
+                ),
+            );
+        }
+        return doctor;
     }
 
     async findDoctors(
         page = 1,
         pageSize = 10,
     ): Promise<{ doctors: DoctorDetail[]; total: number }> {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `doctors page=${page} pageSize=${pageSize}`,
+            ),
+        );
         const skip = (page - 1) * pageSize;
         const [doctors, total] = await Promise.all([
             prisma.doctor.findMany({
@@ -55,14 +88,36 @@ export class DoctorRepository implements IDoctorRepository {
             }),
             prisma.doctor.count(),
         ]);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FOUND,
+                `${doctors.length} doctors`,
+            ),
+        );
         return { doctors, total };
     }
 
     async findAllDoctors(): Promise<DoctorListItem[]> {
-        return prisma.doctor.findMany({
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `all doctors`,
+            ),
+        );
+        const doctors = await prisma.doctor.findMany({
             select: selectCommon,
             orderBy: { surname: "asc" },
         });
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FOUND,
+                `${doctors.length} doctors`,
+            ),
+        );
+        return doctors;
     }
 
     async createDoctor(data: CreateDoctorDTO): Promise<DoctorDetail> {
@@ -83,7 +138,11 @@ export class DoctorRepository implements IDoctorRepository {
         });
 
         logger.info(
-            `REPOSITORY CREATE doctor id=${created.id} email=${created.email}`,
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.CREATE,
+                `doctor id=${created.id} email=${created.email}`,
+            ),
         );
         return created;
     }
@@ -97,13 +156,25 @@ export class DoctorRepository implements IDoctorRepository {
             data: data as any,
             select: selectDetailed,
         });
-        logger.info(`REPOSITORY UPDATE doctor id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.UPDATE,
+                `doctor id=${id}`,
+            ),
+        );
         return updated;
     }
 
     async deleteDoctorById(id: string): Promise<DoctorDetail> {
         const deleted = await prisma.doctor.delete({ where: { id } });
-        logger.info(`REPOSITORY DELETE doctor id=${id}`);
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.DELETE,
+                `doctor id=${id}`,
+            ),
+        );
         return deleted;
     }
 
@@ -112,6 +183,13 @@ export class DoctorRepository implements IDoctorRepository {
         page = 1,
         pageSize = 10,
     ): Promise<{ patients: any[]; total: number }> {
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FIND,
+                `patients by doctor id=${internalDoctorId} page=${page} pageSize=${pageSize}`,
+            ),
+        );
         const skip = (page - 1) * pageSize;
         const [patients, total] = await Promise.all([
             prisma.patient.findMany({
@@ -134,7 +212,13 @@ export class DoctorRepository implements IDoctorRepository {
                 where: { assignedDoctorId: internalDoctorId },
             }),
         ]);
-
+        logger.info(
+            formatLogMessage(
+                LogLayer.REPOSITORY,
+                LogOperation.FOUND,
+                `${patients.length} patients for doctor id=${internalDoctorId}`,
+            ),
+        );
         return { patients, total };
     }
 }

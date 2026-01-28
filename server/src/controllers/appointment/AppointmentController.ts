@@ -2,11 +2,20 @@ import type { Response } from "express";
 import { appointmentService } from "../../services/appointment/AppointmentService";
 import type { AuthRequest } from "../../middlewares/auth-middleware";
 import type { IAppointmentController } from "./IAppointmentController";
+import { logger } from "../../config/logger";
+import { LogLayer, LogOperation, formatLogMessage } from "../../errors";
 
 export class AppointmentController implements IAppointmentController {
     async getAppointmentById(req: AuthRequest, res: Response): Promise<void> {
         try {
             const { appointmentId } = req.params;
+            logger.info(
+                formatLogMessage(
+                    LogLayer.CONTROLLER,
+                    LogOperation.GET,
+                    `appointment by id=${appointmentId} user=${req.user?.id} role=${req.user?.role}`,
+                ),
+            );
             if (!appointmentId) {
                 res.status(400).json({
                     error: "appointmentId parameter is required",
@@ -14,13 +23,20 @@ export class AppointmentController implements IAppointmentController {
                 return;
             }
             const appointment = await appointmentService.getAppointmentById(
-                appointmentId as string
+                appointmentId as string,
             );
 
             if (
                 req.user?.role === "PATIENT" &&
                 appointment.appointedPatient !== req.user.id
             ) {
+                logger.warn(
+                    formatLogMessage(
+                        LogLayer.CONTROLLER,
+                        LogOperation.FORBIDDEN,
+                        `Patient ${req.user.id} tried to access appointment ${appointmentId}`,
+                    ),
+                );
                 res.status(403).json({
                     error: "Forbidden: You can only view your own appointments",
                 });
@@ -31,12 +47,33 @@ export class AppointmentController implements IAppointmentController {
                 req.user?.role === "DOCTOR" &&
                 appointment.appointedDoctor !== req.user.id
             ) {
+                logger.warn(
+                    formatLogMessage(
+                        LogLayer.CONTROLLER,
+                        LogOperation.FORBIDDEN,
+                        `Doctor ${req.user.id} tried to access appointment ${appointmentId}`,
+                    ),
+                );
                 res.status(403).json({ error: "Forbidden" });
                 return;
             }
 
+            logger.info(
+                formatLogMessage(
+                    LogLayer.CONTROLLER,
+                    LogOperation.SUCCESS,
+                    `Retrieved appointment ${appointmentId}`,
+                ),
+            );
             res.json(appointment);
         } catch (error: any) {
+            logger.error(
+                formatLogMessage(
+                    LogLayer.CONTROLLER,
+                    LogOperation.ERROR,
+                    `getting appointment: ${error.message}`,
+                ),
+            );
             res.status(404).json({
                 error: error.message || "Appointment not found",
             });
@@ -45,7 +82,7 @@ export class AppointmentController implements IAppointmentController {
 
     async getAppointmentsByQuery(
         req: AuthRequest,
-        res: Response
+        res: Response,
     ): Promise<void> {
         try {
             const { patientId, doctorId } = req.query;
@@ -58,7 +95,7 @@ export class AppointmentController implements IAppointmentController {
                         await appointmentService.getAppointmentsByPatient(
                             patientId as string,
                             page,
-                            pageSize
+                            pageSize,
                         );
                     res.json(result);
                     return;
@@ -72,7 +109,7 @@ export class AppointmentController implements IAppointmentController {
                         await appointmentService.getAppointmentsByPatient(
                             patientId as string,
                             page,
-                            pageSize
+                            pageSize,
                         );
                     res.json(result);
                     return;
@@ -90,7 +127,7 @@ export class AppointmentController implements IAppointmentController {
                         await appointmentService.getAppointmentsByDoctor(
                             doctorId as string,
                             page,
-                            pageSize
+                            pageSize,
                         );
                     res.json(result);
                     return;
@@ -101,7 +138,7 @@ export class AppointmentController implements IAppointmentController {
                         await appointmentService.getAppointmentsByDoctor(
                             doctorId as string,
                             page,
-                            pageSize
+                            pageSize,
                         );
                     res.json(result);
                     return;
@@ -132,7 +169,7 @@ export class AppointmentController implements IAppointmentController {
                     await appointmentService.getAppointmentsByPatient(
                         id as string,
                         page,
-                        pageSize
+                        pageSize,
                     );
                 res.json(result);
                 return;
@@ -142,7 +179,7 @@ export class AppointmentController implements IAppointmentController {
                 const result = await appointmentService.getAppointmentsByDoctor(
                     id as string,
                     page,
-                    pageSize
+                    pageSize,
                 );
                 res.json(result);
                 return;
@@ -152,7 +189,7 @@ export class AppointmentController implements IAppointmentController {
                 const result = await appointmentService.getAppointmentsByDoctor(
                     id as string,
                     page,
-                    pageSize
+                    pageSize,
                 );
                 res.json(result);
                 return;
@@ -169,7 +206,7 @@ export class AppointmentController implements IAppointmentController {
     async createAppointment(req: AuthRequest, res: Response): Promise<void> {
         try {
             const appointment = await appointmentService.createAppointment(
-                req.body
+                req.body,
             );
             res.status(201).json(appointment);
         } catch (error: any) {
@@ -198,7 +235,7 @@ export class AppointmentController implements IAppointmentController {
 
             const appointment = await appointmentService.updateAppointment(
                 appointmentId as string,
-                req.body
+                req.body,
             );
             res.json(appointment);
         } catch (error: any) {

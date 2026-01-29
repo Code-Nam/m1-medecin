@@ -78,11 +78,10 @@ export const Login = () => {
           <button
             type="button"
             onClick={() => setUserType('doctor')}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              userType === 'doctor'
-                ? ''
-                : 'opacity-50'
-            }`}
+            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${userType === 'doctor'
+              ? ''
+              : 'opacity-50'
+              }`}
             style={{
               backgroundColor:
                 userType === 'doctor'
@@ -97,11 +96,10 @@ export const Login = () => {
           <button
             type="button"
             onClick={() => setUserType('secretary')}
-            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${
-              userType === 'secretary'
-                ? ''
-                : 'opacity-50'
-            }`}
+            className={`flex-1 py-2 px-4 rounded-lg font-medium transition-colors ${userType === 'secretary'
+              ? ''
+              : 'opacity-50'
+              }`}
             style={{
               backgroundColor:
                 userType === 'secretary'
@@ -120,8 +118,8 @@ export const Login = () => {
             <div
               className="p-3 rounded-lg text-sm"
               style={{
-                backgroundColor: colors.error + '20',
-                color: colors.error,
+                backgroundColor: (colors as any).error + '20',
+                color: (colors as any).error,
               }}
             >
               {error}
@@ -143,6 +141,7 @@ export const Login = () => {
               }
               placeholder="votre.email@example.com"
               required
+              // @ts-ignore
               icon={<Mail size={18} />}
             />
           </div>
@@ -162,6 +161,7 @@ export const Login = () => {
               }
               placeholder="••••••••"
               required
+              // @ts-ignore
               icon={<Lock size={18} />}
             />
           </div>
@@ -171,7 +171,7 @@ export const Login = () => {
             disabled={loading}
             className="w-full"
             style={{
-              backgroundColor: colors.primary,
+              backgroundColor: (colors as any).primary,
               color: '#fff',
             }}
           >

@@ -26,7 +26,7 @@ export const Login = () => {
     try {
       const response = await authService.login(credentials);
       authService.storeAuth(response.token, response.user);
-      await fetchPatient(response.user.patientId);
+      await fetchPatient(response.user.id);
       navigate('/');
     } catch (err: any) {
       const errorMessage = err.message || 'Erreur de connexion';
@@ -72,8 +72,8 @@ export const Login = () => {
             <div
               className="p-3 rounded-lg text-sm"
               style={{
-                backgroundColor: colors.error + '20',
-                color: colors.error,
+                backgroundColor: (colors as any).error + '20',
+                color: (colors as any).error,
               }}
             >
               {error}
@@ -95,6 +95,7 @@ export const Login = () => {
               }
               placeholder="votre.email@example.com"
               required
+              // @ts-ignore
               icon={<Mail size={18} />}
             />
           </div>
@@ -114,6 +115,7 @@ export const Login = () => {
               }
               placeholder="••••••••"
               required
+              // @ts-ignore
               icon={<Lock size={18} />}
             />
           </div>
@@ -123,7 +125,7 @@ export const Login = () => {
             disabled={loading}
             className="w-full"
             style={{
-              backgroundColor: colors.primary,
+              backgroundColor: (colors as any).primary,
               color: '#fff',
             }}
           >
@@ -138,7 +140,7 @@ export const Login = () => {
           <Link
             to="/register"
             className="inline-flex items-center gap-2 text-sm font-medium transition-colors"
-            style={{ color: colors.primary }}
+            style={{ color: (colors as any).primary }}
           >
             <UserPlus size={16} />
             Créer un compte

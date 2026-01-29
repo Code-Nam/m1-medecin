@@ -18,8 +18,8 @@ function AppContent() {
   useEffect(() => {
     if (isAuthenticated && !currentPatient) {
       const user = JSON.parse(localStorage.getItem('user') || '{}');
-      if (user.patientId) {
-        fetchPatient(user.patientId);
+      if (user.id) {
+        fetchPatient(user.id);
       }
     }
   }, [isAuthenticated, currentPatient, fetchPatient]);

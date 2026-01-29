@@ -137,6 +137,83 @@
     overflow-y: auto;
     overflow-x: hidden;
   }
+
+  /* ===== FOCUS VISIBLE STYLES ===== */
+  /* Amélioration de la visibilité du focus pour la navigation au clavier */
+
+  /* Focus visible pour tous les éléments interactifs */
+  :focus-visible {
+    outline: 2px solid #00796B !important;
+    outline-offset: 2px !important;
+  }
+
+  html.dark :focus-visible {
+    outline: 2px solid #4DB6AC !important;
+    outline-offset: 2px !important;
+  }
+
+  /* Suppression de l'outline par défaut quand on utilise la souris */
+  :focus:not(:focus-visible) {
+    outline: none;
+  }
+
+  /* Style de focus pour les boutons */
+  button:focus-visible,
+  [role="button"]:focus-visible {
+    outline: 2px solid #00796B !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(0, 121, 107, 0.2) !important;
+  }
+
+  html.dark button:focus-visible,
+  html.dark [role="button"]:focus-visible {
+    outline: 2px solid #4DB6AC !important;
+    outline-offset: 2px !important;
+    box-shadow: 0 0 0 4px rgba(77, 182, 172, 0.2) !important;
+  }
+
+  /* Style de focus pour les inputs */
+  input:focus-visible,
+  textarea:focus-visible,
+  select:focus-visible {
+    outline: none !important;
+    border-color: #00796B !important;
+    box-shadow: 0 0 0 3px rgba(0, 121, 107, 0.15) !important;
+  }
+
+  html.dark input:focus-visible,
+  html.dark textarea:focus-visible,
+  html.dark select:focus-visible {
+    border-color: #4DB6AC !important;
+    box-shadow: 0 0 0 3px rgba(77, 182, 172, 0.2) !important;
+  }
+
+  /* Style de focus pour les liens */
+  a:focus-visible {
+    outline: 2px solid #00796B !important;
+    outline-offset: 2px !important;
+    border-radius: 4px;
+  }
+
+  html.dark a:focus-visible {
+    outline: 2px solid #4DB6AC !important;
+  }
+
+  /* Skip link pour l'accessibilité */
+  .skip-link {
+    position: absolute;
+    top: -40px;
+    left: 0;
+    padding: 8px 16px;
+    background: #00796B;
+    color: white;
+    z-index: 100;
+    transition: top 0.2s;
+  }
+
+  .skip-link:focus {
+    top: 0;
+  }
 }
 
 /* ===== VARIABLES CSS POUR LE THÈME ===== */

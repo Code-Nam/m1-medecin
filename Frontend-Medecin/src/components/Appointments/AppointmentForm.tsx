@@ -22,10 +22,9 @@ interface AppointmentFormProps {
 }
 
 interface AvailableSlot {
-  slotId: string;
+  id: string; // Le backend renvoie 'id'
   startTime: string;
   endTime: string;
-  isAvailable: boolean;
   isBooked: boolean;
 }
 
@@ -63,7 +62,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
     date: appointment?.date ? convertToInputDate(appointment.date) : initialDate || new Date().toISOString().split('T')[0],
     time: appointment?.time || initialTime || '',
     reason: appointment?.reason || '',
-    createdBy: appointment?.createdBy || 'doctor' as 'patient' | 'doctor'
+    createdBy: (appointment?.createdBy || 'doctor') as 'patient' | 'doctor'
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -150,21 +149,22 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
     try {
       const selectedSlot = availableSlots.find(slot => slot.startTime === formData.time);
-      const slotId = selectedSlot?.slotId;
+      const slotId = selectedSlot?.id;
 
-      const appointmentData = {
-        date: convertToAPIDate(formData.date),
+      const appointmentData: Omit<Appointment, 'appointmentId'> = {
+        date: convertToAPIDate(formData.date || ''),
         time: formData.time,
         reason: formData.reason,
         slotId: slotId,
-        status: (formData.createdBy === 'doctor' ? 'doctor_created' : 'pending') as any,
-        createdBy: formData.createdBy as any,
-        appointedPatientId: formData.patientId,
-        appointedDoctorId: doctor.id,
+        status: (formData.createdBy === 'doctor' ? 'DOCTOR_CREATED' : 'PENDING') as Appointment['status'],
+        appointedPatient: formData.patientId,
+        appointedDoctor: doctor.id,
+        createdBy: formData.createdBy,
       };
 
-      if (isEditing && appointment) {
-        await updateAppointment(appointment.appointmentId, appointmentData);
+      const currentAppointment = appointment;
+      if (isEditing && currentAppointment?.appointmentId) {
+        await updateAppointment(currentAppointment.appointmentId, appointmentData as Partial<Appointment>);
         addToast('success', 'Rendez-vous modifié avec succès');
       } else {
         await addAppointment(appointmentData);
@@ -236,12 +236,12 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
             ) : (
               <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
                 {availableSlots
-                  .filter(slot => slot.isAvailable && !slot.isBooked)
+                  .filter(slot => !slot.isBooked)
                   .map((slot) => {
                     const isSelected = formData.time === slot.startTime;
                     return (
                       <button
-                        key={slot.slotId}
+                        key={slot.id}
                         type="button"
                         onClick={() => handleChange('time', slot.startTime)}
                         className="py-2 px-3 text-sm font-medium rounded-md border transition-colors focus:outline-none focus:ring-2"

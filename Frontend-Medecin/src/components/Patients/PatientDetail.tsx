@@ -30,29 +30,29 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
 
   const getStatusBadge = (status: string) => {
     const styleMap: Record<string, { bg: string; text: string }> = {
-      confirmed: {
+      CONFIRMED: {
         bg: darkMode ? 'rgba(16, 185, 129, 0.3)' : '#D1FAE5',
         text: darkMode ? '#4ADE80' : '#065F46'
       },
-      pending: {
+      PENDING: {
         bg: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7',
         text: darkMode ? '#FACC15' : '#92400E'
       },
-      cancelled: {
+      CANCELLED: {
         bg: darkMode ? colors.bg.card : '#F3F4F6',
         text: colors.text.secondary
       },
-      doctor_created: {
+      DOCTOR_CREATED: {
         bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE',
         text: darkMode ? '#60A5FA' : '#1E40AF'
       }
     };
 
     const labels = {
-      confirmed: 'Confirmé',
-      pending: 'En attente',
-      cancelled: 'Annulé',
-      doctor_created: 'Médecin'
+      CONFIRMED: 'Confirmé',
+      PENDING: 'En attente',
+      CANCELLED: 'Annulé',
+      DOCTOR_CREATED: 'Médecin'
     };
 
     const style = styleMap[status] || styleMap.confirmed;
@@ -146,11 +146,11 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
                 key={appt.appointmentId}
                 className="p-3 rounded-lg border transition-colors"
                 style={{
-                  backgroundColor: appt.status === 'cancelled'
+                  backgroundColor: appt.status === 'CANCELLED'
                     ? (darkMode ? 'rgba(30, 30, 30, 0.5)' : '#F9FAFB')
                     : colors.bg.card,
                   borderColor: colors.border.default,
-                  opacity: appt.status === 'cancelled' ? 0.6 : 1
+                  opacity: appt.status === 'CANCELLED' ? 0.6 : 1
                 }}
               >
                 <div className="flex items-center justify-between gap-4">

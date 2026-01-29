@@ -15,7 +15,7 @@ interface PatientState {
   setPatients: (patients: Patient[]) => void;
   addPatient: (patient: Omit<Patient, 'patientId'>) => Promise<void>;
   updatePatient: (patientId: string, updates: Partial<Patient>) => Promise<void>;
-  deletePatient: (patientId: string) => void;
+  deletePatient: (patientId: string) => Promise<void>;
   selectPatient: (patient: Patient | null) => void;
   setSearchTerm: (term: string) => void;
   setCurrentPage: (page: number) => void;
@@ -37,14 +37,14 @@ export const usePatientStore = create<PatientState>((set, get) => ({
   fetchPatients: async (doctorId?: string) => {
     set({ isLoading: true, error: null });
     try {
-      let response;
+      let response: any;
       if (doctorId) {
         response = await patientsService.getByDoctor(doctorId, 1, 100);
       } else {
         response = await patientsService.getAll(1, 100);
       }
 
-      const patients: Patient[] = (response.patients || []).map((p: any) => {
+      const patients: Patient[] = (response.data || response.patients || []).map((p: any) => {
         const patientId = p.id || p.patientId;
         const assignedDoctorId = p.assignedDoctor?.id || p.assignedDoctor?.doctorId || null;
 
@@ -81,7 +81,8 @@ export const usePatientStore = create<PatientState>((set, get) => ({
         assigned_doctor: patientData.assigned_doctor || undefined,
       };
 
-      const createdPatient: any = await patientsService.create(createData);
+      const response: any = await patientsService.create(createData);
+      const createdPatient = response.patient || response;
 
       const newPatient: Patient = {
         patientId: createdPatient.id,
@@ -89,7 +90,7 @@ export const usePatientStore = create<PatientState>((set, get) => ({
         FirstName: createdPatient.firstName,
         email: createdPatient.email,
         phone: createdPatient.phone || '',
-        assigned_doctor: createdPatient.assignedDoctor?.id || patientData.assigned_doctor || '',
+        assigned_doctor: createdPatient.assignedDoctor?.id || createdPatient.assigned_doctor || patientData.assigned_doctor || '',
       };
 
       set((state) => ({
@@ -134,10 +135,17 @@ export const usePatientStore = create<PatientState>((set, get) => ({
     }
   },
 
-  deletePatient: (patientId) => {
-    set((state) => ({
-      patients: state.patients.filter(p => p.patientId !== patientId)
-    }));
+  deletePatient: async (patientId) => {
+    try {
+      const { patientsService } = await import('../services/api');
+      await patientsService.delete(patientId);
+      set((state) => ({
+        patients: state.patients.filter(p => p.patientId !== patientId)
+      }));
+    } catch (error: any) {
+      console.error('Failed to delete patient', error);
+      throw error;
+    }
   },
 
   selectPatient: (patient) => set({ selectedPatient: patient }),

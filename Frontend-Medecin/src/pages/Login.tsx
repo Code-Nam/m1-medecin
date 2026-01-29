@@ -25,7 +25,7 @@ export const Login = () => {
     setLoading(true);
 
     try {
-      let response;
+      let response: any;
       if (userType === 'doctor') {
         response = await authService.loginDoctor(credentials);
       } else {

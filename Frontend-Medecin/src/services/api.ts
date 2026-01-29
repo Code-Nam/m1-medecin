@@ -82,11 +82,11 @@ class APIService {
 export const api = new APIService(API_BASE_URL);
 
 export const patientsService = {
-  getAll: (page = 1, pageSize = 10) =>
-    api.get(`/patients?page=${page}&pageSize=${pageSize}`),
+  getAll: (page = 1, limit = 10) =>
+    api.get(`/patients?page=${page}&limit=${limit}`),
 
-  getByDoctor: (doctorId: string, page = 1, pageSize = 10) =>
-    api.get(`/patients?doctorId=${doctorId}&page=${page}&pageSize=${pageSize}`),
+  getByDoctor: (doctorId: string, page = 1, limit = 10) =>
+    api.get(`/patients?doctorId=${doctorId}&page=${page}&limit=${limit}`),
 
   getById: (patientId: string) =>
     api.get(`/patients/${patientId}`),
@@ -110,33 +110,38 @@ export const patientsService = {
 };
 
 export const appointmentsService = {
-  getAll: (page = 1, pageSize = 30) =>
-    api.get(`/appointments?page=${page}&pageSize=${pageSize}`),
+  getAll: (page = 1, limit = 30) =>
+    api.get(`/appointments?page=${page}&limit=${limit}`),
 
-  getByDoctor: (doctorId: string, page = 1, pageSize = 30) =>
-    api.get(`/appointments?doctorId=${doctorId}&page=${page}&pageSize=${pageSize}`),
+  getByDoctor: (doctorId: string, page = 1, limit = 30) =>
+    api.get(`/appointments?doctorId=${doctorId}&page=${page}&limit=${limit}`),
 
-  getByPatient: (patientId: string, page = 1, pageSize = 30) =>
-    api.get(`/appointments?patientId=${patientId}&page=${page}&pageSize=${pageSize}`),
+  getByPatient: (patientId: string, page = 1, limit = 30) =>
+    api.get(`/appointments?patientId=${patientId}&page=${page}&limit=${limit}`),
 
   getById: (appointmentId: string) =>
     api.get(`/appointments/${appointmentId}`),
 
   create: (appointmentData: {
-    appointedPatientId: string;
-    appointedDoctorId: string;
+    appointedPatient: string;
+    appointedDoctor: string;
     date: string;
     time: string;
     reason: string;
     notes?: string;
+    slotId?: string;
+    status?: string;
   }) => api.post('/appointments', appointmentData),
 
   update: (appointmentId: string, updates: {
+    appointedPatient?: string;
+    appointedDoctor?: string;
     date?: string;
     time?: string;
     reason?: string;
     status?: string;
     notes?: string;
+    slotId?: string;
   }) => api.put(`/appointments/${appointmentId}`, updates),
 
   delete: (appointmentId: string) =>
@@ -144,8 +149,8 @@ export const appointmentsService = {
 };
 
 export const doctorsService = {
-  getAll: (page = 1, pageSize = 10) =>
-    api.get(`/doctors?page=${page}&pageSize=${pageSize}`),
+  getAll: (page = 1, limit = 10) =>
+    api.get(`/doctors?page=${page}&limit=${limit}`),
 
   getAllWithoutPagination: () =>
     api.get(`/doctors/all`),
@@ -177,19 +182,19 @@ export const availabilityService = {
   getAvailableSlots: (doctorId: string, date: string) =>
     api.get(`/availability/${doctorId}/slots?date=${date}`),
 
-  generateSlots: (doctorId: string, startDate: string, endDate: string) =>
-    api.post(`/availability/${doctorId}/generate`, { startDate, endDate }),
+  generateSlots: (doctorId: string, startDate: string, endDate: string, excludedDays: number[] = [0, 6]) =>
+    api.post(`/availability/${doctorId}/generate`, { startDate, endDate, excludedDays }),
 
   cleanupPastSlots: () =>
     api.post('/availability/cleanup', {}),
 };
 
 export const secretariesService = {
-  getAll: (page = 1, pageSize = 10) =>
-    api.get(`/secretaries?page=${page}&pageSize=${pageSize}`),
+  getAll: (page = 1, limit = 10) =>
+    api.get(`/secretaries?page=${page}&limit=${limit}`),
 
-  getByDoctor: (doctorId: string, page = 1, pageSize = 10) =>
-    api.get(`/secretaries?doctorId=${doctorId}&page=${page}&pageSize=${pageSize}`),
+  getByDoctor: (doctorId: string, page = 1, limit = 10) =>
+    api.get(`/secretaries?doctorId=${doctorId}&page=${page}&limit=${limit}`),
 
   getById: (secretaryId: string) =>
     api.get(`/secretaries/${secretaryId}`),

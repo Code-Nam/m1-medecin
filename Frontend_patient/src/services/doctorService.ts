@@ -1,10 +1,10 @@
 import ApiClient from './api.client';
-import { Doctor } from '../types';
+import type { Doctor } from '../types';
 
 export const doctorService = {
   getAllDoctors: async (): Promise<Doctor[]> => {
-    const response = await ApiClient.get<{ doctors: Doctor[] }>('/doctors/all');
-    return response.doctors || [];
+    const response = await ApiClient.get<Doctor[]>('/doctors/all');
+    return response;
   },
 
   getDoctor: async (doctorId: string): Promise<Doctor> => {

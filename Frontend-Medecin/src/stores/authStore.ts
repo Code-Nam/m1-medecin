@@ -11,26 +11,27 @@ export interface User {
   secretaryId?: string;
   title?: string;
   specialization?: string;
-  doctors?: Array<{ 
-    id: string; 
-    doctorId: string; 
-    firstName: string; 
-    surname: string; 
-    title?: string; 
-    specialization: string; 
+  doctors?: Array<{
+    id: string;
+    doctorId: string;
+    firstName: string;
+    surname: string;
+    title?: string;
+    specialization: string;
   }>;
 }
 
 interface AuthState {
   user: User | null;
   isAuthenticated: boolean;
+  isInitialized: boolean;
   selectedDoctorId: string | null;
-  
+
   login: (user: User) => void;
   logout: () => void;
   setSelectedDoctor: (doctorId: string | null) => void;
   initialize: () => void;
-  
+
   getDoctor: () => {
     id: string;
     doctorId: string;
@@ -44,12 +45,13 @@ interface AuthState {
 export const useAuthStore = create<AuthState>((set, get) => ({
   user: null,
   isAuthenticated: false,
+  isInitialized: false,
   selectedDoctorId: null,
 
   login: (user: User) => {
     set({ user, isAuthenticated: true });
     if (user.role === 'SECRETARY' && user.doctors && user.doctors.length > 0) {
-      set({ selectedDoctorId: user.doctors[0].id });
+      set({ selectedDoctorId: user.doctors[0]?.id });
     }
   },
 
@@ -66,18 +68,20 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     const token = authService.getStoredToken();
     const user = authService.getStoredUser();
     if (token && user) {
-      set({ user, isAuthenticated: true });
+      set({ user, isAuthenticated: true, isInitialized: true });
       if (user.role === 'SECRETARY' && user.doctors && user.doctors.length > 0) {
-        set({ selectedDoctorId: user.doctors[0].id });
+        set({ selectedDoctorId: user.doctors[0]?.id });
       }
+    } else {
+      set({ isInitialized: true });
     }
   },
 
   getDoctor: () => {
     const { user, selectedDoctorId } = get();
-    
+
     if (!user) return null;
-    
+
     if (user.role === 'DOCTOR' && user.doctorId) {
       return {
         id: user.id,
@@ -88,7 +92,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         specialization: user.specialization,
       };
     }
-    
+
     if (user.role === 'SECRETARY' && user.doctors && selectedDoctorId) {
       const selectedDoctor = user.doctors.find(d => d.id === selectedDoctorId);
       if (selectedDoctor) {
@@ -102,9 +106,10 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         };
       }
     }
-    
+
     if (user.role === 'SECRETARY' && user.doctors && user.doctors.length > 0) {
       const firstDoctor = user.doctors[0];
+      if (!firstDoctor) return null;
       return {
         id: firstDoctor.id,
         doctorId: firstDoctor.doctorId,
@@ -114,7 +119,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
         specialization: firstDoctor.specialization,
       };
     }
-    
+
     return null;
   },
 }));
@@ -122,9 +127,9 @@ export const useAuthStore = create<AuthState>((set, get) => ({
 export const useDoctor = () => {
   const user = useAuthStore((state) => state.user);
   const selectedDoctorId = useAuthStore((state) => state.selectedDoctorId);
-  
+
   if (!user) return null;
-  
+
   if (user.role === 'DOCTOR') {
     return {
       id: user.id,
@@ -134,7 +139,7 @@ export const useDoctor = () => {
       specialization: user.specialization,
     };
   }
-  
+
   if (user.role === 'SECRETARY' && user.doctors && selectedDoctorId) {
     const selectedDoctor = user.doctors.find(d => d.id === selectedDoctorId);
     if (selectedDoctor) {
@@ -147,9 +152,10 @@ export const useDoctor = () => {
       };
     }
   }
-  
+
   if (user.role === 'SECRETARY' && user.doctors && user.doctors.length > 0) {
     const firstDoctor = user.doctors[0];
+    if (!firstDoctor) return null;
     return {
       id: firstDoctor.id,
       firstName: firstDoctor.firstName,
@@ -158,6 +164,6 @@ export const useDoctor = () => {
       specialization: firstDoctor.specialization,
     };
   }
-  
+
   return null;
 };

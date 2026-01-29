@@ -6,6 +6,7 @@ import { authService } from '../services/authService';
 interface PatientStore {
   currentPatient: Patient | null;
   isLoading: boolean;
+  isInitialized: boolean;
   error: string | null;
   isAuthenticated: boolean;
 
@@ -18,6 +19,7 @@ interface PatientStore {
 export const usePatientStore = create<PatientStore>((set) => ({
   currentPatient: null,
   isLoading: false,
+  isInitialized: false,
   error: null,
   isAuthenticated: false,
 
@@ -57,11 +59,11 @@ export const usePatientStore = create<PatientStore>((set) => ({
 
     // Vérification stricte du rôle : on ne garde la session que si c'est un patient
     if (token && user && user.role === 'PATIENT') {
-      set({ isAuthenticated: true });
+      set({ isAuthenticated: true, isInitialized: true });
     } else {
       // Si c'est un token invalide ou un autre rôle (ex: DOCTEUR), on nettoie
       authService.logout();
-      set({ isAuthenticated: false, currentPatient: null });
+      set({ isAuthenticated: false, currentPatient: null, isInitialized: true });
     }
   },
 }));

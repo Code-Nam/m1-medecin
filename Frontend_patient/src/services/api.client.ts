@@ -31,7 +31,8 @@ class ApiClient {
         window.location.href = '/login';
       }
       const error = await response.json().catch(() => ({ message: 'Erreur réseau' }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      const errorMessage = error.error?.message || error.message || (typeof error.error === 'string' ? error.error : `HTTP error! status: ${response.status}`);
+      throw new Error(errorMessage);
     }
 
     return response.json();

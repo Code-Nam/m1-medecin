@@ -1,9 +1,10 @@
 import ApiClient from './api.client';
-import { Appointment } from '../types';
+import type { Appointment } from '../types';
 
 export const appointmentService = {
   getAppointments: async (patientId: string): Promise<{ appointments: Appointment[] }> => {
-    return ApiClient.get<{ appointments: Appointment[] }>(`/appointments?patientId=${patientId}`);
+    const response = await ApiClient.get<{ data: Appointment[]; pagination: any }>(`/appointments?patientId=${patientId}`);
+    return { appointments: response.data };
   },
 
   createAppointment: async (appointment: {

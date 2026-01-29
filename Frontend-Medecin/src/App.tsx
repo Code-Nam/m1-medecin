@@ -24,7 +24,7 @@ const pageConfig: Record<PageType, { title: string; breadcrumb: string[] }> = {
 };
 
 function AppContent() {
-  const { isAuthenticated, initialize } = useAuthStore();
+  const { isAuthenticated, isInitialized, initialize } = useAuthStore();
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
 
   useEffect(() => {
@@ -53,6 +53,14 @@ function AppContent() {
   };
 
   const { title, breadcrumb } = pageConfig[currentPage];
+
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
+      </div>
+    );
+  }
 
   if (!isAuthenticated) {
     return <Login />;

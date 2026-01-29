@@ -9,7 +9,7 @@ import { useEffect } from 'react';
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentPatient, isAuthenticated, initialize, fetchPatient } = usePatientStore();
+  const { currentPatient, isAuthenticated, isInitialized, initialize, fetchPatient } = usePatientStore();
 
   useEffect(() => {
     initialize();
@@ -46,6 +46,14 @@ function AppContent() {
     navigate(path);
   };
 
+  if (!isInitialized) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
+      </div>
+    );
+  }
+
   if (!isAuthenticated) {
     return (
       <Routes>
@@ -54,6 +62,11 @@ function AppContent() {
         <Route path="*" element={<Navigate to="/login" replace />} />
       </Routes>
     );
+  }
+
+  // Si on est connecté mais qu'on essaie d'aller sur login ou register, on redirige vers l'accueil
+  if (location.pathname === '/login' || location.pathname === '/register') {
+    return <Navigate to="/" replace />;
   }
 
   return (

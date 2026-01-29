@@ -47,7 +47,7 @@ class APIService {
         window.location.href = '/login';
       }
       const errorData = await response.json().catch(() => ({ error: 'Erreur réseau' }));
-      const errorMessage = errorData.error || errorData.message || `Erreur ${response.status}`;
+      const errorMessage = errorData.error?.message || errorData.message || (typeof errorData.error === 'string' ? errorData.error : `Erreur ${response.status}`);
       throw new Error(errorMessage);
     }
 

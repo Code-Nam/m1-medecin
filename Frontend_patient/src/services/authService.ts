@@ -58,8 +58,8 @@ export const authService = {
     });
 
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Erreur d\'inscription' }));
-      const errorMessage = errorData.error || errorData.message || `Erreur ${response.status}`;
+      const errorData = await response.json().catch(() => ({ error: 'Erreur' }));
+      const errorMessage = errorData.error?.message || errorData.message || (typeof errorData.error === 'string' ? errorData.error : `Erreur ${response.status}`);
       throw new Error(errorMessage);
     }
 

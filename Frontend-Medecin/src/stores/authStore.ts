@@ -19,6 +19,10 @@ export interface User {
     title?: string;
     specialization: string;
   }>;
+  phone?: string;
+  openingTime?: string;
+  closingTime?: string;
+  slotDuration?: number;
 }
 
 interface AuthState {

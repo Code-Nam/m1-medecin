@@ -159,8 +159,8 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
         slotId: slotId,
         status: (formData.createdBy === 'doctor' ? 'doctor_created' : 'pending') as any,
         createdBy: formData.createdBy as any,
-        appointedPatient: formData.patientId,
-        appointedDoctor: doctor.id,
+        appointedPatientId: formData.patientId,
+        appointedDoctorId: doctor.id,
       };
 
       if (isEditing && appointment) {

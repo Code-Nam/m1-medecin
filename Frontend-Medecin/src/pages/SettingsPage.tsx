@@ -1,13 +1,13 @@
 import React from 'react';
 import { User, Bell, Shield, Palette, Clock, Save } from 'lucide-react';
-import { useDoctor } from '../stores/authStore';
+import { useAuthStore } from '../stores/authStore';
 import { useUIStore } from '../stores/uiStore';
 import { useTheme } from '../hooks/useTheme';
 import Button from '../components/Common/Button';
 import Input from '../components/Common/Input';
 
 export const SettingsPage: React.FC = () => {
-  const doctor = useDoctor();
+  const { user } = useAuthStore();
   const { darkMode, toggleDarkMode, addToast } = useUIStore();
   const { colors } = useTheme();
 
@@ -19,13 +19,13 @@ export const SettingsPage: React.FC = () => {
     <div className="space-y-6 max-w-4xl">
       {/* Header */}
       <div>
-        <h2 
+        <h2
           className="text-2xl font-bold"
           style={{ color: colors.text.primary }}
         >
           Paramètres
         </h2>
-        <p 
+        <p
           className="text-sm"
           style={{ color: colors.text.secondary }}
         >
@@ -34,14 +34,14 @@ export const SettingsPage: React.FC = () => {
       </div>
 
       {/* Profile Section */}
-      <section 
+      <section
         className="rounded-xl shadow-sm border p-6"
         style={{
           backgroundColor: colors.bg.card,
           borderColor: colors.border.default
         }}
       >
-        <h2 
+        <h2
           className="text-lg font-semibold mb-4 flex items-center gap-2"
           style={{ color: colors.text.primary }}
         >
@@ -51,33 +51,33 @@ export const SettingsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Nom"
-            value={doctor?.Surname || ''}
+            value={user?.surname || ''}
             readOnly
             aria-label="Nom du médecin"
           />
           <Input
             label="Prénom"
-            value={doctor?.FirstName || ''}
+            value={user?.firstName || ''}
             readOnly
             aria-label="Prénom du médecin"
           />
           <Input
             label="Spécialisation"
-            value={doctor?.specialization || ''}
+            value={user?.specialization || ''}
             readOnly
             aria-label="Spécialisation du médecin"
           />
           <Input
             label="Email"
             type="email"
-            value={doctor?.email || ''}
+            value={user?.email || ''}
             readOnly
             aria-label="Email du médecin"
           />
           <Input
             label="Téléphone"
             type="tel"
-            value={doctor?.phone || ''}
+            value={(user as any)?.phone || ''}
             readOnly
             aria-label="Téléphone du médecin"
           />
@@ -85,14 +85,14 @@ export const SettingsPage: React.FC = () => {
       </section>
 
       {/* Appearance Section */}
-      <section 
+      <section
         className="rounded-xl shadow-sm border p-6"
         style={{
           backgroundColor: colors.bg.card,
           borderColor: colors.border.default
         }}
       >
-        <h2 
+        <h2
           className="text-lg font-semibold mb-4 flex items-center gap-2"
           style={{ color: colors.text.primary }}
         >
@@ -129,14 +129,14 @@ export const SettingsPage: React.FC = () => {
       </section>
 
       {/* Notifications Section */}
-      <section 
+      <section
         className="rounded-xl shadow-sm border p-6"
         style={{
           backgroundColor: colors.bg.card,
           borderColor: colors.border.default
         }}
       >
-        <h2 
+        <h2
           className="text-lg font-semibold mb-4 flex items-center gap-2"
           style={{ color: colors.text.primary }}
         >
@@ -187,14 +187,14 @@ export const SettingsPage: React.FC = () => {
       </section>
 
       {/* Working hours Section */}
-      <section 
+      <section
         className="rounded-xl shadow-sm border p-6"
         style={{
           backgroundColor: colors.bg.card,
           borderColor: colors.border.default
         }}
       >
-        <h2 
+        <h2
           className="text-lg font-semibold mb-4 flex items-center gap-2"
           style={{ color: colors.text.primary }}
         >

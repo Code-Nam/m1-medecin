@@ -41,10 +41,12 @@ export class AuthService {
       role: 'PATIENT',
     });
 
+    // On renvoie aussi patientId pour coller au frontend
     return {
       token,
       user: {
         id: patient.id,
+        patientId: patient.id,
         firstName: patient.firstName,
         surname: patient.surname,
         email: patient.email,
@@ -73,10 +75,12 @@ export class AuthService {
       role: 'PATIENT',
     });
 
+    // On renvoie aussi patientId pour coller au frontend
     return {
       token,
       user: {
         id: patient.id,
+        patientId: patient.id,
         firstName: patient.firstName,
         surname: patient.surname,
         email: patient.email,

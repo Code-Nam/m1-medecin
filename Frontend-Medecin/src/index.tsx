@@ -2,7 +2,8 @@ import { serve } from "bun";
 import index from "./index.html";
 
 const server = serve({
-  port: 3000,
+  // Port différent pour éviter les conflits (patient/front)
+  port: 3002,
   routes: {
     "/": index,
     "/src/frontend.tsx": Bun.file("./src/frontend.tsx"),

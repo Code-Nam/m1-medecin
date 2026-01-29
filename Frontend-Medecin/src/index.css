@@ -14,30 +14,45 @@
 /* Palette IIM - Thème clair */
 :root {
   /* Backgrounds */
-  --color-bg-primary: #FCFCF7; /* Fond */
-  --color-bg-secondary: #FFFFFF; /* Cartes */
-  --color-bg-card: #FFFFFF; /* Cartes */
-  
+  --color-bg-primary: #FCFCF7;
+  /* Fond */
+  --color-bg-secondary: #FFFFFF;
+  /* Cartes */
+  --color-bg-card: #FFFFFF;
+  /* Cartes */
+
   /* Text - Contraste amélioré WCAG AA */
-  --color-text-primary: #1A1A1A; /* Couleur Texte - Ratio 16:1 */
-  --color-text-secondary: #37474F; /* Texte secondaire - Ratio 9:1 */
-  --color-text-muted: #455A64; /* Texte muted - Ratio 7:1 */
-  
+  --color-text-primary: #1A1A1A;
+  /* Couleur Texte - Ratio 16:1 */
+  --color-text-secondary: #37474F;
+  /* Texte secondaire - Ratio 9:1 */
+  --color-text-muted: #455A64;
+  /* Texte muted - Ratio 7:1 */
+
   /* Borders */
-  --color-border: #BDBDBD; /* Bordures - Meilleur contraste */
-  
+  --color-border: #BDBDBD;
+  /* Bordures - Meilleur contraste */
+
   /* Accents - Contraste amélioré */
-  --color-accent-1: #F57C00; /* Accentuation 1 (orange) - Ratio 4.6:1 */
-  --color-accent-2: #C62828; /* Accentuation 2 (rouge foncé) - Ratio 7.3:1 */
-  --color-secondary: #00796B; /* Couleur secondaire (teal foncé) - Ratio 5.1:1 */
-  
+  --color-accent-1: #F57C00;
+  /* Accentuation 1 (orange) - Ratio 4.6:1 */
+  --color-accent-2: #C62828;
+  /* Accentuation 2 (rouge foncé) - Ratio 7.3:1 */
+  --color-secondary: #00796B;
+  /* Couleur secondaire (teal foncé) - Ratio 5.1:1 */
+
   /* Semantic colors - Contraste WCAG AA */
-  --color-accent: #00796B; /* Accent principal (teal foncé) - Ratio 5.1:1 */
-  --color-accent-hover: #004D40; /* Hover pour accent - Ratio 8.5:1 */
-  --color-danger: #C62828; /* Danger (rouge foncé) - Ratio 7.3:1 */
-  --color-success: #2E7D32; /* Success (vert foncé) - Ratio 5.4:1 */
-  --color-warning: #EF6C00; /* Warning (orange foncé) - Ratio 4.7:1 */
-  
+  --color-accent: #00796B;
+  /* Accent principal (teal foncé) - Ratio 5.1:1 */
+  --color-accent-hover: #004D40;
+  /* Hover pour accent - Ratio 8.5:1 */
+  --color-danger: #C62828;
+  /* Danger (rouge foncé) - Ratio 7.3:1 */
+  --color-success: #2E7D32;
+  /* Success (vert foncé) - Ratio 5.4:1 */
+  --color-warning: #EF6C00;
+  /* Warning (orange foncé) - Ratio 4.7:1 */
+
   /* Spacing */
   --spacing-base: 16px;
   --radius-base: 8px;
@@ -46,29 +61,44 @@
 /* Palette IIM - Thème sombre */
 .dark {
   /* Backgrounds - Variantes sombres basées sur la charte */
-  --color-bg-primary: #0F0F0F; /* Fond sombre */
-  --color-bg-secondary: #1E1E1E; /* Cartes sombres - Variante assombrie de #263238 */
-  --color-bg-card: #2A2A2A; /* Cartes sombres - Variante assombrie de #263238 */
-  
+  --color-bg-primary: #0F0F0F;
+  /* Fond sombre */
+  --color-bg-secondary: #1E1E1E;
+  /* Cartes sombres - Variante assombrie de #263238 */
+  --color-bg-card: #2A2A2A;
+  /* Cartes sombres - Variante assombrie de #263238 */
+
   /* Text - Contraste optimisé mode sombre */
-  --color-text-primary: #FFFFFF; /* Texte blanc - Ratio 21:1 */
-  --color-text-secondary: #CFD8DC; /* Texte secondaire clair - Ratio 12:1 */
-  --color-text-muted: #B0BEC5; /* Texte muted clair - Ratio 8:1 */
-  
+  --color-text-primary: #FFFFFF;
+  /* Texte blanc - Ratio 21:1 */
+  --color-text-secondary: #CFD8DC;
+  /* Texte secondaire clair - Ratio 12:1 */
+  --color-text-muted: #B0BEC5;
+  /* Texte muted clair - Ratio 8:1 */
+
   /* Borders - Meilleur contraste en mode sombre */
-  --color-border: rgba(255, 255, 255, 0.2); /* Bordures sombres - Ratio 1.6:1 */
-  
+  --color-border: rgba(255, 255, 255, 0.2);
+  /* Bordures sombres - Ratio 1.6:1 */
+
   /* Accents - Contraste optimisé mode sombre */
-  --color-accent-1: #FFB74D; /* Orange clair - Ratio 8.3:1 */
-  --color-accent-2: #EF5350; /* Rouge clair - Ratio 4.9:1 */
-  --color-secondary: #4DB6AC; /* Teal clair - Ratio 5.8:1 */
-  
+  --color-accent-1: #FFB74D;
+  /* Orange clair - Ratio 8.3:1 */
+  --color-accent-2: #EF5350;
+  /* Rouge clair - Ratio 4.9:1 */
+  --color-secondary: #4DB6AC;
+  /* Teal clair - Ratio 5.8:1 */
+
   /* Semantic colors - Contraste WCAG AA mode sombre */
-  --color-accent: #4DB6AC; /* Accent principal (teal clair) - Ratio 5.8:1 */
-  --color-accent-hover: #80CBC4; /* Hover teal très clair - Ratio 9:1 */
-  --color-danger: #EF5350; /* Danger (rouge clair) - Ratio 4.9:1 */
-  --color-success: #66BB6A; /* Success (vert clair) - Ratio 6.2:1 */
-  --color-warning: #FFB74D; /* Warning (orange clair) - Ratio 8.3:1 */
+  --color-accent: #4DB6AC;
+  /* Accent principal (teal clair) - Ratio 5.8:1 */
+  --color-accent-hover: #80CBC4;
+  /* Hover teal très clair - Ratio 9:1 */
+  --color-danger: #EF5350;
+  /* Danger (rouge clair) - Ratio 4.9:1 */
+  --color-success: #66BB6A;
+  /* Success (vert clair) - Ratio 6.2:1 */
+  --color-warning: #FFB74D;
+  /* Warning (orange clair) - Ratio 8.3:1 */
 }
 
 /* ===== BASE STYLES ===== */
@@ -79,22 +109,26 @@
     -moz-osx-font-smoothing: grayscale;
     color-scheme: light;
   }
-  
+
   html.dark {
     color-scheme: dark;
   }
 
   body {
-    background-color: #FCFCF7 !important; /* Fond - Palette IIM */
-    color: #1A1A1A !important; /* Couleur Texte - Ratio 16:1 */
+    background-color: #FCFCF7 !important;
+    /* Fond - Palette IIM */
+    color: #1A1A1A !important;
+    /* Couleur Texte - Ratio 16:1 */
     margin: 0;
     padding: 0;
     min-height: 100vh;
   }
-  
+
   html.dark body {
-    background-color: #0F0F0F !important; /* Fond sombre */
-    color: #FFFFFF !important; /* Texte blanc - Ratio 21:1 */
+    background-color: #0F0F0F !important;
+    /* Fond sombre */
+    color: #FFFFFF !important;
+    /* Texte blanc - Ratio 21:1 */
   }
 
   /* Forcer le root element avec scroll */
@@ -108,37 +142,65 @@
 /* ===== VARIABLES CSS POUR LE THÈME ===== */
 /* Utiliser des variables CSS pour le thème - Palette IIM */
 html {
-  --bg-primary: #FCFCF7; /* Fond */
-  --bg-secondary: #FFFFFF; /* Cartes */
-  --bg-card: #FFFFFF; /* Cartes */
-  --text-primary: #263238; /* Couleur Texte */
-  --text-secondary: #546E7A; /* Texte secondaire */
-  --text-muted: #78909C; /* Texte muted */
-  --border-color: #E0E0E0; /* Bordures */
-  --accent-color: #43A78B; /* Couleur secondaire (teal) */
-  --accent-hover-color: #2E7D6B; /* Hover */
-  --accent-1: #FFE082; /* Accentuation 1 (jaune) */
-  --accent-2: #E63946; /* Accentuation 2 (rouge) */
-  --danger-color: #E63946; /* Danger */
-  --success-color: #43A78B; /* Success */
-  --warning-color: #FFE082; /* Warning */
+  --bg-primary: #FCFCF7;
+  /* Fond */
+  --bg-secondary: #FFFFFF;
+  /* Cartes */
+  --bg-card: #FFFFFF;
+  /* Cartes */
+  --text-primary: #263238;
+  /* Couleur Texte */
+  --text-secondary: #546E7A;
+  /* Texte secondaire */
+  --text-muted: #78909C;
+  /* Texte muted */
+  --border-color: #E0E0E0;
+  /* Bordures */
+  --accent-color: #43A78B;
+  /* Couleur secondaire (teal) */
+  --accent-hover-color: #2E7D6B;
+  /* Hover */
+  --accent-1: #FFE082;
+  /* Accentuation 1 (jaune) */
+  --accent-2: #E63946;
+  /* Accentuation 2 (rouge) */
+  --danger-color: #E63946;
+  /* Danger */
+  --success-color: #43A78B;
+  /* Success */
+  --warning-color: #FFE082;
+  /* Warning */
 }
 
 html.dark {
-  --bg-primary: #0F0F0F; /* Fond sombre */
-  --bg-secondary: #1E1E1E; /* Cartes sombres - Variante de #263238 */
-  --bg-card: #2A2A2A; /* Cartes sombres - Variante de #263238 */
-  --text-primary: #FFFFFF; /* Texte blanc */
-  --text-secondary: #B0BEC5; /* Texte secondaire clair */
-  --text-muted: #90A4AE; /* Texte muted clair */
-  --border-color: rgba(224, 224, 224, 0.15); /* Bordures sombres - Variante de #E0E0E0 */
-  --accent-color: #4DB6AC; /* Couleur secondaire (teal clair) */
-  --accent-hover-color: #26A69A; /* Hover */
-  --accent-1: #FFD54F; /* Accentuation 1 (jaune clair) */
-  --accent-2: #EF5350; /* Accentuation 2 (rouge clair) */
-  --danger-color: #EF5350; /* Danger */
-  --success-color: #4DB6AC; /* Success */
-  --warning-color: #FFD54F; /* Warning */
+  --bg-primary: #0F0F0F;
+  /* Fond sombre */
+  --bg-secondary: #1E1E1E;
+  /* Cartes sombres - Variante de #263238 */
+  --bg-card: #2A2A2A;
+  /* Cartes sombres - Variante de #263238 */
+  --text-primary: #FFFFFF;
+  /* Texte blanc */
+  --text-secondary: #B0BEC5;
+  /* Texte secondaire clair */
+  --text-muted: #90A4AE;
+  /* Texte muted clair */
+  --border-color: rgba(224, 224, 224, 0.15);
+  /* Bordures sombres - Variante de #E0E0E0 */
+  --accent-color: #4DB6AC;
+  /* Couleur secondaire (teal clair) */
+  --accent-hover-color: #26A69A;
+  /* Hover */
+  --accent-1: #FFD54F;
+  /* Accentuation 1 (jaune clair) */
+  --accent-2: #EF5350;
+  /* Accentuation 2 (rouge clair) */
+  --danger-color: #EF5350;
+  /* Danger */
+  --success-color: #4DB6AC;
+  /* Success */
+  --warning-color: #FFD54F;
+  /* Warning */
 }
 
 /* ===== RÈGLES GLOBALES POUR AMÉLIORER LE CONTRASTE EN MODE CLAIR ===== */
@@ -147,7 +209,8 @@ html.dark {
 /* Titres - Palette IIM */
 /* H1 unique - gardé pour le titre principal du dashboard */
 html:not(.dark) h1 {
-  color: #263238 !important; /* Couleur Texte - Palette IIM */
+  color: #263238 !important;
+  /* Couleur Texte - Palette IIM */
   font-weight: 600 !important;
 }
 
@@ -157,7 +220,8 @@ html:not(.dark) h3,
 html:not(.dark) h4,
 html:not(.dark) h5,
 html:not(.dark) h6 {
-  color: #1A1A1A !important; /* Texte principal avec meilleur contraste - Ratio 16:1 */
+  color: #1A1A1A !important;
+  /* Texte principal avec meilleur contraste - Ratio 16:1 */
   font-weight: 600 !important;
 }
 
@@ -166,7 +230,8 @@ html.dark h3,
 html.dark h4,
 html.dark h5,
 html.dark h6 {
-  color: #FFFFFF !important; /* Texte blanc en mode sombre - Ratio 21:1 */
+  color: #FFFFFF !important;
+  /* Texte blanc en mode sombre - Ratio 21:1 */
   font-weight: 600 !important;
 }
 
@@ -174,48 +239,57 @@ html.dark h6 {
 html:not(.dark) [class*="text-gray-900"],
 html:not(.dark) [class*="text-gray-800"],
 html:not(.dark) [class*="text-gray-700"] {
-  color: #263238 !important; /* Couleur Texte - Palette IIM */
+  color: #263238 !important;
+  /* Couleur Texte - Palette IIM */
 }
 
 html:not(.dark) [class*="text-gray-600"],
 html:not(.dark) [class*="text-gray-500"] {
-  color: #546E7A !important; /* Texte secondaire - Palette IIM */
+  color: #546E7A !important;
+  /* Texte secondaire - Palette IIM */
 }
 
 html:not(.dark) [class*="text-gray-400"] {
-  color: #78909C !important; /* Texte muted - Palette IIM */
+  color: #78909C !important;
+  /* Texte muted - Palette IIM */
 }
 
 html:not(.dark) [class*="text-gray-300"],
 html:not(.dark) [class*="text-gray-200"] {
-  color: #263238 !important; /* Forcer le texte clair à utiliser la couleur texte */
+  color: #263238 !important;
+  /* Forcer le texte clair à utiliser la couleur texte */
 }
 
 /* Backgrounds sombres -> Palette IIM en mode clair */
 html:not(.dark) [class*="bg-gray-800"],
 html:not(.dark) [class*="bg-gray-900"],
 html:not(.dark) [class*="bg-gray-950"] {
-  background-color: #FFFFFF !important; /* Cartes - Palette IIM */
+  background-color: #FFFFFF !important;
+  /* Cartes - Palette IIM */
 }
 
 html:not(.dark) [class*="bg-gray-700"] {
-  background-color: #FCFCF7 !important; /* Fond - Palette IIM */
+  background-color: #FCFCF7 !important;
+  /* Fond - Palette IIM */
 }
 
 /* Bordures - Palette IIM */
 html:not(.dark) [class*="border-gray-700"],
 html:not(.dark) [class*="border-gray-800"] {
-  border-color: #E0E0E0 !important; /* Bordures - Palette IIM */
+  border-color: #E0E0E0 !important;
+  /* Bordures - Palette IIM */
 }
 
 /* Spécifique pour les éléments avec dark: dans les classes */
 html:not(.dark) [class*="dark:text-white"] {
-  color: #263238 !important; /* Couleur Texte - Palette IIM */
+  color: #263238 !important;
+  /* Couleur Texte - Palette IIM */
 }
 
 /* Section de bienvenue du dashboard - Forcer le texte en blanc */
 html:not(.dark) [class*="text-white"] {
-  color: #FFFFFF !important; /* Texte blanc pour les éléments avec text-white */
+  color: #FFFFFF !important;
+  /* Texte blanc pour les éléments avec text-white */
 }
 
 /* Section de bienvenue du dashboard - Forcer tous les textes en blanc */
@@ -230,7 +304,8 @@ html:not(.dark) .dashboard-welcome p,
 html:not(.dark) .dashboard-welcome button,
 html:not(.dark) .dashboard-welcome span,
 html:not(.dark) .dashboard-welcome * {
-  color: #FFFFFF !important; /* Texte blanc pour la section de bienvenue */
+  color: #FFFFFF !important;
+  /* Texte blanc pour la section de bienvenue */
 }
 
 /* Section de bienvenue avec fond gradient - Forcer tous les textes en blanc (fallback) */
@@ -244,25 +319,30 @@ html:not(.dark) div.rounded-2xl[style*="linear-gradient"] p,
 html:not(.dark) div.rounded-2xl[style*="linear-gradient"] button,
 html:not(.dark) div.rounded-2xl[style*="linear-gradient"] span,
 html:not(.dark) div.rounded-2xl[style*="linear-gradient"] * {
-  color: #FFFFFF !important; /* Texte blanc pour la section de bienvenue */
+  color: #FFFFFF !important;
+  /* Texte blanc pour la section de bienvenue */
 }
 
 html:not(.dark) [class*="dark:text-gray-400"] {
-  color: #78909C !important; /* Texte muted - Palette IIM */
+  color: #78909C !important;
+  /* Texte muted - Palette IIM */
 }
 
 html:not(.dark) [class*="dark:text-gray-300"] {
-  color: #546E7A !important; /* Texte secondaire - Palette IIM */
+  color: #546E7A !important;
+  /* Texte secondaire - Palette IIM */
 }
 
 html:not(.dark) [class*="dark:bg-gray-800"],
 html:not(.dark) [class*="dark:bg-gray-900"] {
-  background-color: #FFFFFF !important; /* Cartes - Palette IIM */
+  background-color: #FFFFFF !important;
+  /* Cartes - Palette IIM */
 }
 
 html:not(.dark) [class*="dark:border-gray-700"],
 html:not(.dark) [class*="dark:border-gray-800"] {
-  border-color: #E0E0E0 !important; /* Bordures - Palette IIM */
+  border-color: #E0E0E0 !important;
+  /* Bordures - Palette IIM */
 }
 
 /* Mono font for time/codes */
@@ -273,11 +353,13 @@ html:not(.dark) [class*="dark:border-gray-800"] {
 /* Focus styles for accessibility - Palette IIM */
 *:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #43A78B; /* Couleur secondaire - Palette IIM */
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #43A78B;
+  /* Couleur secondaire - Palette IIM */
 }
 
 html.dark *:focus-visible {
-  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC; /* Teal clair pour le sombre - Variante de #263238 */
+  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC;
+  /* Teal clair pour le sombre - Variante de #263238 */
 }
 
 /* Scrollbar styling */
@@ -291,7 +373,8 @@ html.dark *:focus-visible {
 }
 
 html.dark ::-webkit-scrollbar-track {
-  background-color: #2A2A2A; /* Variante de #263238 */
+  background-color: #2A2A2A;
+  /* Variante de #263238 */
 }
 
 ::-webkit-scrollbar-thumb {
@@ -300,7 +383,8 @@ html.dark ::-webkit-scrollbar-track {
 }
 
 html.dark ::-webkit-scrollbar-thumb {
-  background-color: rgba(224, 224, 224, 0.3); /* Variante de #E0E0E0 */
+  background-color: rgba(224, 224, 224, 0.3);
+  /* Variante de #E0E0E0 */
 }
 
 ::-webkit-scrollbar-thumb:hover {
@@ -313,17 +397,22 @@ html.dark ::-webkit-scrollbar-thumb:hover {
 
 /* Selection - Palette IIM */
 ::selection {
-  background-color: rgba(67, 167, 139, 0.3); /* Couleur secondaire (teal) avec transparence */
-  color: #263238; /* Couleur Texte - Palette IIM */
+  background-color: rgba(67, 167, 139, 0.3);
+  /* Couleur secondaire (teal) avec transparence */
+  color: #263238;
+  /* Couleur Texte - Palette IIM */
 }
 
 html.dark ::selection {
-  background-color: rgba(77, 182, 172, 0.3); /* Teal clair avec transparence */
-  color: #FFFFFF; /* Texte blanc */
+  background-color: rgba(77, 182, 172, 0.3);
+  /* Teal clair avec transparence */
+  color: #FFFFFF;
+  /* Texte blanc */
 }
 
 /* ===== COMPONENT STYLES ===== */
 @layer components {
+
   /* Card hover effect */
   .card-hover {
     @apply transition-all duration-200 hover:shadow-lg hover:-translate-y-0.5;
@@ -338,9 +427,10 @@ html.dark ::selection {
   .glass {
     @apply bg-white/80 backdrop-blur-md;
   }
-  
+
   html.dark .glass {
-    background-color: rgba(42, 42, 42, 0.8) !important; /* Variante de #263238 avec transparence */
+    background-color: rgba(42, 42, 42, 0.8) !important;
+    /* Variante de #263238 avec transparence */
   }
 
   /* Gradient text */
@@ -350,50 +440,72 @@ html.dark ::selection {
 
   /* Status badges - Palette IIM */
   .badge-confirmed {
-    background-color: rgba(67, 167, 139, 0.2); /* Couleur secondaire (teal) */
-    color: #2E7D6B; /* Teal foncé */
+    background-color: rgba(67, 167, 139, 0.2);
+    /* Couleur secondaire (teal) */
+    color: #2E7D6B;
+    /* Teal foncé */
   }
+
   html.dark .badge-confirmed {
-    background-color: rgba(77, 182, 172, 0.3); /* Teal clair avec transparence */
-    color: #4DB6AC; /* Teal clair */
+    background-color: rgba(77, 182, 172, 0.3);
+    /* Teal clair avec transparence */
+    color: #4DB6AC;
+    /* Teal clair */
   }
 
   .badge-pending {
-    background-color: rgba(255, 224, 130, 0.3); /* Accentuation 1 (jaune) */
-    color: #F57C00; /* Jaune foncé */
+    background-color: rgba(255, 224, 130, 0.3);
+    /* Accentuation 1 (jaune) */
+    color: #F57C00;
+    /* Jaune foncé */
   }
+
   html.dark .badge-pending {
-    background-color: rgba(255, 213, 79, 0.3); /* Jaune clair avec transparence */
-    color: #FFD54F; /* Jaune clair */
+    background-color: rgba(255, 213, 79, 0.3);
+    /* Jaune clair avec transparence */
+    color: #FFD54F;
+    /* Jaune clair */
   }
 
   .badge-cancelled {
-    background-color: #F5F5F5; /* Gris clair */
-    color: #546E7A; /* Texte secondaire */
+    background-color: #F5F5F5;
+    /* Gris clair */
+    color: #546E7A;
+    /* Texte secondaire */
   }
+
   html.dark .badge-cancelled {
-    background-color: #2A2A2A; /* Variante de #263238 */
-    color: #90A4AE; /* Texte muted clair */
+    background-color: #2A2A2A;
+    /* Variante de #263238 */
+    color: #90A4AE;
+    /* Texte muted clair */
   }
 
   .badge-doctor {
-    background-color: rgba(67, 167, 139, 0.2); /* Couleur secondaire (teal) */
-    color: #2E7D6B; /* Teal foncé */
+    background-color: rgba(67, 167, 139, 0.2);
+    /* Couleur secondaire (teal) */
+    color: #2E7D6B;
+    /* Teal foncé */
   }
+
   html.dark .badge-doctor {
-    background-color: rgba(77, 182, 172, 0.3); /* Teal clair avec transparence */
-    color: #4DB6AC; /* Teal clair */
+    background-color: rgba(77, 182, 172, 0.3);
+    /* Teal clair avec transparence */
+    color: #4DB6AC;
+    /* Teal clair */
   }
 }
 
 /* ===== ANIMATIONS ===== */
 @layer utilities {
+
   /* Modal enter animation */
   @keyframes modal-enter {
     from {
       opacity: 0;
       transform: scale(0.95) translateY(-10px);
     }
+
     to {
       opacity: 1;
       transform: scale(1) translateY(0);
@@ -410,6 +522,7 @@ html.dark ::selection {
       opacity: 0;
       transform: translateX(100%);
     }
+
     to {
       opacity: 1;
       transform: translateX(0);
@@ -425,6 +538,7 @@ html.dark ::selection {
     from {
       opacity: 0;
     }
+
     to {
       opacity: 1;
     }
@@ -436,9 +550,12 @@ html.dark ::selection {
 
   /* Pulse subtle */
   @keyframes pulse-subtle {
-    0%, 100% {
+
+    0%,
+    100% {
       opacity: 1;
     }
+
     50% {
       opacity: 0.7;
     }
@@ -454,13 +571,16 @@ html.dark ::selection {
       opacity: 0;
       transform: scale(0.3);
     }
+
     50% {
       opacity: 1;
       transform: scale(1.05);
     }
+
     70% {
       transform: scale(0.9);
     }
+
     100% {
       transform: scale(1);
     }
@@ -473,28 +593,50 @@ html.dark ::selection {
 
 /* ===== FULLCALENDAR CUSTOMIZATION - Palette IIM ===== */
 .fc {
-  --fc-border-color: #E0E0E0; /* Bordures - Palette IIM */
-  --fc-button-bg-color: #43A78B; /* Couleur secondaire (teal) - Palette IIM */
+  --fc-border-color: #E0E0E0;
+  /* Bordures - Palette IIM */
+  --fc-button-bg-color: #43A78B;
+  /* Couleur secondaire (teal) - Palette IIM */
   --fc-button-border-color: #43A78B;
-  --fc-button-hover-bg-color: #2E7D6B; /* Teal foncé */
+  --fc-button-hover-bg-color: #2E7D6B;
+  /* Teal foncé */
   --fc-button-hover-border-color: #2E7D6B;
-  --fc-button-active-bg-color: #1B5E4F; /* Teal très foncé */
-  --fc-today-bg-color: rgba(67, 167, 139, 0.1); /* Teal avec transparence */
+  --fc-button-active-bg-color: #1B5E4F;
+  /* Teal très foncé */
+  --fc-today-bg-color: rgba(67, 167, 139, 0.1);
+  /* Teal avec transparence */
   --fc-page-bg-color: transparent;
   --fc-neutral-bg-color: transparent;
   font-family: 'Inter', sans-serif;
+  width: 100% !important;
+  max-width: 100% !important;
+}
+
+.fc-view-harness {
+  width: 100% !important;
+  min-width: 100% !important;
+}
+
+.fc table {
+  width: 100% !important;
+  table-layout: fixed !important;
 }
 
 .dark .fc {
-  --fc-border-color: #404040; /* Bordures sombres */
-  --fc-button-bg-color: #4DB6AC; /* Teal clair */
+  --fc-border-color: #404040;
+  /* Bordures sombres */
+  --fc-button-bg-color: #4DB6AC;
+  /* Teal clair */
   --fc-button-border-color: #4DB6AC;
-  --fc-button-hover-bg-color: #26A69A; /* Teal moyen */
+  --fc-button-hover-bg-color: #26A69A;
+  /* Teal moyen */
   --fc-button-hover-border-color: #26A69A;
-  --fc-button-active-bg-color: #00897B; /* Teal foncé */
+  --fc-button-active-bg-color: #00897B;
+  /* Teal foncé */
   --fc-page-bg-color: transparent;
   --fc-neutral-bg-color: transparent;
-  --fc-today-bg-color: rgba(77, 182, 172, 0.1); /* Teal clair avec transparence */
+  --fc-today-bg-color: rgba(77, 182, 172, 0.1);
+  /* Teal clair avec transparence */
 }
 
 /* FC Header */
@@ -512,7 +654,8 @@ html.dark ::selection {
 
 .fc .fc-toolbar-title {
   @apply text-lg sm:text-xl font-semibold capitalize;
-  color: #263238 !important; /* Couleur Texte - Palette IIM */
+  color: #263238 !important;
+  /* Couleur Texte - Palette IIM */
   text-align: center;
   min-width: 150px;
 }
@@ -527,7 +670,7 @@ html.dark .fc .fc-toolbar-title {
     padding: 0.4rem 0.6rem !important;
     font-size: 0.8rem !important;
   }
-  
+
   .fc .fc-toolbar-chunk {
     display: flex;
     justify-content: center;
@@ -542,11 +685,13 @@ html.dark .fc .fc-toolbar-title {
 }
 
 .fc .fc-button:focus {
-  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #43A78B !important; /* Couleur secondaire - Palette IIM */
+  box-shadow: 0 0 0 2px #fff, 0 0 0 4px #43A78B !important;
+  /* Couleur secondaire - Palette IIM */
 }
 
 html.dark .fc .fc-button:focus {
-  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC !important; /* Teal clair - Variante de #263238 */
+  box-shadow: 0 0 0 2px #2A2A2A, 0 0 0 4px #4DB6AC !important;
+  /* Teal clair - Variante de #263238 */
 }
 
 /* FC Day cells - Palette IIM */
@@ -555,30 +700,36 @@ html.dark .fc .fc-button:focus {
 }
 
 .fc .fc-daygrid-day:hover {
-  background-color: rgba(252, 252, 247, 0.5) !important; /* Fond avec transparence */
+  background-color: rgba(252, 252, 247, 0.5) !important;
+  /* Fond avec transparence */
 }
 
 html.dark .fc .fc-daygrid-day:hover {
-  background-color: rgba(42, 42, 42, 0.5) !important; /* Variante de #263238 avec transparence */
+  background-color: rgba(42, 42, 42, 0.5) !important;
+  /* Variante de #263238 avec transparence */
 }
 
 .fc .fc-daygrid-day-number {
   @apply font-medium p-2;
-  color: #263238 !important; /* Couleur Texte - Palette IIM */
+  color: #263238 !important;
+  /* Couleur Texte - Palette IIM */
 }
 
 html.dark .fc .fc-daygrid-day-number {
-  color: #B0BEC5 !important; /* Texte secondaire clair */
+  color: #B0BEC5 !important;
+  /* Texte secondaire clair */
 }
 
 .fc .fc-day-today .fc-daygrid-day-number {
   @apply rounded-full w-8 h-8 flex items-center justify-center;
-  background-color: #43A78B !important; /* Couleur secondaire (teal) - Palette IIM */
+  background-color: #43A78B !important;
+  /* Couleur secondaire (teal) - Palette IIM */
   color: white !important;
 }
 
 html.dark .fc .fc-day-today .fc-daygrid-day-number {
-  background-color: #4DB6AC !important; /* Teal clair */
+  background-color: #4DB6AC !important;
+  /* Teal clair */
   color: white !important;
 }
 
@@ -598,21 +749,25 @@ html.dark .fc .fc-day-today .fc-daygrid-day-number {
 /* FC More link - Palette IIM */
 .fc .fc-more-link {
   @apply font-medium hover:underline;
-  color: #43A78B !important; /* Couleur secondaire (teal) - Palette IIM */
+  color: #43A78B !important;
+  /* Couleur secondaire (teal) - Palette IIM */
 }
 
 html.dark .fc .fc-more-link {
-  color: #4DB6AC !important; /* Teal clair */
+  color: #4DB6AC !important;
+  /* Teal clair */
 }
 
 /* FC Time grid - Palette IIM */
 .fc .fc-timegrid-slot {
   @apply text-xs;
-  color: #546E7A !important; /* Texte secondaire - Palette IIM */
+  color: #546E7A !important;
+  /* Texte secondaire - Palette IIM */
 }
 
 html.dark .fc .fc-timegrid-slot {
-  color: #90A4AE !important; /* Texte muted clair */
+  color: #90A4AE !important;
+  /* Texte muted clair */
 }
 
 .fc .fc-timegrid-slot-label {
@@ -622,39 +777,47 @@ html.dark .fc .fc-timegrid-slot {
 /* FC Header cells - Palette IIM */
 .fc .fc-col-header-cell {
   @apply py-3;
-  background-color: #FCFCF7 !important; /* Fond - Palette IIM */
+  background-color: #FCFCF7 !important;
+  /* Fond - Palette IIM */
 }
 
 html.dark .fc .fc-col-header-cell {
-  background-color: rgba(42, 42, 42, 0.5) !important; /* Variante de #263238 avec transparence */
+  background-color: rgba(42, 42, 42, 0.5) !important;
+  /* Variante de #263238 avec transparence */
 }
 
 .fc .fc-col-header-cell-cushion {
   @apply font-semibold text-sm uppercase tracking-wider;
-  color: #546E7A !important; /* Texte secondaire - Palette IIM */
+  color: #546E7A !important;
+  /* Texte secondaire - Palette IIM */
 }
 
 html.dark .fc .fc-col-header-cell-cushion {
-  color: #90A4AE !important; /* Texte muted clair */
+  color: #90A4AE !important;
+  /* Texte muted clair */
 }
 
 /* ===== RECHARTS CUSTOMIZATION - Palette IIM ===== */
 .recharts-cartesian-grid-horizontal line,
 .recharts-cartesian-grid-vertical line {
-  stroke: #E0E0E0 !important; /* Bordures - Palette IIM */
+  stroke: #E0E0E0 !important;
+  /* Bordures - Palette IIM */
 }
 
 html.dark .recharts-cartesian-grid-horizontal line,
 html.dark .recharts-cartesian-grid-vertical line {
-  stroke: #404040 !important; /* Bordures sombres */
+  stroke: #404040 !important;
+  /* Bordures sombres */
 }
 
 .recharts-text {
-  fill: #546E7A !important; /* Texte secondaire - Palette IIM */
+  fill: #546E7A !important;
+  /* Texte secondaire - Palette IIM */
 }
 
 html.dark .recharts-text {
-  fill: #90A4AE !important; /* Texte muted clair */
+  fill: #90A4AE !important;
+  /* Texte muted clair */
 }
 
 /* ===== ACCESSIBILITY ===== */
@@ -674,12 +837,14 @@ html.dark .recharts-text {
 /* Skip link - Palette IIM */
 .skip-link {
   @apply sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:rounded-lg;
-  background-color: #43A78B !important; /* Couleur secondaire (teal) - Palette IIM */
+  background-color: #43A78B !important;
+  /* Couleur secondaire (teal) - Palette IIM */
   color: white !important;
 }
 
 html.dark .skip-link {
-  background-color: #4DB6AC !important; /* Teal clair */
+  background-color: #4DB6AC !important;
+  /* Teal clair */
   color: white !important;
 }
 
@@ -688,17 +853,20 @@ input:focus-visible,
 select:focus-visible,
 textarea:focus-visible {
   @apply ring-2 border-transparent;
-  --tw-ring-color: #43A78B; /* Couleur secondaire (teal) - Palette IIM */
+  --tw-ring-color: #43A78B;
+  /* Couleur secondaire (teal) - Palette IIM */
 }
 
 html.dark input:focus-visible,
 html.dark select:focus-visible,
 html.dark textarea:focus-visible {
-  --tw-ring-color: #4DB6AC; /* Teal clair */
+  --tw-ring-color: #4DB6AC;
+  /* Teal clair */
 }
 
 /* Reduced motion */
 @media (prefers-reduced-motion: reduce) {
+
   *,
   *::before,
   *::after {

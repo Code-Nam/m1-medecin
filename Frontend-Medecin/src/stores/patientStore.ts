@@ -4,6 +4,7 @@ import type { Patient } from '../types';
 
 interface PatientState {
   patients: Patient[];
+  allPatients: Patient[];
   selectedPatient: Patient | null;
   searchTerm: string;
   currentPage: number;
@@ -12,6 +13,8 @@ interface PatientState {
   error: string | null;
 
   fetchPatients: (doctorId?: string) => Promise<void>;
+  fetchAllPatients: () => Promise<void>;
+  assignPatientToDoctor: (patientId: string, doctorId: string) => Promise<void>;
   setPatients: (patients: Patient[]) => void;
   addPatient: (patient: Omit<Patient, 'patientId'>) => Promise<void>;
   updatePatient: (patientId: string, updates: Partial<Patient>) => Promise<void>;
@@ -23,10 +26,12 @@ interface PatientState {
   getPaginatedPatients: () => Patient[];
   getTotalPages: () => number;
   getPatientsByDoctor: (doctorId: string) => Patient[];
+  getUnassignedPatients: (doctorId: string) => Patient[];
 }
 
 export const usePatientStore = create<PatientState>((set, get) => ({
   patients: [],
+  allPatients: [],
   isLoading: false,
   error: null,
   selectedPatient: null,
@@ -63,6 +68,55 @@ export const usePatientStore = create<PatientState>((set, get) => ({
       set({ error: error.message || 'Erreur lors du chargement des patients' });
     } finally {
       set({ isLoading: false });
+    }
+  },
+
+  fetchAllPatients: async () => {
+    set({ isLoading: true, error: null });
+    try {
+      const response: any = await patientsService.getAll(1, 500);
+
+      const allPatients: Patient[] = (response.data || response.patients || []).map((p: any) => {
+        const patientId = p.id || p.patientId;
+        const assignedDoctorId = p.assignedDoctor?.id || p.assignedDoctor?.doctorId || null;
+
+        return {
+          patientId: patientId,
+          Surname: p.surname,
+          FirstName: p.firstName,
+          email: p.email,
+          phone: p.phone || '',
+          assigned_doctor: assignedDoctorId ? String(assignedDoctorId) : '',
+        };
+      });
+
+      set({ allPatients });
+    } catch (error: any) {
+      set({ error: error.message || 'Erreur lors du chargement des patients' });
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  assignPatientToDoctor: async (patientId: string, doctorId: string) => {
+    try {
+      await patientsService.update(patientId, { assigned_doctor: doctorId });
+
+      // Mettre à jour la liste des patients du médecin
+      const { allPatients } = get();
+      const patient = allPatients.find(p => p.patientId === patientId);
+
+      if (patient) {
+        const updatedPatient = { ...patient, assigned_doctor: doctorId };
+        set((state) => ({
+          patients: [...state.patients, updatedPatient],
+          allPatients: state.allPatients.map(p =>
+            p.patientId === patientId ? updatedPatient : p
+          )
+        }));
+      }
+    } catch (error: any) {
+      throw error;
     }
   },
 
@@ -182,6 +236,15 @@ export const usePatientStore = create<PatientState>((set, get) => ({
   getPatientsByDoctor: (doctorId) => {
     const { patients } = get();
     return patients.filter(p => p.assigned_doctor === doctorId);
+  },
+
+  getUnassignedPatients: (doctorId) => {
+    const { allPatients, patients } = get();
+    const assignedPatientIds = patients.map(p => p.patientId);
+    return allPatients.filter(p =>
+      !assignedPatientIds.includes(p.patientId) &&
+      (!p.assigned_doctor || p.assigned_doctor !== doctorId)
+    );
   }
 }));
 

@@ -37,7 +37,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
 }) => {
   const doctor = useDoctor();
   const { patients, fetchPatients } = usePatientStore();
-  const { addAppointment, updateAppointment } = useAppointmentStore();
+  const { addAppointment, updateAppointment, cancelAppointment } = useAppointmentStore();
   const { addToast } = useUIStore();
   const { colors } = useTheme();
 
@@ -183,6 +183,23 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
     setFormData(prev => ({ ...prev, [field]: value }));
     if (errors[field]) {
       setErrors(prev => ({ ...prev, [field]: '' }));
+    }
+  };
+
+  const handleCancelAppointment = async () => {
+    if (!appointment?.appointmentId) return;
+
+    if (window.confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
+      setIsSubmitting(true);
+      try {
+        await cancelAppointment(appointment.appointmentId);
+        addToast('success', 'Rendez-vous annulé');
+        onSuccess();
+      } catch (error: any) {
+        addToast('error', error.message || 'Erreur lors de l\'annulation');
+      } finally {
+        setIsSubmitting(false);
+      }
     }
   };
 
@@ -363,25 +380,40 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
       {/* Actions */}
       <div
-        className="flex justify-end gap-3 pt-4 border-t"
+        className="flex justify-between gap-3 pt-4 border-t"
         style={{ borderColor: colors.border.default }}
       >
-        <Button
-          type="button"
-          variant="ghost"
-          onClick={onCancel}
-          aria-label="Annuler et fermer"
-        >
-          Annuler
-        </Button>
-        <Button
-          type="submit"
-          variant="primary"
-          isLoading={isSubmitting}
-          aria-label={isEditing ? 'Enregistrer les modifications' : 'Créer le rendez-vous'}
-        >
-          {isEditing ? 'Enregistrer' : 'Créer le rendez-vous'}
-        </Button>
+        <div>
+          {isEditing && (
+            <Button
+              type="button"
+              variant="danger"
+              onClick={handleCancelAppointment}
+              isLoading={isSubmitting}
+              aria-label="Annuler ce rendez-vous"
+            >
+              Annuler le RDV
+            </Button>
+          )}
+        </div>
+        <div className="flex gap-3">
+          <Button
+            type="button"
+            variant="ghost"
+            onClick={onCancel}
+            aria-label="Fermer sans enregistrer"
+          >
+            Fermer
+          </Button>
+          <Button
+            type="submit"
+            variant="primary"
+            isLoading={isSubmitting}
+            aria-label={isEditing ? 'Enregistrer les modifications' : 'Créer le rendez-vous'}
+          >
+            {isEditing ? 'Enregistrer' : 'Créer le rendez-vous'}
+          </Button>
+        </div>
       </div>
     </form>
   );

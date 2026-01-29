@@ -173,18 +173,21 @@ export const Dashboard: React.FC = () => {
                   <p className="text-xs mb-2" style={{ color: colors.text.secondary }}>
                     {appointment.date} - {appointment.reason}
                   </p>
-                  <div className="flex gap-2">
+                  <div className="flex gap-2" role="group" aria-label="Actions">
                     <button
+                      type="button"
                       onClick={() => handleConfirmAppointment(appointment.appointmentId)}
-                      className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors"
+                      className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-2"
                       style={{ color: 'rgba(255, 255, 255, 1)' }}
                       aria-label={`Confirmer le rendez-vous de ${getPatientName(appointment.appointedPatient)} à ${appointment.time}`}
+                      tabIndex={0}
                     >
                       Confirmer
                     </button>
                     <button
+                      type="button"
                       onClick={() => openModal('deleteAppointment', appointment)}
-                      className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors"
+                      className="flex-1 px-3 py-1.5 text-xs font-medium rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2"
                       style={{
                         backgroundColor: colors.border.light,
                         color: colors.text.secondary
@@ -196,6 +199,7 @@ export const Dashboard: React.FC = () => {
                         e.currentTarget.style.backgroundColor = colors.border.light;
                       }}
                       aria-label={`Refuser le rendez-vous de ${getPatientName(appointment.appointedPatient)} à ${appointment.time}`}
+                      tabIndex={0}
                     >
                       Refuser
                     </button>

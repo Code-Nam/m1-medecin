@@ -55,7 +55,15 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                         const currentMinute = today.getMinutes();
 
                         mappedSlots = mappedSlots.filter(slot => {
-                            const [slotHour, slotMinute] = slot.time.split(':').map(Number);
+                            if (!slot.time) return false;
+                            const parts = slot.time.split(':');
+                            if (parts.length < 2) return false;
+
+                            const slotHour = Number(parts[0]);
+                            const slotMinute = Number(parts[1]);
+
+                            if (isNaN(slotHour) || isNaN(slotMinute)) return false;
+
                             if (slotHour < currentHour) return false;
                             if (slotHour === currentHour && slotMinute <= currentMinute) return false;
                             return true;
@@ -109,8 +117,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                 date: formattedDate,
                 time: selectedTime,
                 reason: reason,
-                status: 'pending' as any,
-                slotId: selectedSlot?.slotId
+                status: 'PENDING' as any,
+                slotId: selectedSlot ? selectedSlot.slotId : undefined
             });
             onSuccess();
         } catch (error) {

@@ -5,7 +5,7 @@ import type { IPatientRepository } from "../../repositories/patient/IPatientRepo
 import type { IPatientService } from "./IPatientService";
 
 export class PatientService implements IPatientService {
-    constructor(private repository: IPatientRepository = patientRepository) {}
+    constructor(private repository: IPatientRepository = patientRepository) { }
 
     async getPatient(id: string) {
         const patient = await this.repository.findPatientById(id);
@@ -44,10 +44,10 @@ export class PatientService implements IPatientService {
             address: patient.address,
             assignedDoctor: patient.assignedDoctor
                 ? {
-                      id: patient.assignedDoctor.id,
-                      firstName: patient.assignedDoctor.firstName,
-                      surname: patient.assignedDoctor.surname,
-                  }
+                    id: patient.assignedDoctor.id,
+                    firstName: patient.assignedDoctor.firstName,
+                    surname: patient.assignedDoctor.surname,
+                }
                 : null,
         }));
 
@@ -68,14 +68,22 @@ export class PatientService implements IPatientService {
             ? new Date(data.dateOfBirth)
             : null;
 
+        // Ensure we pick the doctor ID from all possible field names
+        const assignedDoctorId = data.assigned_doctor || data.assignedDoctorId || data.assigned_doctor_id;
+
         const patient = await this.repository.createPatient({
-            ...data,
+            firstName: data.firstName || data.FirstName,
+            surname: data.surname || data.Surname,
+            email: data.email,
+            phone: data.phone,
+            address: data.address,
+            assignedDoctorId,
             password: hashedPassword,
             dateOfBirth,
         });
 
         const { password: _, ...patientWithoutPassword } = patient as any;
-        logger.info(`Patient created: ${patient.id}`);
+        logger.info(`Patient created: ${patient.id} assigned to doctor: ${assignedDoctorId}`);
         return patientWithoutPassword;
     }
 

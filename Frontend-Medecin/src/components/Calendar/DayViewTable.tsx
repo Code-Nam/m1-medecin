@@ -24,29 +24,29 @@ export const DayViewTable: React.FC = () => {
 
   const getStatusBadge = (status: string) => {
     const styleMap: Record<string, { bg: string; text: string }> = {
-      confirmed: {
+      CONFIRMED: {
         bg: darkMode ? 'rgba(16, 185, 129, 0.3)' : '#D1FAE5',
         text: darkMode ? '#4ADE80' : '#065F46'
       },
-      pending: {
+      PENDING: {
         bg: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7',
         text: darkMode ? '#FACC15' : '#92400E'
       },
-      cancelled: {
+      CANCELLED: {
         bg: darkMode ? colors.bg.card : '#F3F4F6',
         text: colors.text.secondary
       },
-      doctor_created: {
+      DOCTOR_CREATED: {
         bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE',
         text: darkMode ? '#60A5FA' : '#1E40AF'
       }
     };
 
     const labels = {
-      confirmed: 'Confirmé',
-      pending: 'En attente',
-      cancelled: 'Annulé',
-      doctor_created: 'Créé par médecin'
+      CONFIRMED: 'Confirmé',
+      PENDING: 'En attente',
+      CANCELLED: 'Annulé',
+      DOCTOR_CREATED: 'Créé par médecin'
     };
 
     const style = styleMap[status] || styleMap.confirmed!;
@@ -131,11 +131,11 @@ export const DayViewTable: React.FC = () => {
             key={appointment.appointmentId}
             className="p-4 rounded-lg border transition-all duration-200 hover:shadow-md"
             style={{
-              backgroundColor: appointment.status === 'cancelled'
+              backgroundColor: appointment.status === 'CANCELLED'
                 ? (darkMode ? 'rgba(30, 30, 30, 0.5)' : '#F9FAFB')
                 : colors.bg.secondary,
               borderColor: colors.border.default,
-              opacity: appointment.status === 'cancelled' ? 0.6 : 1
+              opacity: appointment.status === 'CANCELLED' ? 0.6 : 1
             }}
           >
             <div className="flex items-start justify-between gap-4">
@@ -163,7 +163,7 @@ export const DayViewTable: React.FC = () => {
 
               {/* Actions */}
               <div className="flex items-center gap-1">
-                {appointment.status === 'pending' && (
+                {appointment.status === 'PENDING' && (
                   <>
                     <button
                       onClick={() => handleConfirm(appointment.appointmentId)}
@@ -181,7 +181,7 @@ export const DayViewTable: React.FC = () => {
                     </button>
                   </>
                 )}
-                {appointment.status !== 'cancelled' && (
+                {appointment.status !== 'CANCELLED' && (
                   <>
                     <button
                       onClick={() => handleEdit(appointment)}

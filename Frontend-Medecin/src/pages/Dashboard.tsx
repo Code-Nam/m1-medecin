@@ -36,7 +36,7 @@ export const Dashboard: React.FC = () => {
   const doctorPatients = doctor ? getPatientsByDoctor(doctor.id) : [];
 
   const confirmedToday = todayAppointments.filter(a =>
-    a.status === 'confirmed' || a.status === 'doctor_created'
+    a.status === 'CONFIRMED' || a.status === 'DOCTOR_CREATED'
   ).length;
 
   const handleConfirmAppointment = (appointmentId: string) => {

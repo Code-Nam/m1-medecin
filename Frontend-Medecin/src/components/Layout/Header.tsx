@@ -1,9 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Bell, ChevronRight } from 'lucide-react';
+import { Sun, Moon, Bell, ChevronRight, Menu } from 'lucide-react';
 import { useUIStore } from '../../stores/uiStore';
 import { useAppointmentStore } from '../../stores/appointmentStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useTheme } from '../../hooks/useTheme';
+import { DoctorSelector } from '../Common/DoctorSelector';
 
 interface HeaderProps {
   pageTitle: string;
@@ -11,13 +12,13 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) => {
-  const { darkMode, toggleDarkMode } = useUIStore();
-  const { doctor } = useAuthStore();
+  const { darkMode, toggleDarkMode, toggleSidebar } = useUIStore();
   const { getPendingAppointments } = useAppointmentStore();
   const { colors } = useTheme();
   const [currentTime, setCurrentTime] = useState(new Date());
 
-  const pendingCount = doctor ? getPendingAppointments(doctor.doctorId).length : 0;
+  const doctor = useDoctor();
+  const pendingCount = doctor?.id ? getPendingAppointments(doctor.id).length : 0;
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -56,7 +57,25 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
       <div className="flex items-center justify-between px-4 lg:px-6 py-4">
         {/* Left - Breadcrumb */}
         <div className="flex items-center gap-4">
-          <nav aria-label="Fil d'Ariane">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-lg transition-colors lg:hidden"
+            style={{
+              color: colors.text.secondary,
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+            aria-label="Ouvrir le menu de navigation"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <nav aria-label="Fil d'Ariane" className="hidden sm:block">
             <ol className="flex items-center gap-2 text-sm">
               {breadcrumb.length > 0 ? (
                 breadcrumb.map((item, index) => (
@@ -90,8 +109,11 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
           </nav>
         </div>
 
-        {/* Right - Time, notifications, dark mode */}
+        {/* Right - Clinic selector, Time, notifications, dark mode */}
         <div className="flex items-center gap-2 sm:gap-4">
+          {/* Doctor Selector for Secretaries */}
+          <DoctorSelector />
+          
           {/* Date/Time */}
           <div className="hidden md:block text-right">
             <p 

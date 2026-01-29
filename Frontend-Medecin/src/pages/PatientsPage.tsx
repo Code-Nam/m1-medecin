@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { PatientList } from '../components/Patients/PatientList';
 import { PatientModal } from '../components/Patients/PatientModal';
 import { CalendarModal } from '../components/Calendar/CalendarModal';
+import { usePatientStore } from '../stores/patientStore';
+import { useDoctor } from '../stores/authStore';
 import { useTheme } from '../hooks/useTheme';
 
 export const PatientsPage: React.FC = () => {
+  const doctor = useDoctor();
+  const { fetchPatients } = usePatientStore();
   const { colors } = useTheme();
+
+  useEffect(() => {
+    if (doctor?.id) {
+      fetchPatients(doctor.id);
+    }
+  }, [doctor?.id, fetchPatients]);
 
   return (
     <div className="space-y-6">

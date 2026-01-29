@@ -2,7 +2,7 @@ import React from 'react';
 import { Calendar, Users, Clock, AlertCircle, Plus, TrendingUp } from 'lucide-react';
 import { useAppointmentStore } from '../stores/appointmentStore';
 import { usePatientStore } from '../stores/patientStore';
-import { useAuthStore } from '../stores/authStore';
+import { useDoctor } from '../stores/authStore';
 import { useUIStore } from '../stores/uiStore';
 import { useTheme } from '../hooks/useTheme';
 import { DayViewTable } from '../components/Calendar/DayViewTable';
@@ -13,15 +13,15 @@ import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export const Dashboard: React.FC = () => {
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const { getTodayAppointments, getPendingAppointments, confirmAppointment } = useAppointmentStore();
   const { patients, getPatientsByDoctor } = usePatientStore();
   const { openModal, addToast } = useUIStore();
   const { darkMode, colors } = useTheme();
 
-  const todayAppointments = doctor ? getTodayAppointments(doctor.doctorId) : [];
-  const pendingAppointments = doctor ? getPendingAppointments(doctor.doctorId) : [];
-  const doctorPatients = doctor ? getPatientsByDoctor(doctor.doctorId) : [];
+  const todayAppointments = doctor ? getTodayAppointments(doctor.id) : [];
+  const pendingAppointments = doctor ? getPendingAppointments(doctor.id) : [];
+  const doctorPatients = doctor ? getPatientsByDoctor(doctor.id) : [];
 
   const confirmedToday = todayAppointments.filter(a => 
     a.status === 'confirmed' || a.status === 'doctor_created'

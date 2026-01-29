@@ -23,8 +23,6 @@ export const Dashboard = () => {
     const upcoming = getUpcomingAppointments();
     const nextAppointment = upcoming.length > 0 ? upcoming[0] : undefined;
 
-    // Display contextually relevant upcoming appointments (excluding the immediate next one if desired, or just list a few)
-    // Showing the next 3 upcoming appointments
     const displayAppointments = upcoming.slice(1, 4);
 
     const getDoctorName = (doctorId: string) => {

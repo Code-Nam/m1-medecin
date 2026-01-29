@@ -8,7 +8,6 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     const html = document.documentElement;
     const body = document.body;
     
-    // Appliquer/retirer la classe dark
     if (darkMode) {
       html.classList.add('dark');
       html.style.colorScheme = 'dark';

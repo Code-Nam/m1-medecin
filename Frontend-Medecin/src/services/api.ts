@@ -1,18 +1,21 @@
-// Service API - Configuration et méthodes pour appels backend
-// Ce fichier est prêt pour l'intégration avec le vrai backend
-
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000/v1';
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
+  (typeof process !== 'undefined' && process.env?.VITE_API_URL) ||
+  'http://localhost:3000/v1';
 
 interface RequestOptions extends RequestInit {
   doctorId?: string;
 }
 
-// Instance de base pour les appels API
 class APIService {
   private baseURL: string;
 
   constructor(baseURL: string) {
     this.baseURL = baseURL;
+  }
+
+  private getAuthToken(): string | null {
+    return localStorage.getItem('token');
   }
 
   private async request<T>(
@@ -26,6 +29,11 @@ class APIService {
       ...options.headers,
     };
 
+    const token = this.getAuthToken();
+    if (token) {
+      (headers as Record<string, string>)['Authorization'] = `Bearer ${token}`;
+    }
+
     if (doctorId) {
       (headers as Record<string, string>)['doctorId'] = doctorId;
     }
@@ -36,19 +44,23 @@ class APIService {
     });
 
     if (!response.ok) {
-      const error = await response.json().catch(() => ({ message: 'Erreur réseau' }));
-      throw new Error(error.message || `HTTP error! status: ${response.status}`);
+      if (response.status === 401) {
+        localStorage.removeItem('token');
+        localStorage.removeItem('user');
+        window.location.href = '/login';
+      }
+      const errorData = await response.json().catch(() => ({ error: 'Erreur réseau' }));
+      const errorMessage = errorData.error || errorData.message || `Erreur ${response.status}`;
+      throw new Error(errorMessage);
     }
 
     return response.json();
   }
 
-  // GET request
   async get<T>(endpoint: string, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'GET' });
   }
 
-  // POST request
   async post<T>(endpoint: string, data: any, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -57,7 +69,6 @@ class APIService {
     });
   }
 
-  // PUT request
   async put<T>(endpoint: string, data: any, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, {
       ...options,
@@ -66,7 +77,6 @@ class APIService {
     });
   }
 
-  // DELETE request
   async delete<T>(endpoint: string, options?: RequestOptions): Promise<T> {
     return this.request<T>(endpoint, { ...options, method: 'DELETE' });
   }
@@ -74,70 +84,133 @@ class APIService {
 
 export const api = new APIService(API_BASE_URL);
 
-// ===== PATIENTS SERVICE =====
 export const patientsService = {
-  // Récupérer les patients d'un médecin
+  getAll: (page = 1, pageSize = 10) =>
+    api.get(`/patients?page=${page}&pageSize=${pageSize}`),
+
   getByDoctor: (doctorId: string, page = 1, pageSize = 10) =>
     api.get(`/patients?doctorId=${doctorId}&page=${page}&pageSize=${pageSize}`),
 
-  // Créer un patient
+  getById: (patientId: string) =>
+    api.get(`/patients/${patientId}`),
+
   create: (patientData: {
-    Surname: string;
-    FirstName: string;
-    email?: string;
+    firstName: string;
+    surname: string;
+    email: string;
+    password: string;
     phone?: string;
+    dateOfBirth?: string;
+    address?: string;
     assigned_doctor?: string;
   }) => api.post('/patients', patientData),
 
-  // Mettre à jour un patient
   update: (patientId: string, updates: any) =>
     api.put(`/patients/${patientId}`, updates),
 
-  // Assigner un patient à un médecin
-  assignToDoctor: (patientId: string, doctorId: string) =>
-    api.put(`/patients/${patientId}`, { assigned_doctor: doctorId }),
+  delete: (patientId: string) =>
+    api.delete(`/patients/${patientId}`),
 };
 
-// ===== APPOINTMENTS SERVICE =====
 export const appointmentsService = {
-  // Récupérer les RDV d'un médecin
-  getByDoctor: (doctorId: string, page = 1, pageSize = 30) =>
-    api.get(`/appointments/${doctorId}?page=${page}&pageSize=${pageSize}`),
+  getAll: (page = 1, pageSize = 30) =>
+    api.get(`/appointments?page=${page}&pageSize=${pageSize}`),
 
-  // Créer un RDV
+  getByDoctor: (doctorId: string, page = 1, pageSize = 30) =>
+    api.get(`/appointments?doctorId=${doctorId}&page=${page}&pageSize=${pageSize}`),
+
+  getByPatient: (patientId: string, page = 1, pageSize = 30) =>
+    api.get(`/appointments?patientId=${patientId}&page=${page}&pageSize=${pageSize}`),
+
+  getById: (appointmentId: string) =>
+    api.get(`/appointments/${appointmentId}`),
+
   create: (appointmentData: {
-    appointedPatient: string;
-    appointedDoctor: string;
+    appointedPatientId: string;
+    appointedDoctorId: string;
     date: string;
     time: string;
     reason: string;
+    notes?: string;
   }) => api.post('/appointments', appointmentData),
 
-  // Modifier un RDV
-  update: (
-    appointmentId: string,
-    updates: { date?: string; time?: string; reason?: string },
-    doctorId: string
-  ) => api.put(`/appointments/${appointmentId}`, updates, { doctorId }),
+  update: (appointmentId: string, updates: {
+    date?: string;
+    time?: string;
+    reason?: string;
+    status?: string;
+    notes?: string;
+  }) => api.put(`/appointments/${appointmentId}`, updates),
 
-  // Supprimer/Annuler un RDV
-  delete: (appointmentId: string, doctorId: string) =>
-    api.delete(`/appointments/${appointmentId}`, { doctorId }),
+  delete: (appointmentId: string) =>
+    api.delete(`/appointments/${appointmentId}`),
 };
 
-// ===== DOCTORS SERVICE =====
 export const doctorsService = {
-  // Récupérer les infos d'un médecin
-  getById: (doctorId: string) => api.get(`/doctors/${doctorId}`),
+  getAll: (page = 1, pageSize = 10) =>
+    api.get(`/doctors?page=${page}&pageSize=${pageSize}`),
 
-  // Créer un médecin
+  getAllWithoutPagination: () =>
+    api.get(`/doctors/all`),
+
+  getById: (doctorId: string) =>
+    api.get(`/doctors/${doctorId}`),
+
   create: (doctorData: {
-    Surname: string;
-    FirstName: string;
-    specialization: string;
+    firstName: string;
+    surname: string;
     email: string;
-    phone: string;
+    password: string;
+    phone?: string;
+    title?: string;
+    specialization: string;
+    openingTime?: string;
+    closingTime?: string;
+    slotDuration?: number;
   }) => api.post('/doctors', doctorData),
+
+  update: (doctorId: string, updates: any) =>
+    api.put(`/doctors/${doctorId}`, updates),
+
+  delete: (doctorId: string) =>
+    api.delete(`/doctors/${doctorId}`),
+};
+
+export const availabilityService = {
+  getAvailableSlots: (doctorId: string, date: string) =>
+    api.get(`/availability/${doctorId}/slots?date=${date}`),
+
+  generateSlots: (doctorId: string, startDate: string, endDate: string) =>
+    api.post(`/availability/${doctorId}/generate`, { startDate, endDate }),
+
+  cleanupPastSlots: () =>
+    api.post('/availability/cleanup'),
+};
+
+export const secretariesService = {
+  getAll: (page = 1, pageSize = 10) =>
+    api.get(`/secretaries?page=${page}&pageSize=${pageSize}`),
+
+  getByDoctor: (doctorId: string, page = 1, pageSize = 10) =>
+    api.get(`/secretaries?doctorId=${doctorId}&page=${page}&pageSize=${pageSize}`),
+
+  getById: (secretaryId: string) =>
+    api.get(`/secretaries/${secretaryId}`),
+
+  create: (secretaryData: {
+    firstName: string;
+    surname: string;
+    email: string;
+    password: string;
+    phone?: string;
+    doctorIds?: string[];
+  }) => api.post('/secretaries', secretaryData),
+
+  update: (secretaryId: string, updates: any) =>
+    api.put(`/secretaries/${secretaryId}`, updates),
+
+  delete: (secretaryId: string) =>
+    api.delete(`/secretaries/${secretaryId}`),
 };
 
 export default api;

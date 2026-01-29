@@ -34,8 +34,6 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
       cancelAppointment(appointment.appointmentId);
       
       if (notifyPatient) {
-        // Ici, vous pouvez ajouter la logique pour notifier le patient
-        console.log('Notification envoyée au patient');
       }
 
       addToast('success', 'Rendez-vous annulé');

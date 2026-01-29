@@ -1,4 +1,3 @@
-// Mock Data pour l'interface médecin
 
 export interface Doctor {
   doctorId: string;
@@ -139,7 +138,6 @@ export const mockPatients: Patient[] = [
   }
 ];
 
-// Générer des dates pour les rendez-vous
 const today = new Date();
 const formatDate = (date: Date): string => {
   const day = String(date.getDate()).padStart(2, '0');
@@ -155,7 +153,6 @@ const addDays = (date: Date, days: number): Date => {
 };
 
 export const mockAppointments: Appointment[] = [
-  // Aujourd'hui
   {
     appointmentId: "appt_001",
     appointedPatient: "pat_001",
@@ -196,7 +193,6 @@ export const mockAppointments: Appointment[] = [
     status: "doctor_created",
     createdBy: "doctor"
   },
-  // Demain
   {
     appointmentId: "appt_005",
     appointedPatient: "pat_005",
@@ -227,7 +223,6 @@ export const mockAppointments: Appointment[] = [
     status: "pending",
     createdBy: "patient"
   },
-  // Après-demain
   {
     appointmentId: "appt_008",
     appointedPatient: "pat_008",
@@ -248,7 +243,6 @@ export const mockAppointments: Appointment[] = [
     status: "doctor_created",
     createdBy: "doctor"
   },
-  // J+3
   {
     appointmentId: "appt_010",
     appointedPatient: "pat_010",
@@ -269,7 +263,6 @@ export const mockAppointments: Appointment[] = [
     status: "confirmed",
     createdBy: "patient"
   },
-  // J+4
   {
     appointmentId: "appt_012",
     appointedPatient: "pat_012",
@@ -290,7 +283,6 @@ export const mockAppointments: Appointment[] = [
     status: "confirmed",
     createdBy: "doctor"
   },
-  // J+5
   {
     appointmentId: "appt_014",
     appointedPatient: "pat_002",
@@ -311,7 +303,6 @@ export const mockAppointments: Appointment[] = [
     status: "doctor_created",
     createdBy: "doctor"
   },
-  // J-1 (hier)
   {
     appointmentId: "appt_016",
     appointedPatient: "pat_004",
@@ -332,7 +323,6 @@ export const mockAppointments: Appointment[] = [
     status: "cancelled",
     createdBy: "patient"
   },
-  // J-2
   {
     appointmentId: "appt_018",
     appointedPatient: "pat_006",
@@ -353,7 +343,6 @@ export const mockAppointments: Appointment[] = [
     status: "confirmed",
     createdBy: "patient"
   },
-  // J-3
   {
     appointmentId: "appt_020",
     appointedPatient: "pat_008",
@@ -374,7 +363,6 @@ export const mockAppointments: Appointment[] = [
     status: "cancelled",
     createdBy: "patient"
   },
-  // J-4
   {
     appointmentId: "appt_022",
     appointedPatient: "pat_010",
@@ -395,7 +383,6 @@ export const mockAppointments: Appointment[] = [
     status: "confirmed",
     createdBy: "patient"
   },
-  // J-5
   {
     appointmentId: "appt_024",
     appointedPatient: "pat_012",
@@ -418,13 +405,11 @@ export const mockAppointments: Appointment[] = [
   }
 ];
 
-// Helper pour obtenir le nom complet d'un patient
 export const getPatientName = (patientId: string): string => {
   const patient = mockPatients.find(p => p.patientId === patientId);
   return patient ? `${patient.FirstName} ${patient.Surname}` : 'Patient inconnu';
 };
 
-// Helper pour obtenir les infos d'un patient
 export const getPatient = (patientId: string): Patient | undefined => {
   return mockPatients.find(p => p.patientId === patientId);
 };

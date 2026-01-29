@@ -1,13 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 import { MainLayout } from './components/Layout/MainLayout';
 import { Dashboard } from './pages/Dashboard';
 import { CalendarPage } from './pages/CalendarPage';
 import { PatientsPage } from './pages/PatientsPage';
 import { StatisticsPage } from './pages/StatisticsPage';
 import { SettingsPage } from './pages/SettingsPage';
+import { Login } from './pages/Login';
 import { CalendarModal } from './components/Calendar/CalendarModal';
 import { PatientModal } from './components/Patients/PatientModal';
 import { ThemeProvider } from './components/ThemeProvider';
+import { useAuthStore } from './stores/authStore';
 import './index.css';
 
 type PageType = 'dashboard' | 'calendar' | 'patients' | 'statistics' | 'settings';
@@ -20,8 +23,13 @@ const pageConfig: Record<PageType, { title: string; breadcrumb: string[] }> = {
   settings: { title: 'Paramètres', breadcrumb: ['Accueil', 'Paramètres'] }
 };
 
-export function App() {
+function AppContent() {
+  const { isAuthenticated, initialize } = useAuthStore();
   const [currentPage, setCurrentPage] = useState<PageType>('dashboard');
+
+  useEffect(() => {
+    initialize();
+  }, [initialize]);
 
   const handleNavigate = (page: string) => {
     setCurrentPage(page as PageType);
@@ -46,23 +54,38 @@ export function App() {
 
   const { title, breadcrumb } = pageConfig[currentPage];
 
+  if (!isAuthenticated) {
+    return <Login />;
+  }
+
+  return (
+    <MainLayout
+      currentPage={currentPage}
+      onNavigate={handleNavigate}
+      pageTitle={title}
+      breadcrumb={breadcrumb}
+    >
+      {renderPage()}
+      {/* Global modals for pages that don't include them */}
+      {currentPage === 'dashboard' && (
+        <>
+          <CalendarModal />
+          <PatientModal />
+        </>
+      )}
+    </MainLayout>
+  );
+}
+
+export function App() {
   return (
     <ThemeProvider>
-      <MainLayout
-        currentPage={currentPage}
-        onNavigate={handleNavigate}
-        pageTitle={title}
-        breadcrumb={breadcrumb}
-      >
-        {renderPage()}
-        {/* Global modals for pages that don't include them */}
-        {currentPage === 'dashboard' && (
-          <>
-            <CalendarModal />
-            <PatientModal />
-          </>
-        )}
-      </MainLayout>
+      <Router>
+        <Routes>
+          <Route path="/login" element={<Login />} />
+          <Route path="/*" element={<AppContent />} />
+        </Routes>
+      </Router>
     </ThemeProvider>
   );
 }

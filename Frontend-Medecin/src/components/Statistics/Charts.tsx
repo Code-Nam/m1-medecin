@@ -27,7 +27,7 @@ export const AppointmentsPerDayChart: React.FC<AppointmentsPerDayChartProps> = (
   const { darkMode, colors } = useTheme();
 
   return (
-    <div 
+    <div
       className="rounded-xl shadow-sm border p-5"
       style={{
         backgroundColor: colors.bg.card,
@@ -52,10 +52,18 @@ export const AppointmentsPerDayChart: React.FC<AppointmentsPerDayChartProps> = (
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: colors.bg.card,
+                backgroundColor: darkMode ? '#374151' : '#FFFFFF',
                 border: `1px solid ${colors.border.default}`,
                 borderRadius: '8px',
-                color: colors.text.primary
+                color: darkMode ? '#FFFFFF' : '#1F2937',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+              itemStyle={{
+                color: darkMode ? '#FFFFFF' : '#1F2937'
+              }}
+              labelStyle={{
+                color: darkMode ? '#FFFFFF' : '#1F2937',
+                fontWeight: 600
               }}
             />
             <Bar
@@ -86,7 +94,7 @@ export const ReasonsChart: React.FC<ReasonsChartProps> = ({ data }) => {
   const COLORS = darkMode ? COLORS_DARK : COLORS_LIGHT;
 
   return (
-    <div 
+    <div
       className="rounded-xl shadow-sm border p-5"
       style={{
         backgroundColor: colors.bg.card,
@@ -119,10 +127,18 @@ export const ReasonsChart: React.FC<ReasonsChartProps> = ({ data }) => {
             </Pie>
             <Tooltip
               contentStyle={{
-                backgroundColor: colors.bg.card,
+                backgroundColor: darkMode ? '#374151' : '#FFFFFF',
                 border: `1px solid ${colors.border.default}`,
                 borderRadius: '8px',
-                color: colors.text.primary
+                color: darkMode ? '#FFFFFF' : '#1F2937',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+              itemStyle={{
+                color: darkMode ? '#FFFFFF' : '#1F2937'
+              }}
+              labelStyle={{
+                color: darkMode ? '#FFFFFF' : '#1F2937',
+                fontWeight: 600
               }}
             />
           </PieChart>
@@ -143,7 +159,7 @@ export const PresenceRateChart: React.FC<PresenceRateChartProps> = ({ data }) =>
   const { darkMode, colors } = useTheme();
 
   return (
-    <div 
+    <div
       className="rounded-xl shadow-sm border p-5"
       style={{
         backgroundColor: colors.bg.card,
@@ -170,10 +186,18 @@ export const PresenceRateChart: React.FC<PresenceRateChartProps> = ({ data }) =>
             />
             <Tooltip
               contentStyle={{
-                backgroundColor: colors.bg.card,
+                backgroundColor: darkMode ? '#374151' : '#FFFFFF',
                 border: `1px solid ${colors.border.default}`,
                 borderRadius: '8px',
-                color: colors.text.primary
+                color: darkMode ? '#FFFFFF' : '#1F2937',
+                boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1)'
+              }}
+              itemStyle={{
+                color: darkMode ? '#FFFFFF' : '#1F2937'
+              }}
+              labelStyle={{
+                color: darkMode ? '#FFFFFF' : '#1F2937',
+                fontWeight: 600
               }}
               formatter={(value: number) => [`${value}%`, 'Taux de présence']}
             />

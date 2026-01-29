@@ -6,13 +6,14 @@ interface AppointmentStore {
   appointments: Appointment[];
   isLoading: boolean;
   error: string | null;
-  
+
   fetchAppointments: (patientId: string) => Promise<void>;
   createAppointment: (appointment: Omit<Appointment, 'appointmentId' | 'createdAt' | 'updatedAt'>) => Promise<void>;
   updateAppointment: (id: string, data: Partial<Appointment>) => Promise<void>;
   deleteAppointment: (id: string) => Promise<void>;
+  cancelAppointment: (id: string) => Promise<void>;
   setError: (error: string | null) => void;
-  
+
   getAppointmentsByStatus: (status: AppointmentStatus) => Appointment[];
   getUpcomingAppointments: () => Appointment[];
   getPastAppointments: () => Appointment[];
@@ -53,7 +54,7 @@ export const useAppointmentStore = create<AppointmentStore>((set, get) => ({
     try {
       const updatedAppt = await appointmentService.updateAppointment(id, data);
       set({
-        appointments: get().appointments.map((appt) => 
+        appointments: get().appointments.map((appt) =>
           appt.appointmentId === id ? updatedAppt : appt
         ),
       });
@@ -74,6 +75,23 @@ export const useAppointmentStore = create<AppointmentStore>((set, get) => ({
       });
     } catch (error: any) {
       set({ error: error.message || 'Impossible de supprimer le rendez-vous' });
+      throw error;
+    } finally {
+      set({ isLoading: false });
+    }
+  },
+
+  cancelAppointment: async (id) => {
+    set({ isLoading: true });
+    try {
+      await appointmentService.updateAppointment(id, { status: 'CANCELLED' as any });
+      set({
+        appointments: get().appointments.map((appt) =>
+          appt.appointmentId === id ? { ...appt, status: 'CANCELLED' as any } : appt
+        ),
+      });
+    } catch (error: any) {
+      set({ error: error.message || 'Impossible d\'annuler le rendez-vous' });
       throw error;
     } finally {
       set({ isLoading: false });

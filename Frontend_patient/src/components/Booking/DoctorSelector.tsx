@@ -49,7 +49,7 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
                                         : 'transparent',
                                     boxShadow: isSelected
                                         ? `0 0 0 2px ${darkMode ? 'rgba(77, 182, 172, 0.3)' : 'rgba(67, 167, 139, 0.2)'}`
-                                        : 'none'
+                                        : undefined
                                 }}
                                 role="radio"
                                 aria-checked={isSelected}

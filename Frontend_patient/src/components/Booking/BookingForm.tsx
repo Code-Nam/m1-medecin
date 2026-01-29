@@ -117,7 +117,12 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                 date: formattedDate,
                 time: selectedTime,
                 reason: reason,
-                status: 'PENDING' as any,
+                status: 'PENDING' as any, // The backend expects uppercase, and our Enum is now uppercase so this matches, but keeping 'as any' or using Enum member is better.
+                // Actually, let's use the Type if possible, but I need to import AppointmentStatus.
+                // Since I cannot easily add an import without potentially messing up lines, and 'PENDING' matches the new Enum value, this is technically fine. 
+                // However, I will check if I can import it. Be safer to just leave 'PENDING' as it matches the new enum value 'PENDING'.
+                // The user only complained about DISPLAY. 
+                // I will update it to be cleaner if I can see where imports are.
                 slotId: selectedSlot ? selectedSlot.slotId : undefined
             });
             onSuccess();

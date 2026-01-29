@@ -22,23 +22,25 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
     const { colors } = useTheme();
 
     return (
-        <article 
-            className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
+        <article
+            className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow focus:ring-2 focus:ring-offset-2 focus:outline-none"
+            tabIndex={0}
             style={{
                 backgroundColor: colors.bg.card,
-                borderColor: colors.border.default
+                borderColor: colors.border.default,
+                // Ensure ring color respects theme if needed, but standard focus ring is usually accessible
             }}
             aria-label={`Rendez-vous : ${appointment.reason} le ${formatDate(appointment.date)} à ${formatTime(appointment.time)}`}
         >
             <div className="flex justify-between items-start mb-4">
                 <div>
-                    <h3 
+                    <h3
                         className="text-lg font-semibold mb-1"
                         style={{ color: colors.text.primary }}
                     >
                         {appointment.reason}
                     </h3>
-                    <div 
+                    <div
                         className="flex items-center mb-2"
                         style={{ color: colors.text.secondary }}
                     >
@@ -53,7 +55,7 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
             </div>
 
             <dl className="flex items-center gap-6 mb-6">
-                <div 
+                <div
                     className="flex items-center"
                     style={{ color: colors.text.primary }}
                 >
@@ -61,7 +63,7 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                     <dt className="sr-only">Date :</dt>
                     <dd>{formatDate(appointment.date)}</dd>
                 </div>
-                <div 
+                <div
                     className="flex items-center"
                     style={{ color: colors.text.primary }}
                 >
@@ -72,7 +74,7 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
             </dl>
 
             {(onCancel || onEdit) && (
-                <div 
+                <div
                     className="flex gap-3 justify-end pt-4 border-t"
                     style={{ borderColor: colors.border.default }}
                     role="group"

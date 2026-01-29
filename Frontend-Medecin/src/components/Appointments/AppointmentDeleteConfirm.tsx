@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { AlertTriangle, Bell } from 'lucide-react';
 import { useAppointmentStore } from '../../stores/appointmentStore';
+import { usePatientStore } from '../../stores/patientStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
-import { getPatientName } from '../../utils/mockData';
 import Button from '../Common/Button';
 import Textarea from '../Common/Textarea';
-import type { Appointment } from '../../utils/mockData';
+import type { Appointment } from '../../types';
 
 interface AppointmentDeleteConfirmProps {
   appointment: Appointment | null;
@@ -20,7 +20,9 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
   onCancel
 }) => {
   const { cancelAppointment } = useAppointmentStore();
+  const { patients } = usePatientStore();
   const { addToast } = useUIStore();
+  const { colors, darkMode } = useTheme();
   const [reason, setReason] = useState('');
   const [notifyPatient, setNotifyPatient] = useState(true);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -32,7 +34,7 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
 
     try {
       cancelAppointment(appointment.appointmentId);
-      
+
       if (notifyPatient) {
       }
 
@@ -43,6 +45,11 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
     } finally {
       setIsSubmitting(false);
     }
+  };
+
+  const getPatientName = (patientId: string): string => {
+    const patient = patients.find(p => p.patientId === patientId);
+    return patient ? `${patient.FirstName} ${patient.Surname}` : 'Patient inconnu';
   };
 
   return (
@@ -61,7 +68,7 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
       </div>
 
       {/* Appointment details */}
-      <div 
+      <div
         className="p-4 rounded-lg space-y-2"
         style={{ backgroundColor: colors.bg.secondary }}
       >
@@ -117,7 +124,7 @@ export const AppointmentDeleteConfirm: React.FC<AppointmentDeleteConfirmProps> =
       </label>
 
       {/* Actions */}
-      <div 
+      <div
         className="flex justify-end gap-3 pt-4 border-t"
         style={{ borderColor: colors.border.default }}
       >

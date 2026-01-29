@@ -4,10 +4,11 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useAppointmentStore } from '../../stores/appointmentStore';
+import { usePatientStore } from '../../stores/patientStore';
 import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
-import { getPatientName } from '../../utils/mockData';
+// import { getPatientName } from '../../utils/mockData';
 
 export const CalendarView: React.FC = () => {
   const calendarRef = useRef<FullCalendar>(null);
@@ -15,6 +16,12 @@ export const CalendarView: React.FC = () => {
   const { getAppointmentsForCalendar, selectAppointment, setSelectedDate } = useAppointmentStore();
   const { openModal } = useUIStore();
   const { colors } = useTheme();
+  const { patients } = usePatientStore();
+
+  const getPatientName = (patientId: string): string => {
+    const patient = patients.find(p => p.patientId === patientId);
+    return patient ? `${patient.FirstName} ${patient.Surname}` : 'Patient inconnu';
+  };
 
   const events = doctor ? getAppointmentsForCalendar(doctor.id) : [];
 
@@ -45,7 +52,7 @@ export const CalendarView: React.FC = () => {
   };
 
   return (
-    <div 
+    <div
       className="rounded-xl shadow-sm border p-4 lg:p-6"
       style={{
         backgroundColor: colors.bg.card,

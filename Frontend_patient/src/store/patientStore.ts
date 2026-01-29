@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Patient, PatientUpdatePayload } from '../types';
+import type { Patient, PatientUpdatePayload } from '../types';
 import { patientService } from '../services';
 import { authService } from '../services/authService';
 
@@ -54,8 +54,14 @@ export const usePatientStore = create<PatientStore>((set) => ({
   initialize: () => {
     const token = authService.getStoredToken();
     const user = authService.getStoredUser();
-    if (token && user) {
+
+    // Vérification stricte du rôle : on ne garde la session que si c'est un patient
+    if (token && user && user.role === 'PATIENT') {
       set({ isAuthenticated: true });
+    } else {
+      // Si c'est un token invalide ou un autre rôle (ex: DOCTEUR), on nettoie
+      authService.logout();
+      set({ isAuthenticated: false, currentPatient: null });
     }
   },
 }));

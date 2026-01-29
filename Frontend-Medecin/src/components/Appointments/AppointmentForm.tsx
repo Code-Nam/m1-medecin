@@ -11,7 +11,7 @@ import Input from '../Common/Input';
 import Select from '../Common/Select';
 import Textarea from '../Common/Textarea';
 import { isValidReason, isValidTime, isDateValid, validationMessages } from '../../utils/validation';
-import type { Appointment } from '../../utils/mockData';
+import type { Appointment } from '../../types';
 
 interface AppointmentFormProps {
   appointment?: Appointment | null;
@@ -71,29 +71,15 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
   const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
   const [loadingSlots, setLoadingSlots] = useState(false);
 
-  useEffect(() => {
-    if (doctor?.id) {
-      fetchPatients(doctor.id).catch(() => {});
-    }
-  }, [doctor?.id, fetchPatients]);
-
-  useEffect(() => {
-    if (doctor?.id && formData.date && !isEditing) {
-      fetchAvailableSlots(doctor.id, formData.date);
-    } else {
-      setAvailableSlots([]);
-    }
-  }, [doctor?.id, formData.date, isEditing, fetchAvailableSlots]);
-
   const fetchAvailableSlots = React.useCallback(async (doctorId: string, date: string) => {
     if (!doctorId || !date) {
       setAvailableSlots([]);
       return;
     }
-    
+
     setLoadingSlots(true);
     try {
-      const response = await availabilityService.getAvailableSlots(doctorId, date);
+      const response: any = await availabilityService.getAvailableSlots(doctorId, date);
       setAvailableSlots(response.slots || []);
     } catch (error: any) {
       setAvailableSlots([]);
@@ -104,6 +90,20 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
       setLoadingSlots(false);
     }
   }, [addToast]);
+
+  useEffect(() => {
+    if (doctor?.id) {
+      fetchPatients(doctor.id).catch(() => { });
+    }
+  }, [doctor?.id, fetchPatients]);
+
+  useEffect(() => {
+    if (doctor?.id && formData.date && !isEditing) {
+      fetchAvailableSlots(doctor.id, formData.date);
+    } else {
+      setAvailableSlots([]);
+    }
+  }, [doctor?.id, formData.date, isEditing, fetchAvailableSlots]);
 
   const doctorPatients = patients.filter(p => p.assigned_doctor === doctor?.id);
   const patientOptions = doctorPatients.map(p => ({
@@ -153,12 +153,14 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
       const slotId = selectedSlot?.slotId;
 
       const appointmentData = {
-        appointedPatientId: formData.patientId,
-        appointedDoctorId: doctor.id,
         date: convertToAPIDate(formData.date),
         time: formData.time,
         reason: formData.reason,
         slotId: slotId,
+        status: (formData.createdBy === 'doctor' ? 'doctor_created' : 'pending') as any,
+        createdBy: formData.createdBy as any,
+        appointedPatient: formData.patientId,
+        appointedDoctor: doctor.id,
       };
 
       if (isEditing && appointment) {
@@ -188,7 +190,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
     <form onSubmit={handleSubmit} className="space-y-5" aria-label={isEditing ? "Modifier le rendez-vous" : "Créer un nouveau rendez-vous"}>
       <fieldset>
         <legend className="sr-only">Informations du rendez-vous</legend>
-        
+
         {/* Patient */}
         <Select
           label="Patient"
@@ -244,14 +246,14 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                         onClick={() => handleChange('time', slot.startTime)}
                         className="py-2 px-3 text-sm font-medium rounded-md border transition-colors focus:outline-none focus:ring-2"
                         style={{
-                          backgroundColor: isSelected 
-                            ? colors.accent.primary 
+                          backgroundColor: isSelected
+                            ? colors.accent.primary
                             : colors.bg.card,
-                          color: isSelected 
-                            ? '#FFFFFF' 
+                          color: isSelected
+                            ? '#FFFFFF'
                             : colors.text.primary,
-                          borderColor: isSelected 
-                            ? colors.accent.primary 
+                          borderColor: isSelected
+                            ? colors.accent.primary
                             : colors.border.default,
                         }}
                         onMouseEnter={(e) => {
@@ -323,7 +325,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 checked={formData.createdBy === 'doctor'}
                 onChange={(e) => handleChange('createdBy', e.target.value)}
                 className="w-4 h-4 focus:ring-2 focus:ring-offset-2"
-                style={{ 
+                style={{
                   accentColor: colors.accent.primary,
                   '--tw-ring-color': colors.accent.primary
                 } as React.CSSProperties}
@@ -341,7 +343,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 checked={formData.createdBy === 'patient'}
                 onChange={(e) => handleChange('createdBy', e.target.value)}
                 className="w-4 h-4 focus:ring-2 focus:ring-offset-2"
-                style={{ 
+                style={{
                   accentColor: colors.accent.primary,
                   '--tw-ring-color': colors.accent.primary
                 } as React.CSSProperties}
@@ -356,7 +358,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
       )}
 
       {/* Actions */}
-      <div 
+      <div
         className="flex justify-end gap-3 pt-4 border-t"
         style={{ borderColor: colors.border.default }}
       >

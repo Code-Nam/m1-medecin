@@ -33,7 +33,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
       htmlElement.classList.remove('dark');
       htmlElement.style.colorScheme = 'light';
       document.body.style.backgroundColor = '#FCFCF7';
-      document.body.style.color = '#263238';
+      document.body.style.color = '#1A1A1A';
     }
   }, [darkMode]);
 
@@ -44,13 +44,22 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
         backgroundColor: colors.bg.primary,
         color: colors.text.primary
       }}
+      lang="fr"
       >
+      {/* Skip Links */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:text-white focus:rounded-lg"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:text-white focus:rounded-lg focus:shadow-lg"
         style={{ backgroundColor: colors.accent.primary }}
       >
         Aller au contenu principal
+      </a>
+      <a
+        href="#navigation"
+        className="sr-only focus:not-sr-only focus:absolute focus:top-16 focus:left-4 focus:z-50 focus:px-4 focus:py-2 focus:text-white focus:rounded-lg focus:shadow-lg"
+        style={{ backgroundColor: colors.accent.primary }}
+      >
+        Aller à la navigation
       </a>
 
       <div className="flex">
@@ -61,8 +70,14 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
 
           <main
             id="main-content"
+            role="main"
             className="flex-1 p-4 lg:p-6 overflow-auto"
+            style={{
+              backgroundColor: colors.bg.primary,
+              color: colors.text.primary
+            }}
             tabIndex={-1}
+            aria-label="Contenu principal"
           >
             {children}
           </main>

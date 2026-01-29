@@ -20,22 +20,30 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
     return (
         <div className="space-y-4">
             <h3 
+                id="timeslot-selector-heading"
                 className="text-lg font-medium"
                 style={{ color: colors.text.primary }}
             >
-                2. Choisissez un créneau
+                Deuxième étape : Choisissez un créneau horaire
             </h3>
             {availableSlots.length === 0 ? (
                 <p 
                     className="italic"
                     style={{ color: colors.text.secondary }}
+                    role="status"
+                    aria-live="polite"
                 >
-                    Aucun créneau disponible.
+                    Aucun créneau disponible pour cette date.
                 </p>
             ) : (
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                <div 
+                    className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3"
+                    role="group"
+                    aria-labelledby="timeslot-selector-heading"
+                >
                     {availableSlots.map((slot) => {
                         const isSelected = selectedTime === slot.time;
+                        const timeLabel = `Créneau de ${formatTime(slot.time)}${isSelected ? ', actuellement sélectionné' : ''}`;
                         return (
                             <button
                                 key={slot.time}
@@ -64,6 +72,8 @@ export const TimeSlotSelector: React.FC<TimeSlotSelectorProps> = ({
                                     }
                                 }}
                                 type="button"
+                                aria-label={timeLabel}
+                                aria-pressed={isSelected}
                             >
                                 {formatTime(slot.time)}
                             </button>

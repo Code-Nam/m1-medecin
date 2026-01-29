@@ -7,8 +7,7 @@ import {
   Settings,
   LogOut,
   Menu,
-  Stethoscope,
-  Building2
+  Stethoscope
 } from 'lucide-react';
 import { useAuthStore } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -67,6 +66,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
       )}
 
       <aside
+        id="navigation"
         className={`
           fixed lg:static inset-y-0 left-0 z-50
           flex flex-col border-r
@@ -77,6 +77,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           backgroundColor: colors.bg.sidebar,
           borderColor: colors.border.default
         }}
+        role="complementary"
         aria-label="Menu de navigation principal"
       >
         <div 
@@ -88,7 +89,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
             style={{ 
               background: darkMode 
                 ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)' 
-                : 'linear-gradient(to bottom right, #43A78B, #2E7D6B)' 
+                : 'linear-gradient(to bottom right, #00796B, #004D40)' 
             }}
           >
             <Stethoscope className="w-6 h-6" />
@@ -146,11 +147,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                   `}
                   style={{
                     backgroundColor: currentPage === item.path
-                      ? darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(67, 167, 139, 0.1)'
+                      ? darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(0, 121, 107, 0.1)'
                       : 'transparent',
                     color: currentPage === item.path
-                      ? darkMode ? '#4DB6AC' : '#43A78B'
-                      : darkMode ? '#D1D5DB' : '#263238'
+                      ? darkMode ? '#4DB6AC' : '#00796B'
+                      : darkMode ? '#CFD8DC' : '#1A1A1A'
                   }}
                   onMouseEnter={(e) => {
                     if (currentPage !== item.path) {
@@ -163,23 +164,23 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                     }
                   }}
                   aria-current={currentPage === item.path ? 'page' : undefined}
-                  aria-label={item.label}
                 >
                   <span 
                     className="flex-shrink-0"
+                    aria-hidden="true"
                     style={{
                       color: currentPage === item.path
-                        ? darkMode ? '#4DB6AC' : '#43A78B'
-                        : darkMode ? '#9CA3AF' : '#546E7A'
+                        ? darkMode ? '#4DB6AC' : '#00796B'
+                        : darkMode ? '#B0BEC5' : '#37474F'
                     }}
                     onMouseEnter={(e) => {
                       if (currentPage !== item.path) {
-                        e.currentTarget.style.color = darkMode ? '#4DB6AC' : '#43A78B';
+                        e.currentTarget.style.color = darkMode ? '#4DB6AC' : '#00796B';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (currentPage !== item.path) {
-                        e.currentTarget.style.color = darkMode ? '#9CA3AF' : '#546E7A';
+                        e.currentTarget.style.color = darkMode ? '#B0BEC5' : '#37474F';
                       }
                     }}
                   >

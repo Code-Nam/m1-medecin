@@ -51,6 +51,8 @@ export const CalendarView: React.FC = () => {
         backgroundColor: colors.bg.card,
         borderColor: colors.border.default
       }}
+      role="region"
+      aria-label="Calendrier des rendez-vous"
     >
       <FullCalendar
         ref={calendarRef}
@@ -67,7 +69,8 @@ export const CalendarView: React.FC = () => {
           today: "Aujourd'hui",
           month: 'Mois',
           week: 'Semaine',
-          day: 'Jour'
+          day: 'Jour',
+          list: 'Liste'
         }}
         events={enrichedEvents}
         dateClick={handleDateClick}
@@ -93,8 +96,22 @@ export const CalendarView: React.FC = () => {
         }}
         height="auto"
         aspectRatio={1.8}
-        eventClassNames="cursor-pointer transition-transform hover:scale-[1.02]"
+        eventClassNames="cursor-pointer transition-transform hover:scale-[1.02] focus:outline-none focus:ring-2"
         dayCellClassNames="cursor-pointer transition-colors"
+        navLinks={true}
+        navLinkDayClick="timeGridDay"
+        dayMaxEventRows={true}
+        views={{
+          dayGridMonth: {
+            titleFormat: { year: 'numeric', month: 'long' }
+          },
+          timeGridWeek: {
+            titleFormat: { year: 'numeric', month: 'long', day: 'numeric' }
+          },
+          timeGridDay: {
+            titleFormat: { year: 'numeric', month: 'long', day: 'numeric', weekday: 'long' }
+          }
+        }}
       />
     </div>
   );

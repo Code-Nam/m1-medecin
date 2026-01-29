@@ -2,13 +2,14 @@ import React from 'react';
 import { createRoot } from 'react-dom/client';
 import App from './App';
 import './index.css';
+import { initZoomControl } from './utils/zoomControl';
 
 const initializeTheme = () => {
   const htmlElement = document.documentElement;
   htmlElement.classList.remove('dark');
   htmlElement.style.colorScheme = 'light';
   document.body.style.backgroundColor = '#F5F5F5';
-  document.body.style.color = '#1F1F1F';
+  document.body.style.color = '#1A1A1A';
   
   const stored = localStorage.getItem('ui-storage');
   if (stored) {
@@ -24,23 +25,26 @@ const initializeTheme = () => {
         htmlElement.classList.remove('dark');
         htmlElement.style.colorScheme = 'light';
         document.body.style.backgroundColor = '#F5F5F5';
-        document.body.style.color = '#1F1F1F';
+        document.body.style.color = '#1A1A1A';
       }
     } catch (e) {
       htmlElement.classList.remove('dark');
       htmlElement.style.colorScheme = 'light';
       document.body.style.backgroundColor = '#F5F5F5';
-      document.body.style.color = '#1F1F1F';
+      document.body.style.color = '#1A1A1A';
     }
   } else {
     htmlElement.classList.remove('dark');
     htmlElement.style.colorScheme = 'light';
     document.body.style.backgroundColor = '#F5F5F5';
-    document.body.style.color = '#1F1F1F';
+    document.body.style.color = '#1A1A1A';
   }
 };
 
 initializeTheme();
+
+// Limiter le zoom à 150% maximum
+initZoomControl();
 
 const container = document.getElementById('root');
 if (!container) {

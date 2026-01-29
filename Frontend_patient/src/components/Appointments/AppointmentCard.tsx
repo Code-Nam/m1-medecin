@@ -22,12 +22,13 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
     const { colors } = useTheme();
 
     return (
-        <div 
+        <article 
             className="rounded-lg shadow-sm border p-6 hover:shadow-md transition-shadow"
             style={{
                 backgroundColor: colors.bg.card,
                 borderColor: colors.border.default
             }}
+            aria-label={`Rendez-vous : ${appointment.reason} le ${formatDate(appointment.date)} à ${formatTime(appointment.time)}`}
         >
             <div className="flex justify-between items-start mb-4">
                 <div>
@@ -41,42 +42,50 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                         className="flex items-center mb-2"
                         style={{ color: colors.text.secondary }}
                     >
-                        <User size={16} className="mr-2" />
-                        <span className="text-sm">{doctorName || 'Médecin inconnu'}</span>
+                        <User size={16} className="mr-2" aria-hidden="true" />
+                        <span className="text-sm">
+                            <span className="sr-only">Médecin : </span>
+                            {doctorName || 'Médecin inconnu'}
+                        </span>
                     </div>
                 </div>
                 <AppointmentStatus status={appointment.status} />
             </div>
 
-            <div className="flex items-center gap-6 mb-6">
+            <dl className="flex items-center gap-6 mb-6">
                 <div 
                     className="flex items-center"
                     style={{ color: colors.text.primary }}
                 >
-                    <Calendar size={18} className="mr-2" style={{ color: colors.accent.primary }} />
-                    <span>{formatDate(appointment.date)}</span>
+                    <Calendar size={18} className="mr-2" style={{ color: colors.accent.primary }} aria-hidden="true" />
+                    <dt className="sr-only">Date :</dt>
+                    <dd>{formatDate(appointment.date)}</dd>
                 </div>
                 <div 
                     className="flex items-center"
                     style={{ color: colors.text.primary }}
                 >
-                    <Clock size={18} className="mr-2" style={{ color: colors.accent.primary }} />
-                    <span>{formatTime(appointment.time)}</span>
+                    <Clock size={18} className="mr-2" style={{ color: colors.accent.primary }} aria-hidden="true" />
+                    <dt className="sr-only">Heure :</dt>
+                    <dd>{formatTime(appointment.time)}</dd>
                 </div>
-            </div>
+            </dl>
 
             {(onCancel || onEdit) && (
                 <div 
                     className="flex gap-3 justify-end pt-4 border-t"
                     style={{ borderColor: colors.border.default }}
+                    role="group"
+                    aria-label="Actions du rendez-vous"
                 >
                     {onEdit && (
                         <Button
                             variant="outline"
                             size="sm"
                             onClick={() => onEdit(appointment.appointmentId)}
+                            aria-label={`Modifier le rendez-vous du ${formatDate(appointment.date)}`}
                         >
-                            Modifier
+                            <span aria-hidden="true">Modifier</span>
                         </Button>
                     )}
                     {onCancel && (
@@ -84,12 +93,13 @@ export const AppointmentCard: React.FC<AppointmentCardProps> = ({
                             variant="danger"
                             size="sm"
                             onClick={() => onCancel(appointment.appointmentId)}
+                            aria-label={`Annuler le rendez-vous du ${formatDate(appointment.date)}`}
                         >
-                            Annuler
+                            <span aria-hidden="true">Annuler</span>
                         </Button>
                     )}
                 </div>
             )}
-        </div>
+        </article>
     );
 };

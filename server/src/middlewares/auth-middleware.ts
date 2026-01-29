@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { verifyToken, extractTokenFromHeader, JWTPayload } from '../utils/jwt';
+import type { Request, Response, NextFunction } from 'express';
+import { verifyToken, extractTokenFromHeader, type JWTPayload } from '../utils/jwt';
 
 export interface AuthRequest extends Request {
   user?: JWTPayload;

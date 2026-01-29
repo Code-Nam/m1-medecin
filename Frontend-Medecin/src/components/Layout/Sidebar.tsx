@@ -29,9 +29,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
   const { user, logout } = useAuthStore();
   const { sidebarCollapsed, toggleSidebar, darkMode } = useUIStore();
   const { colors } = useTheme();
-  
+
   const [isDesktop, setIsDesktop] = React.useState(window.innerWidth >= 1024);
-  
+
   React.useEffect(() => {
     const handleResize = () => {
       const desktop = window.innerWidth >= 1024;
@@ -40,11 +40,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
         toggleSidebar();
       }
     };
-    
+
     window.addEventListener('resize', handleResize);
     return () => window.removeEventListener('resize', handleResize);
   }, [sidebarCollapsed, toggleSidebar]);
-  
+
   const isCollapsed = isDesktop ? false : sidebarCollapsed;
 
   const navItems: NavItem[] = [
@@ -80,30 +80,30 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
         role="complementary"
         aria-label="Menu de navigation principal"
       >
-        <div 
+        <div
           className="flex items-center gap-3 px-4 py-5 border-b"
           style={{ borderColor: colors.border.default }}
         >
-          <div 
+          <div
             className="flex items-center justify-center w-10 h-10 rounded-xl text-white shadow-lg"
-            style={{ 
-              background: darkMode 
-                ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)' 
-                : 'linear-gradient(to bottom right, #00796B, #004D40)' 
+            style={{
+              background: darkMode
+                ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)'
+                : 'linear-gradient(to bottom right, #00796B, #004D40)'
             }}
           >
             <Stethoscope className="w-6 h-6" />
           </div>
           {!isCollapsed && (
             <div className="flex-1 min-w-0">
-              <p 
+              <p
                 className="text-sm font-semibold truncate"
                 style={{ color: colors.text.primary }}
               >
                 {user?.role === 'DOCTOR' ? 'Dr. ' : ''}
                 {user?.firstName} {user?.surname}
               </p>
-              <p 
+              <p
                 className="text-xs truncate"
                 style={{ color: colors.text.secondary }}
               >
@@ -118,11 +118,13 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           )}
           <button
             onClick={toggleSidebar}
-            className="p-2 rounded-lg transition-colors lg:hidden"
+            type="button"
+            className="p-2 rounded-lg transition-colors lg:hidden focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{
               color: colors.text.secondary,
-              backgroundColor: 'transparent'
-            }}
+              backgroundColor: 'transparent',
+              '--tw-ring-color': colors.accent.primary
+            } as React.CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
             }}
@@ -130,6 +132,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
             aria-label={isCollapsed ? 'Ouvrir le menu' : 'Fermer le menu'}
+            aria-expanded={!isCollapsed}
+            aria-controls="navigation"
+            tabIndex={0}
           >
             <Menu className="w-5 h-5" />
           </button>
@@ -140,10 +145,12 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
             {navItems.map((item) => (
               <li key={item.id}>
                 <button
+                  type="button"
                   onClick={() => onNavigate(item.path)}
                   className={`
                     w-full flex items-center gap-3 px-3 py-2.5 rounded-lg
                     transition-all duration-200 group font-medium
+                    focus:outline-none focus:ring-2 focus:ring-inset
                   `}
                   style={{
                     backgroundColor: currentPage === item.path
@@ -151,8 +158,9 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                       : 'transparent',
                     color: currentPage === item.path
                       ? darkMode ? '#4DB6AC' : '#00796B'
-                      : darkMode ? '#CFD8DC' : '#1A1A1A'
-                  }}
+                      : darkMode ? '#CFD8DC' : '#1A1A1A',
+                    '--tw-ring-color': darkMode ? '#4DB6AC' : '#00796B'
+                  } as React.CSSProperties}
                   onMouseEnter={(e) => {
                     if (currentPage !== item.path) {
                       e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
@@ -163,9 +171,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                       e.currentTarget.style.backgroundColor = 'transparent';
                     }
                   }}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                      e.preventDefault();
+                      onNavigate(item.path);
+                    }
+                  }}
                   aria-current={currentPage === item.path ? 'page' : undefined}
+                  tabIndex={0}
                 >
-                  <span 
+                  <span
                     className="flex-shrink-0"
                     aria-hidden="true"
                     style={{
@@ -198,13 +213,14 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
           </ul>
         </nav>
 
-        <div 
+        <div
           className="px-3 py-4 border-t"
           style={{ borderColor: colors.border.default }}
         >
           <button
+            type="button"
             onClick={logout}
-            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors"
+            className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-inset focus:ring-red-500"
             style={{
               color: colors.text.primary
             }}
@@ -216,9 +232,16 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
               e.currentTarget.style.backgroundColor = 'transparent';
               e.currentTarget.style.color = colors.text.primary;
             }}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                logout();
+              }
+            }}
             aria-label="Se déconnecter"
+            tabIndex={0}
           >
-            <LogOut className="w-5 h-5 flex-shrink-0" />
+            <LogOut className="w-5 h-5 flex-shrink-0" aria-hidden="true" />
             {!isCollapsed && <span>Déconnexion</span>}
           </button>
         </div>

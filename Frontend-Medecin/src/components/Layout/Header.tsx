@@ -45,7 +45,7 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
   };
 
   return (
-    <header 
+    <header
       role="banner"
       className="sticky top-0 z-30 backdrop-blur-md border-b"
       style={{
@@ -58,12 +58,14 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
         {/* Left - Breadcrumb */}
         <div className="flex items-center gap-4">
           <button
+            type="button"
             onClick={toggleSidebar}
-            className="p-2 rounded-lg transition-colors lg:hidden"
+            className="p-2 rounded-lg transition-colors lg:hidden focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{
               color: colors.text.secondary,
-              backgroundColor: 'transparent'
-            }}
+              backgroundColor: 'transparent',
+              '--tw-ring-color': colors.accent.primary
+            } as React.CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
             }}
@@ -71,8 +73,10 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
             aria-label="Ouvrir le menu de navigation"
+            aria-controls="navigation"
+            tabIndex={0}
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-5 h-5" aria-hidden="true" />
           </button>
 
           <nav aria-label="Fil d'Ariane" className="hidden sm:block">
@@ -81,10 +85,10 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
                 breadcrumb.map((item, index) => (
                   <li key={index} className="flex items-center gap-2">
                     {index > 0 && (
-                      <ChevronRight 
-                        className="w-4 h-4" 
+                      <ChevronRight
+                        className="w-4 h-4"
                         style={{ color: colors.text.muted }}
-                        aria-hidden="true" 
+                        aria-hidden="true"
                       />
                     )}
                     <span
@@ -113,16 +117,16 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
         <div className="flex items-center gap-2 sm:gap-4">
           {/* Doctor Selector for Secretaries */}
           <DoctorSelector />
-          
+
           {/* Date/Time */}
           <div className="hidden md:block text-right">
-            <p 
+            <p
               className="text-sm font-medium font-mono"
               style={{ color: colors.text.primary }}
             >
               {formatTime(currentTime)}
             </p>
-            <p 
+            <p
               className="text-xs capitalize"
               style={{ color: colors.text.secondary }}
             >
@@ -132,11 +136,13 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
 
           {/* Notifications */}
           <button
-            className="relative p-2 rounded-lg transition-colors"
+            type="button"
+            className="relative p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{
               color: colors.text.secondary,
-              backgroundColor: 'transparent'
-            }}
+              backgroundColor: 'transparent',
+              '--tw-ring-color': colors.accent.primary
+            } as React.CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
             }}
@@ -144,10 +150,11 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
             aria-label={`Notifications${pendingCount > 0 ? ` (${pendingCount} en attente)` : ''}`}
+            tabIndex={0}
           >
             <Bell className="w-5 h-5" aria-hidden="true" />
             {pendingCount > 0 && (
-              <span 
+              <span
                 className="absolute top-1 right-1 w-4 h-4 bg-red-500 text-white text-xs font-bold rounded-full flex items-center justify-center"
                 style={{ color: 'rgba(255, 255, 255, 1)' }}
                 aria-hidden="true"
@@ -159,12 +166,14 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
 
           {/* Dark mode toggle */}
           <button
+            type="button"
             onClick={toggleDarkMode}
-            className="p-2 rounded-lg transition-colors"
+            className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
             style={{
               color: colors.text.secondary,
-              backgroundColor: 'transparent'
-            }}
+              backgroundColor: 'transparent',
+              '--tw-ring-color': colors.accent.primary
+            } as React.CSSProperties}
             onMouseEnter={(e) => {
               e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
             }}
@@ -172,6 +181,8 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
               e.currentTarget.style.backgroundColor = 'transparent';
             }}
             aria-label={darkMode ? 'Activer le mode clair' : 'Activer le mode sombre'}
+            aria-pressed={darkMode}
+            tabIndex={0}
           >
             {darkMode ? (
               <Sun className="w-5 h-5 text-yellow-500" aria-hidden="true" />

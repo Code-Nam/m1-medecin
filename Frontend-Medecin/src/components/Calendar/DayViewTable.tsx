@@ -149,31 +149,39 @@ export const DayViewTable: React.FC = () => {
                 </div>
 
                 {/* Actions groupées */}
-                <div className="flex items-center gap-1 bg-white/10 dark:bg-black/10 rounded-lg p-0.5">
+                <div className="flex items-center gap-1 bg-white/10 dark:bg-black/10 rounded-lg p-0.5" role="group" aria-label="Actions du rendez-vous">
                   {appointment.status === 'PENDING' && (
                     <>
                       <button
+                        type="button"
                         onClick={() => handleConfirm(appointment.appointmentId)}
-                        className="p-1.5 rounded-md text-green-600 hover:bg-green-50 dark:hover:bg-green-900/40 transition-colors"
+                        className="p-1.5 rounded-md text-green-600 hover:bg-green-50 dark:hover:bg-green-900/40 transition-colors focus:outline-none focus:ring-2 focus:ring-green-500 focus:ring-offset-1"
                         aria-label={`Confirmer ${getPatientName(appointment.appointedPatient)}`}
+                        tabIndex={0}
                       >
-                        <CheckCircle className="w-4 h-4" />
+                        <CheckCircle className="w-4 h-4" aria-hidden="true" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleCancel(appointment)}
-                        className="p-1.5 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 transition-colors"
+                        className="p-1.5 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                         aria-label={`Refuser ${getPatientName(appointment.appointedPatient)}`}
+                        tabIndex={0}
                       >
-                        <XCircle className="w-4 h-4" />
+                        <XCircle className="w-4 h-4" aria-hidden="true" />
                       </button>
                     </>
                   )}
                   {appointment.status !== 'CANCELLED' && (
                     <>
                       <button
+                        type="button"
                         onClick={() => handleEdit(appointment)}
-                        className="p-1.5 rounded-md transition-colors"
-                        style={{ color: colors.text.muted }}
+                        className="p-1.5 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1"
+                        style={{
+                          color: colors.text.muted,
+                          '--tw-ring-color': darkMode ? '#4DB6AC' : '#00796B'
+                        } as React.CSSProperties}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = darkMode ? 'rgba(255,255,255,0.1)' : '#F3F4F6';
                         }}
@@ -181,12 +189,14 @@ export const DayViewTable: React.FC = () => {
                           e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                         aria-label={`Modifier ${getPatientName(appointment.appointedPatient)}`}
+                        tabIndex={0}
                       >
-                        <Edit2 className="w-3.5 h-3.5" />
+                        <Edit2 className="w-3.5 h-3.5" aria-hidden="true" />
                       </button>
                       <button
+                        type="button"
                         onClick={() => handleDelete(appointment)}
-                        className="p-1.5 rounded-md transition-colors"
+                        className="p-1.5 rounded-md transition-colors focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-1"
                         style={{ color: colors.text.muted }}
                         onMouseEnter={(e) => {
                           e.currentTarget.style.backgroundColor = darkMode ? 'rgba(255,255,255,0.1)' : '#F3F4F6';
@@ -195,8 +205,9 @@ export const DayViewTable: React.FC = () => {
                           e.currentTarget.style.backgroundColor = 'transparent';
                         }}
                         aria-label={`Supprimer ${getPatientName(appointment.appointedPatient)}`}
+                        tabIndex={0}
                       >
-                        <Trash2 className="w-3.5 h-3.5" />
+                        <Trash2 className="w-3.5 h-3.5" aria-hidden="true" />
                       </button>
                     </>
                   )}

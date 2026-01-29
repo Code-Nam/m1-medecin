@@ -1,10 +1,11 @@
 import React from 'react';
 import { Clock, User, FileText, CheckCircle, XCircle, Edit2, Trash2 } from 'lucide-react';
 import { useAppointmentStore } from '../../stores/appointmentStore';
+import { usePatientStore } from '../../stores/patientStore';
 import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
-import { getPatientName } from '../../utils/mockData';
+// import { getPatientName } from '../../utils/mockData';
 import Button from '../Common/Button';
 
 export const DayViewTable: React.FC = () => {
@@ -12,26 +13,32 @@ export const DayViewTable: React.FC = () => {
   const { getTodayAppointments, selectAppointment, confirmAppointment, cancelAppointment } = useAppointmentStore();
   const { openModal, addToast } = useUIStore();
   const { darkMode, colors } = useTheme();
+  const { patients } = usePatientStore();
+
+  const getPatientName = (patientId: string): string => {
+    const patient = patients.find(p => p.patientId === patientId);
+    return patient ? `${patient.FirstName} ${patient.Surname}` : 'Patient inconnu';
+  };
 
   const todayAppointments = doctor ? getTodayAppointments(doctor.id) : [];
 
   const getStatusBadge = (status: string) => {
     const styleMap: Record<string, { bg: string; text: string }> = {
-      confirmed: { 
-        bg: darkMode ? 'rgba(16, 185, 129, 0.3)' : '#D1FAE5', 
-        text: darkMode ? '#4ADE80' : '#065F46' 
+      confirmed: {
+        bg: darkMode ? 'rgba(16, 185, 129, 0.3)' : '#D1FAE5',
+        text: darkMode ? '#4ADE80' : '#065F46'
       },
-      pending: { 
-        bg: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7', 
-        text: darkMode ? '#FACC15' : '#92400E' 
+      pending: {
+        bg: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7',
+        text: darkMode ? '#FACC15' : '#92400E'
       },
-      cancelled: { 
-        bg: darkMode ? colors.bg.card : '#F3F4F6', 
-        text: colors.text.secondary 
+      cancelled: {
+        bg: darkMode ? colors.bg.card : '#F3F4F6',
+        text: colors.text.secondary
       },
-      doctor_created: { 
-        bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE', 
-        text: darkMode ? '#60A5FA' : '#1E40AF' 
+      doctor_created: {
+        bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE',
+        text: darkMode ? '#60A5FA' : '#1E40AF'
       }
     };
 
@@ -42,10 +49,10 @@ export const DayViewTable: React.FC = () => {
       doctor_created: 'Créé par médecin'
     };
 
-    const style = styleMap[status] || styleMap.confirmed;
+    const style = styleMap[status] || styleMap.confirmed!;
 
     return (
-      <span 
+      <span
         className="px-2 py-1 rounded-full text-xs font-medium"
         style={{ backgroundColor: style.bg, color: style.text }}
       >
@@ -76,14 +83,14 @@ export const DayViewTable: React.FC = () => {
 
   if (todayAppointments.length === 0) {
     return (
-      <div 
+      <div
         className="rounded-xl shadow-sm border p-6"
         style={{
           backgroundColor: colors.bg.card,
           borderColor: colors.border.default
         }}
       >
-        <h3 
+        <h3
           className="text-lg font-semibold mb-4 flex items-center gap-2"
           style={{ color: colors.text.primary }}
         >
@@ -100,14 +107,14 @@ export const DayViewTable: React.FC = () => {
   }
 
   return (
-    <div 
+    <div
       className="rounded-xl shadow-sm border p-6"
       style={{
         backgroundColor: colors.bg.card,
         borderColor: colors.border.default
       }}
     >
-      <h3 
+      <h3
         className="text-lg font-semibold mb-4 flex items-center gap-2"
         style={{ color: colors.text.primary }}
       >
@@ -124,7 +131,7 @@ export const DayViewTable: React.FC = () => {
             key={appointment.appointmentId}
             className="p-4 rounded-lg border transition-all duration-200 hover:shadow-md"
             style={{
-              backgroundColor: appointment.status === 'cancelled' 
+              backgroundColor: appointment.status === 'cancelled'
                 ? (darkMode ? 'rgba(30, 30, 30, 0.5)' : '#F9FAFB')
                 : colors.bg.secondary,
               borderColor: colors.border.default,

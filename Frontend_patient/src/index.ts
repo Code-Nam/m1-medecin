@@ -3,7 +3,7 @@ import index from "./index.html";
 
 const server = serve({
   // Port spécifique pour le frontend patient
-  port: 3003,
+  port: 3001,
   routes: {
     "/*": index,
 
@@ -36,3 +36,5 @@ const server = serve({
     console: true,
   },
 });
+
+console.log(`Listening on http://localhost:${server.port}`);

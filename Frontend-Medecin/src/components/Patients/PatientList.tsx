@@ -1,5 +1,5 @@
 import React from 'react';
-import { Search, Plus, Phone, Mail, ChevronLeft, ChevronRight, Eye, UserMinus } from 'lucide-react';
+import { Search, Plus, Phone, Mail, ChevronLeft, ChevronRight, Eye, UserMinus, UserPlus } from 'lucide-react';
 import { usePatientStore } from '../../stores/patientStore';
 import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
@@ -57,18 +57,28 @@ export const PatientList: React.FC = () => {
             aria-label="Rechercher un patient par nom ou prénom"
           />
         </div>
-        <Button
-          variant="primary"
-          leftIcon={<Plus className="w-4 h-4" />}
-          onClick={() => openModal('createPatient')}
-          aria-label="Créer un nouveau patient"
-        >
-          Nouveau patient
-        </Button>
+        <div className="flex gap-2">
+          <Button
+            variant="outline"
+            leftIcon={<UserPlus className="w-4 h-4" />}
+            onClick={() => openModal('assignPatient')}
+            aria-label="Ajouter un patient existant"
+          >
+            Patient existant
+          </Button>
+          <Button
+            variant="primary"
+            leftIcon={<Plus className="w-4 h-4" />}
+            onClick={() => openModal('createPatient')}
+            aria-label="Créer un nouveau patient"
+          >
+            Nouveau patient
+          </Button>
+        </div>
       </div>
 
       {/* Table */}
-      <div 
+      <div
         className="rounded-xl shadow-sm border overflow-hidden"
         style={{
           backgroundColor: colors.bg.card,
@@ -80,7 +90,7 @@ export const PatientList: React.FC = () => {
         <div className="overflow-x-auto">
           <table className="w-full" aria-label={`Liste de ${patients.length} patient${patients.length > 1 ? 's' : ''}`}>
             <thead>
-              <tr 
+              <tr
                 className="border-b"
                 style={{
                   backgroundColor: colors.bg.secondary,
@@ -136,12 +146,12 @@ export const PatientList: React.FC = () => {
                   >
                     <th scope="row" className="px-4 py-3">
                       <div className="flex items-center gap-3">
-                        <div 
+                        <div
                           className="w-10 h-10 rounded-full flex items-center justify-center text-white font-semibold text-sm"
-                          style={{ 
-                            background: darkMode 
-                              ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)' 
-                              : 'linear-gradient(to bottom right, #43A78B, #2E7D6B)' 
+                          style={{
+                            background: darkMode
+                              ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)'
+                              : 'linear-gradient(to bottom right, #43A78B, #2E7D6B)'
                           }}
                           aria-hidden="true"
                         >
@@ -182,7 +192,7 @@ export const PatientList: React.FC = () => {
                           type="button"
                           onClick={() => handleViewDetail(patient)}
                           className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
-                          style={{ 
+                          style={{
                             color: colors.text.muted,
                             '--tw-ring-color': colors.accent.primary
                           } as React.CSSProperties}
@@ -200,7 +210,7 @@ export const PatientList: React.FC = () => {
                           type="button"
                           onClick={() => handleRemoveFromDoctor(patient)}
                           className="p-2 rounded-lg transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2"
-                          style={{ 
+                          style={{
                             color: colors.text.muted,
                             '--tw-ring-color': colors.semantic.danger
                           } as React.CSSProperties}
@@ -227,7 +237,7 @@ export const PatientList: React.FC = () => {
 
         {/* Pagination */}
         {totalPages > 1 && (
-          <nav 
+          <nav
             className="flex items-center justify-between px-4 py-3 border-t"
             style={{ borderColor: colors.border.default }}
             aria-label="Navigation de pagination"

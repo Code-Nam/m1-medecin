@@ -1,6 +1,7 @@
 import React, { useEffect } from 'react';
 import { PatientList } from '../components/Patients/PatientList';
 import { PatientModal } from '../components/Patients/PatientModal';
+import { AssignPatientModal } from '../components/Patients/AssignPatientModal';
 import { CalendarModal } from '../components/Calendar/CalendarModal';
 import { usePatientStore } from '../stores/patientStore';
 import { useDoctor } from '../stores/authStore';
@@ -21,13 +22,13 @@ export const PatientsPage: React.FC = () => {
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 
+        <h2
           className="text-2xl font-bold"
           style={{ color: colors.text.primary }}
         >
           Patients
         </h2>
-        <p 
+        <p
           className="text-sm"
           style={{ color: colors.text.secondary }}
         >
@@ -40,6 +41,7 @@ export const PatientsPage: React.FC = () => {
 
       {/* Modals */}
       <PatientModal />
+      <AssignPatientModal />
       <CalendarModal />
     </div>
   );

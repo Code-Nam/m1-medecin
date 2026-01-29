@@ -12,7 +12,7 @@ interface ToastItemProps {
 
 const ToastItem: React.FC<ToastItemProps> = ({ id, type, message, onClose }) => {
   const { darkMode, colors } = useTheme();
-  
+
   const icons = {
     success: <CheckCircle className="w-5 h-5" style={{ color: darkMode ? '#4DB6AC' : '#43A78B' }} />,
     error: <XCircle className="w-5 h-5" style={{ color: darkMode ? '#EF5350' : '#E63946' }} />,
@@ -49,7 +49,10 @@ const ToastItem: React.FC<ToastItemProps> = ({ id, type, message, onClose }) => 
       className={`flex items-center gap-3 px-4 py-3 rounded-lg border shadow-lg animate-slide-in ${bgClasses[type]}`}
     >
       <span aria-hidden="true">{icons[type]}</span>
-      <p className="flex-1 text-sm font-medium text-gray-900 dark:text-white">
+      <p
+        className="flex-1 text-sm font-medium"
+        style={{ color: darkMode ? '#FFFFFF' : '#1A1A1A' }}
+      >
         {message}
       </p>
       <button

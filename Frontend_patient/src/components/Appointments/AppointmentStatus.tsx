@@ -31,9 +31,15 @@ export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }: 
                 };
             case StatusEnum.DOCTOR_CREATED:
                 return {
-                    backgroundColor: darkMode ? 'rgba(77, 182, 172, 0.3)' : 'rgba(67, 167, 139, 0.2)',
-                    color: colors.semantic.success,
-                    borderColor: darkMode ? 'rgba(77, 182, 172, 0.4)' : 'rgba(67, 167, 139, 0.3)'
+                    backgroundColor: darkMode ? 'rgba(33, 150, 243, 0.3)' : 'rgba(33, 150, 243, 0.2)',
+                    color: '#2196F3', // Blue for planned
+                    borderColor: darkMode ? 'rgba(33, 150, 243, 0.4)' : 'rgba(33, 150, 243, 0.3)'
+                };
+            case StatusEnum.COMPLETED:
+                return {
+                    backgroundColor: darkMode ? 'rgba(158, 158, 158, 0.3)' : 'rgba(158, 158, 158, 0.2)',
+                    color: colors.text.secondary,
+                    borderColor: darkMode ? 'rgba(158, 158, 158, 0.4)' : 'rgba(158, 158, 158, 0.3)'
                 };
             default:
                 return {
@@ -53,7 +59,9 @@ export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }: 
             case StatusEnum.CANCELLED:
                 return 'Annulé';
             case StatusEnum.DOCTOR_CREATED:
-                return 'Proposé';
+                return 'Confirmé par le médecin';
+            case StatusEnum.COMPLETED:
+                return 'Terminé';
             default:
                 return status;
         }
@@ -68,7 +76,9 @@ export const AppointmentStatus: React.FC<AppointmentStatusProps> = ({ status }: 
             case StatusEnum.CANCELLED:
                 return 'Statut du rendez-vous : Annulé';
             case StatusEnum.DOCTOR_CREATED:
-                return 'Statut du rendez-vous : Proposé par le médecin';
+                return 'Statut du rendez-vous : Planifié par le médecin';
+            case StatusEnum.COMPLETED:
+                return 'Statut du rendez-vous : Terminé';
             default:
                 return `Statut du rendez-vous : ${status}`;
         }

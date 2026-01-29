@@ -1,8 +1,9 @@
 export enum AppointmentStatus {
-  CONFIRMED = 'confirmed',
-  PENDING = 'pending',
-  CANCELLED = 'cancelled',
-  DOCTOR_CREATED = 'doctor_created',
+  CONFIRMED = 'CONFIRMED',
+  PENDING = 'PENDING',
+  CANCELLED = 'CANCELLED',
+  DOCTOR_CREATED = 'DOCTOR_CREATED',
+  COMPLETED = 'COMPLETED',
 }
 
 export interface Appointment {

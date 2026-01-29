@@ -6,6 +6,7 @@
     "scripts": {
         "dev": "bun run src/server.ts",
         "start": "bun run src/server.ts",
+        "build": "bun build src/server.ts --outdir ./dist --target bun",
         "test": "jest",
         "test:unit": "jest unit",
         "test:integration": "jest integration",

@@ -52,6 +52,7 @@ describe("PatientController - Unit Tests", () => {
             user: {
                 id: "user-123",
                 role: "PATIENT",
+                email: "user@email.com"
             },
         };
     });
@@ -69,7 +70,9 @@ describe("PatientController - Unit Tests", () => {
             };
 
             mockRequest.params = { id: "patient-123" };
-            (patientService.getPatient as jest.Mock).mockResolvedValue(mockPatient);
+            (patientService.getPatient as jest.Mock).mockResolvedValue(
+                mockPatient
+            );
 
             // Act
             await patientController.getPatient(
@@ -78,7 +81,9 @@ describe("PatientController - Unit Tests", () => {
             );
 
             // Assert
-            expect(patientService.getPatient).toHaveBeenCalledWith("patient-123");
+            expect(patientService.getPatient).toHaveBeenCalledWith(
+                "patient-123"
+            );
             expect(mockStatus).toHaveBeenCalledWith(200);
             expect(mockJson).toHaveBeenCalledWith(mockPatient);
         });
@@ -132,7 +137,9 @@ describe("PatientController - Unit Tests", () => {
             };
 
             mockRequest.query = { page: "1", pageSize: "10" };
-            (patientService.getPatients as jest.Mock).mockResolvedValue(mockResult);
+            (patientService.getPatients as jest.Mock).mockResolvedValue(
+                mockResult
+            );
 
             // Act
             await patientController.getPatients(
@@ -169,7 +176,9 @@ describe("PatientController - Unit Tests", () => {
                 pageSize: "10",
                 doctorId: "doctor-123",
             };
-            (patientService.getPatients as jest.Mock).mockResolvedValue(mockResult);
+            (patientService.getPatients as jest.Mock).mockResolvedValue(
+                mockResult
+            );
 
             // Act
             await patientController.getPatients(
@@ -199,7 +208,9 @@ describe("PatientController - Unit Tests", () => {
             };
 
             mockRequest.query = {};
-            (patientService.getPatients as jest.Mock).mockResolvedValue(mockResult);
+            (patientService.getPatients as jest.Mock).mockResolvedValue(
+                mockResult
+            );
 
             // Act
             await patientController.getPatients(
@@ -247,7 +258,9 @@ describe("PatientController - Unit Tests", () => {
             );
 
             // Assert
-            expect(patientService.createPatient).toHaveBeenCalledWith(patientData);
+            expect(patientService.createPatient).toHaveBeenCalledWith(
+                patientData
+            );
             expect(mockStatus).toHaveBeenCalledWith(201);
             expect(mockJson).toHaveBeenCalledWith(mockCreatedPatient);
         });
@@ -256,7 +269,9 @@ describe("PatientController - Unit Tests", () => {
             // Arrange
             mockRequest.body = { firstName: "Alice" }; // Missing required fields
             const error = new Error("Validation error");
-            (patientService.createPatient as jest.Mock).mockRejectedValue(error);
+            (patientService.createPatient as jest.Mock).mockRejectedValue(
+                error
+            );
 
             // Act
             await patientController.createPatient(
@@ -286,7 +301,11 @@ describe("PatientController - Unit Tests", () => {
 
             mockRequest.params = { id: "patient-123" };
             mockRequest.body = updateData;
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT", email: "patient@test.com" };
+            mockRequest.user = {
+                id: "patient-123",
+                role: "PATIENT",
+                email: "patient@test.com",
+            };
             (patientService.updatePatient as jest.Mock).mockResolvedValue(
                 mockUpdatedPatient
             );
@@ -326,7 +345,11 @@ describe("PatientController - Unit Tests", () => {
             // Arrange
             mockRequest.params = { id: "patient-123" };
             mockRequest.body = { phone: "0987654321" };
-            mockRequest.user = { id: "different-user", email: "test@test.com", role: "PATIENT", email: "other@test.com" };
+            mockRequest.user = {
+                id: "different-user",
+                role: "PATIENT",
+                email: "other@test.com",
+            };
 
             // Act
             await patientController.updatePatient(
@@ -343,8 +366,14 @@ describe("PatientController - Unit Tests", () => {
         it("should delete patient successfully", async () => {
             // Arrange
             mockRequest.params = { id: "patient-123" };
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT", email: "patient@test.com" };
-            (patientService.deletePatient as jest.Mock).mockResolvedValue(undefined);
+            mockRequest.user = {
+                id: "patient-123",
+                role: "PATIENT",
+                email: "patient@test.com",
+            };
+            (patientService.deletePatient as jest.Mock).mockResolvedValue(
+                undefined
+            );
 
             // Act
             await patientController.deletePatient(
@@ -353,11 +382,10 @@ describe("PatientController - Unit Tests", () => {
             );
 
             // Assert
-            expect(patientService.deletePatient).toHaveBeenCalledWith("patient-123");
-            expect(mockStatus).toHaveBeenCalledWith(200);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: expect.any(String),
-            });
+            expect(patientService.deletePatient).toHaveBeenCalledWith(
+                "patient-123"
+            );
+            expect(mockStatus).toHaveBeenCalledWith(204);
         });
 
         it("should return 400 when id is missing", async () => {
@@ -378,7 +406,11 @@ describe("PatientController - Unit Tests", () => {
         it("should handle unauthorized access", async () => {
             // Arrange
             mockRequest.params = { id: "patient-123" };
-            mockRequest.user = { id: "different-user", email: "test@test.com", role: "PATIENT", email: "other@test.com" };
+            mockRequest.user = {
+                id: "different-user",
+                role: "PATIENT",
+                email: "other@test.com",
+            };
 
             // Act
             await patientController.deletePatient(

@@ -53,6 +53,7 @@ describe("AppointmentController - Unit Tests", () => {
             user: {
                 id: "user-123",
                 role: "PATIENT",
+                email: "user@email.com"
             },
         };
     });
@@ -71,10 +72,14 @@ describe("AppointmentController - Unit Tests", () => {
             };
 
             mockRequest.params = { appointmentId: "appointment-123" };
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT" };
-            (appointmentService.getAppointmentById as jest.Mock).mockResolvedValue(
-                mockAppointment
-            );
+            mockRequest.user = {
+                id: "patient-123",
+                email: "test@test.com",
+                role: "PATIENT",
+            };
+            (
+                appointmentService.getAppointmentById as jest.Mock
+            ).mockResolvedValue(mockAppointment);
 
             // Act
             await appointmentController.getAppointmentById(
@@ -103,10 +108,14 @@ describe("AppointmentController - Unit Tests", () => {
             };
 
             mockRequest.params = { appointmentId: "appointment-123" };
-            mockRequest.user = { id: "doctor-456", email: "test@test.com", role: "DOCTOR" };
-            (appointmentService.getAppointmentById as jest.Mock).mockResolvedValue(
-                mockAppointment
-            );
+            mockRequest.user = {
+                id: "doctor-456",
+                email: "test@test.com",
+                role: "DOCTOR",
+            };
+            (
+                appointmentService.getAppointmentById as jest.Mock
+            ).mockResolvedValue(mockAppointment);
 
             // Act
             await appointmentController.getAppointmentById(
@@ -132,7 +141,9 @@ describe("AppointmentController - Unit Tests", () => {
             );
 
             // Assert
-            expect(appointmentService.getAppointmentById).not.toHaveBeenCalled();
+            expect(
+                appointmentService.getAppointmentById
+            ).not.toHaveBeenCalled();
             expect(mockStatus).toHaveBeenCalledWith(400);
         });
 
@@ -140,9 +151,9 @@ describe("AppointmentController - Unit Tests", () => {
             // Arrange
             mockRequest.params = { appointmentId: "appointment-123" };
             const error = new Error("Service error");
-            (appointmentService.getAppointmentById as jest.Mock).mockRejectedValue(
-                error
-            );
+            (
+                appointmentService.getAppointmentById as jest.Mock
+            ).mockRejectedValue(error);
 
             // Act
             await appointmentController.getAppointmentById(
@@ -162,12 +173,12 @@ describe("AppointmentController - Unit Tests", () => {
                 appointments: [
                     {
                         id: "appointment-1",
-                        appointedPatient: "patient-123",
+                        patientId: "patient-123",
                         date: new Date("2026-02-15"),
                     },
                     {
                         id: "appointment-2",
-                        appointedPatient: "patient-123",
+                        patientId: "patient-123",
                         date: new Date("2026-02-16"),
                     },
                 ],
@@ -179,12 +190,20 @@ describe("AppointmentController - Unit Tests", () => {
                 },
             };
 
-            mockRequest.params = { appointedPatient: "patient-123" };
-            mockRequest.query = { page: "1", pageSize: "10" };
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT" };
-            (appointmentService.getAppointmentsByPatient as jest.Mock).mockResolvedValue(
-                mockResult
-            );
+            mockRequest.params = {};
+            mockRequest.query = {
+                patientId: "patient-123",
+                page: "1",
+                pageSize: "10",
+            };
+            mockRequest.user = {
+                id: "patient-123",
+                email: "test@test.com",
+                role: "PATIENT",
+            };
+            (
+                appointmentService.getAppointmentsByPatient as jest.Mock
+            ).mockResolvedValue(mockResult);
 
             // Act
             await appointmentController.getAppointmentsByQuery(
@@ -193,11 +212,9 @@ describe("AppointmentController - Unit Tests", () => {
             );
 
             // Assert
-            expect(appointmentService.getAppointmentsByPatient).toHaveBeenCalledWith(
-                "patient-123",
-                1,
-                10
-            );
+            expect(
+                appointmentService.getAppointmentsByPatient
+            ).toHaveBeenCalledWith("patient-123", 1, 10);
             expect(mockStatus).toHaveBeenCalledWith(200);
             expect(mockJson).toHaveBeenCalledWith(mockResult);
         });
@@ -210,12 +227,12 @@ describe("AppointmentController - Unit Tests", () => {
                 appointments: [
                     {
                         id: "appointment-1",
-                        appointedDoctor: "doctor-123",
+                        doctorId: "doctor-123",
                         date: new Date("2026-02-15"),
                     },
                     {
                         id: "appointment-2",
-                        appointedDoctor: "doctor-123",
+                        doctorId: "doctor-123",
                         date: new Date("2026-02-16"),
                     },
                 ],
@@ -227,12 +244,20 @@ describe("AppointmentController - Unit Tests", () => {
                 },
             };
 
-            mockRequest.params = { appointedDoctor: "doctor-123" };
-            mockRequest.query = { page: "1", pageSize: "10" };
-            mockRequest.user = { id: "doctor-123", email: "test@test.com", role: "DOCTOR" };
-            (appointmentService.getAppointmentsByDoctor as jest.Mock).mockResolvedValue(
-                mockResult
-            );
+            mockRequest.params = {};
+            mockRequest.query = {
+                doctorId: "doctor-123",
+                page: "1",
+                pageSize: "10",
+            };
+            mockRequest.user = {
+                id: "doctor-123",
+                email: "test@test.com",
+                role: "DOCTOR",
+            };
+            (
+                appointmentService.getAppointmentsByDoctor as jest.Mock
+            ).mockResolvedValue(mockResult);
 
             // Act
             await appointmentController.getAppointmentsByQuery(
@@ -241,11 +266,9 @@ describe("AppointmentController - Unit Tests", () => {
             );
 
             // Assert
-            expect(appointmentService.getAppointmentsByDoctor).toHaveBeenCalledWith(
-                "doctor-123",
-                1,
-                10
-            );
+            expect(
+                appointmentService.getAppointmentsByDoctor
+            ).toHaveBeenCalledWith("doctor-123", 1, 10);
             expect(mockStatus).toHaveBeenCalledWith(200);
         });
     });
@@ -254,8 +277,8 @@ describe("AppointmentController - Unit Tests", () => {
         it("should create appointment successfully", async () => {
             // Arrange
             const appointmentData = {
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 date: "2026-02-15",
                 startTime: "10:00",
                 endTime: "10:30",
@@ -270,10 +293,11 @@ describe("AppointmentController - Unit Tests", () => {
             };
 
             mockRequest.body = appointmentData;
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT" };
-            (appointmentService.createAppointment as jest.Mock).mockResolvedValue(
-                mockCreatedAppointment
-            );
+                
+            mockRequest.user = { id: "patient-123", role: "PATIENT",  email: "user@email.com"};
+            (
+                appointmentService.createAppointment as jest.Mock
+            ).mockResolvedValue(mockCreatedAppointment);
 
             // Act
             await appointmentController.createAppointment(
@@ -291,11 +315,11 @@ describe("AppointmentController - Unit Tests", () => {
 
         it("should handle validation errors", async () => {
             // Arrange
-            mockRequest.body = { appointedPatient: "patient-123" }; // Missing required fields
+            mockRequest.body = { patientId: "patient-123" }; // Missing required fields
             const error = new Error("Validation error");
-            (appointmentService.createAppointment as jest.Mock).mockRejectedValue(
-                error
-            );
+            (
+                appointmentService.createAppointment as jest.Mock
+            ).mockRejectedValue(error);
 
             // Act
             await appointmentController.createAppointment(
@@ -319,8 +343,8 @@ describe("AppointmentController - Unit Tests", () => {
 
             const mockUpdatedAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 ...updateData,
                 date: new Date(updateData.date),
                 status: "SCHEDULED",
@@ -328,21 +352,25 @@ describe("AppointmentController - Unit Tests", () => {
 
             const mockExistingAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 status: "SCHEDULED",
             };
 
             mockRequest.params = { appointmentId: "appointment-123" };
             mockRequest.body = updateData;
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT" };
-            
-            (appointmentService.getAppointmentById as jest.Mock).mockResolvedValue(
-                mockExistingAppointment
-            );
-            (appointmentService.updateAppointment as jest.Mock).mockResolvedValue(
-                mockUpdatedAppointment
-            );
+            mockRequest.user = {
+                id: "doctor-456",
+                email: "test@test.com",
+                role: "DOCTOR",
+            };
+
+            (
+                appointmentService.getAppointmentById as jest.Mock
+            ).mockResolvedValue(mockExistingAppointment);
+            (
+                appointmentService.updateAppointment as jest.Mock
+            ).mockResolvedValue(mockUpdatedAppointment);
 
             // Act
             await appointmentController.updateAppointment(
@@ -381,20 +409,20 @@ describe("AppointmentController - Unit Tests", () => {
             // Arrange
             const mockExistingAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 status: "SCHEDULED",
             };
 
             mockRequest.params = { appointmentId: "appointment-123" };
-            mockRequest.user = { id: "patient-123", email: "test@test.com", role: "PATIENT" };
-            
-            (appointmentService.getAppointmentById as jest.Mock).mockResolvedValue(
-                mockExistingAppointment
-            );
-            (appointmentService.deleteAppointment as jest.Mock).mockResolvedValue(
-                undefined
-            );
+            mockRequest.user = { id: "patient-123", role: "PATIENT", email: "user@email.com" };
+
+            (
+                appointmentService.getAppointmentById as jest.Mock
+            ).mockResolvedValue(mockExistingAppointment);
+            (
+                appointmentService.deleteAppointment as jest.Mock
+            ).mockResolvedValue(undefined);
 
             // Act
             await appointmentController.deleteAppointment(
@@ -406,10 +434,7 @@ describe("AppointmentController - Unit Tests", () => {
             expect(appointmentService.deleteAppointment).toHaveBeenCalledWith(
                 "appointment-123"
             );
-            expect(mockStatus).toHaveBeenCalledWith(200);
-            expect(mockJson).toHaveBeenCalledWith({
-                message: expect.any(String),
-            });
+            expect(mockStatus).toHaveBeenCalledWith(204);
         });
 
         it("should return 400 when appointmentId is missing", async () => {

@@ -74,8 +74,8 @@ describe("AppointmentController - Integration Tests", () => {
             // Arrange
             const mockAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 date: new Date("2026-02-15"),
                 startTime: "10:00",
                 endTime: "10:30",
@@ -96,18 +96,21 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("id", "appointment-123");
-            expect(response.body.data).toHaveProperty("patientId", "patient-123");
-            expect(response.body.data).toHaveProperty("status", "SCHEDULED");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("id", "appointment-123");
+            expect(response.body).toHaveProperty(
+                "patientId",
+                "patient-123"
+            );
+            expect(response.body).toHaveProperty("status", "SCHEDULED");
         });
 
         it("should get appointment by id successfully for doctor", async () => {
             // Arrange
             const mockAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 date: new Date("2026-02-15"),
                 startTime: "10:00",
                 endTime: "10:30",
@@ -129,13 +132,15 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("doctorId", "doctor-456");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("doctorId", "doctor-456");
         });
 
         it("should return 404 when appointment not found", async () => {
             // Arrange
-            (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(null);
+            (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(
+                null
+            );
 
             // Act
             const response = await request(app)
@@ -181,8 +186,8 @@ describe("AppointmentController - Integration Tests", () => {
             const mockAppointments = [
                 {
                     id: "appointment-1",
-                    appointedPatient: "patient-123",
-                    appointedDoctor: "doctor-456",
+                    patientId: "patient-123",
+                    doctorId: "doctor-456",
                     date: new Date("2026-02-15"),
                     startTime: "10:00",
                     endTime: "10:30",
@@ -190,8 +195,8 @@ describe("AppointmentController - Integration Tests", () => {
                 },
                 {
                     id: "appointment-2",
-                    appointedPatient: "patient-123",
-                    appointedDoctor: "doctor-789",
+                    patientId: "patient-123",
+                    doctorId: "doctor-789",
                     date: new Date("2026-02-16"),
                     startTime: "14:00",
                     endTime: "14:30",
@@ -211,9 +216,9 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.appointments).toHaveLength(2);
-            expect(response.body.data.pagination).toHaveProperty("total", 2);
+            // Response body checked directly
+            expect(response.body.appointments).toHaveLength(2);
+            expect(response.body.pagination).toHaveProperty("total", 2);
         });
 
         it("should return 403 for unauthorized patient access", async () => {
@@ -240,8 +245,8 @@ describe("AppointmentController - Integration Tests", () => {
             const mockAppointments = [
                 {
                     id: "appointment-1",
-                    appointedPatient: "patient-123",
-                    appointedDoctor: "doctor-456",
+                    patientId: "patient-123",
+                    doctorId: "doctor-456",
                     date: new Date("2026-02-15"),
                     startTime: "10:00",
                     endTime: "10:30",
@@ -249,8 +254,8 @@ describe("AppointmentController - Integration Tests", () => {
                 },
                 {
                     id: "appointment-2",
-                    appointedPatient: "patient-789",
-                    appointedDoctor: "doctor-456",
+                    patientId: "patient-789",
+                    doctorId: "doctor-456",
                     date: new Date("2026-02-16"),
                     startTime: "14:00",
                     endTime: "14:30",
@@ -274,9 +279,9 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.appointments).toHaveLength(2);
-            expect(response.body.data.pagination).toHaveProperty("total", 2);
+            // Response body checked directly
+            expect(response.body.appointments).toHaveLength(2);
+            expect(response.body.pagination).toHaveProperty("total", 2);
         });
 
         it("should return 403 for unauthorized doctor access", async () => {
@@ -301,8 +306,8 @@ describe("AppointmentController - Integration Tests", () => {
         it("should create appointment successfully", async () => {
             // Arrange
             const appointmentData = {
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 date: "2026-02-15",
                 startTime: "10:00",
                 endTime: "10:30",
@@ -330,8 +335,12 @@ describe("AppointmentController - Integration Tests", () => {
                 surname: "Johnson",
             };
 
-            (prisma.doctor.findUnique as jest.Mock).mockResolvedValue(mockDoctor);
-            (prisma.patient.findUnique as jest.Mock).mockResolvedValue(mockPatient);
+            (prisma.doctor.findUnique as jest.Mock).mockResolvedValue(
+                mockDoctor
+            );
+            (prisma.patient.findUnique as jest.Mock).mockResolvedValue(
+                mockPatient
+            );
             (prisma.appointment.findMany as jest.Mock).mockResolvedValue([]);
             (prisma.appointment.create as jest.Mock).mockResolvedValue(
                 mockCreatedAppointment
@@ -345,15 +354,15 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(201);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("id", "appointment-123");
-            expect(response.body.data).toHaveProperty("status", "SCHEDULED");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("id", "appointment-123");
+            expect(response.body).toHaveProperty("status", "SCHEDULED");
         });
 
         it("should return 400 for missing required fields", async () => {
             // Arrange
             const invalidData = {
-                appointedPatient: "patient-123",
+                patientId: "patient-123",
                 // Missing required fields
             };
 
@@ -371,7 +380,7 @@ describe("AppointmentController - Integration Tests", () => {
         it("should return 404 when doctor not found", async () => {
             // Arrange
             const appointmentData = {
-                appointedPatient: "patient-123",
+                patientId: "patient-123",
                 doctorId: "nonexistent-doctor",
                 date: "2026-02-15",
                 startTime: "10:00",
@@ -403,8 +412,8 @@ describe("AppointmentController - Integration Tests", () => {
 
             const mockExistingAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 date: new Date("2026-02-15"),
                 startTime: "10:00",
                 endTime: "10:30",
@@ -433,14 +442,16 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("startTime", "14:00");
-            expect(response.body.data).toHaveProperty("endTime", "14:30");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("startTime", "14:00");
+            expect(response.body).toHaveProperty("endTime", "14:30");
         });
 
         it("should return 404 when appointment not found", async () => {
             // Arrange
-            (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(null);
+            (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(
+                null
+            );
 
             // Act
             const response = await request(app)
@@ -487,8 +498,8 @@ describe("AppointmentController - Integration Tests", () => {
             // Arrange
             const mockAppointment = {
                 id: "appointment-123",
-                appointedPatient: "patient-123",
-                appointedDoctor: "doctor-456",
+                patientId: "patient-123",
+                doctorId: "doctor-456",
                 status: "SCHEDULED",
             };
 
@@ -506,7 +517,7 @@ describe("AppointmentController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
+            // Response body checked directly
             expect(prisma.appointment.delete).toHaveBeenCalledWith({
                 where: { id: "appointment-123" },
             });
@@ -514,7 +525,9 @@ describe("AppointmentController - Integration Tests", () => {
 
         it("should return 404 when appointment not found", async () => {
             // Arrange
-            (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(null);
+            (prisma.appointment.findUnique as jest.Mock).mockResolvedValue(
+                null
+            );
 
             // Act
             const response = await request(app)

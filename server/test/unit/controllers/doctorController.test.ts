@@ -53,6 +53,7 @@ describe("DoctorController - Unit Tests", () => {
             user: {
                 id: "user-123",
                 role: "DOCTOR",
+                email: "user@email.com"
             },
         };
     });
@@ -254,7 +255,6 @@ describe("DoctorController - Unit Tests", () => {
                 id: "doctor-123",
                 email: "test@test.com",
                 role: "DOCTOR",
-                email: "doctor@test.com",
             };
             (doctorService.updateDoctor as jest.Mock).mockResolvedValue(
                 mockUpdatedDoctor
@@ -300,7 +300,6 @@ describe("DoctorController - Unit Tests", () => {
                 id: "doctor-123",
                 email: "test@test.com",
                 role: "DOCTOR",
-                email: "doctor@test.com",
             };
             (doctorService.deleteDoctor as jest.Mock).mockResolvedValue(
                 undefined

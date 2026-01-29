@@ -95,10 +95,10 @@ describe("PatientController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("id", "patient-123");
-            expect(response.body.data).toHaveProperty("firstName", "Alice");
-            expect(response.body.data).not.toHaveProperty("password");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("id", "patient-123");
+            expect(response.body).toHaveProperty("firstName", "Alice");
+            expect(response.body).not.toHaveProperty("password");
             expect(prisma.patient.findUnique).toHaveBeenCalledWith({
                 where: { id: "patient-123" },
             });
@@ -153,11 +153,11 @@ describe("PatientController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.patients).toHaveLength(2);
-            expect(response.body.data.pagination).toHaveProperty("total", 2);
-            expect(response.body.data.pagination).toHaveProperty("page", 1);
-            expect(response.body.data.pagination).toHaveProperty(
+            // Response body checked directly
+            expect(response.body.patients).toHaveLength(2);
+            expect(response.body.pagination).toHaveProperty("total", 2);
+            expect(response.body.pagination).toHaveProperty("page", 1);
+            expect(response.body.pagination).toHaveProperty(
                 "pageSize",
                 10
             );
@@ -187,8 +187,8 @@ describe("PatientController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.patients).toHaveLength(1);
+            // Response body checked directly
+            expect(response.body.patients).toHaveLength(1);
         });
 
         it("should use default pagination values", async () => {
@@ -203,9 +203,9 @@ describe("PatientController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.pagination).toHaveProperty("page", 1);
-            expect(response.body.data.pagination).toHaveProperty(
+            // Response body checked directly
+            expect(response.body.pagination).toHaveProperty("page", 1);
+            expect(response.body.pagination).toHaveProperty(
                 "pageSize",
                 10
             );
@@ -245,10 +245,10 @@ describe("PatientController - Integration Tests", () => {
                 .expect(201);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("id", "patient-123");
-            expect(response.body.data).toHaveProperty("firstName", "Alice");
-            expect(response.body.data).not.toHaveProperty("password");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("id", "patient-123");
+            expect(response.body).toHaveProperty("firstName", "Alice");
+            expect(response.body).not.toHaveProperty("password");
         });
 
         it("should return 400 for duplicate email", async () => {
@@ -336,9 +336,9 @@ describe("PatientController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("phone", "0987654321");
-            expect(response.body.data).toHaveProperty(
+            // Response body checked directly
+            expect(response.body).toHaveProperty("phone", "0987654321");
+            expect(response.body).toHaveProperty(
                 "email",
                 "newemail@example.com"
             );
@@ -414,7 +414,7 @@ describe("PatientController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
+            // Response body checked directly
             expect(prisma.patient.delete).toHaveBeenCalledWith({
                 where: { id: "patient-123" },
             });

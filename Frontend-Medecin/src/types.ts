@@ -25,6 +25,7 @@ export interface Appointment {
     reason: string;
     status: 'CONFIRMED' | 'PENDING' | 'CANCELLED' | 'DOCTOR_CREATED' | 'COMPLETED';
     createdBy: 'patient' | 'doctor';
+    patientName?: string;
     slotId?: string;
     notes?: string;
     createdAt?: string;

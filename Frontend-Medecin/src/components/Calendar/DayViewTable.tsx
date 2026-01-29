@@ -138,81 +138,81 @@ export const DayViewTable: React.FC = () => {
               opacity: appointment.status === 'CANCELLED' ? 0.6 : 1
             }}
           >
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1 min-w-0">
-                {/* Heure */}
-                <div className="flex items-center gap-2 mb-2">
-                  <span className="text-lg font-bold font-mono" style={{ color: '#0891B2' }}>
+            <div className="flex flex-col gap-2">
+              {/* Top line: Time + Status + Actions */}
+              <div className="flex items-center justify-between flex-wrap gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="text-base font-bold font-mono" style={{ color: '#0891B2' }}>
                     {appointment.time}
                   </span>
                   {getStatusBadge(appointment.status)}
                 </div>
 
-                {/* Patient */}
-                <div className="flex items-center gap-2 text-sm mb-1" style={{ color: colors.text.secondary }}>
-                  <User className="w-4 h-4" style={{ color: colors.text.muted }} />
-                  <span className="font-medium">{getPatientName(appointment.appointedPatient)}</span>
-                </div>
-
-                {/* Motif */}
-                <div className="flex items-center gap-2 text-sm" style={{ color: colors.text.muted }}>
-                  <FileText className="w-4 h-4" />
-                  <span className="truncate">{appointment.reason}</span>
+                {/* Actions groupées */}
+                <div className="flex items-center gap-1 bg-white/10 dark:bg-black/10 rounded-lg p-0.5">
+                  {appointment.status === 'PENDING' && (
+                    <>
+                      <button
+                        onClick={() => handleConfirm(appointment.appointmentId)}
+                        className="p-1.5 rounded-md text-green-600 hover:bg-green-50 dark:hover:bg-green-900/40 transition-colors"
+                        aria-label={`Confirmer ${getPatientName(appointment.appointedPatient)}`}
+                      >
+                        <CheckCircle className="w-4 h-4" />
+                      </button>
+                      <button
+                        onClick={() => handleCancel(appointment)}
+                        className="p-1.5 rounded-md text-red-600 hover:bg-red-50 dark:hover:bg-red-900/40 transition-colors"
+                        aria-label={`Refuser ${getPatientName(appointment.appointedPatient)}`}
+                      >
+                        <XCircle className="w-4 h-4" />
+                      </button>
+                    </>
+                  )}
+                  {appointment.status !== 'CANCELLED' && (
+                    <>
+                      <button
+                        onClick={() => handleEdit(appointment)}
+                        className="p-1.5 rounded-md transition-colors"
+                        style={{ color: colors.text.muted }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = darkMode ? 'rgba(255,255,255,0.1)' : '#F3F4F6';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                        aria-label={`Modifier ${getPatientName(appointment.appointedPatient)}`}
+                      >
+                        <Edit2 className="w-3.5 h-3.5" />
+                      </button>
+                      <button
+                        onClick={() => handleDelete(appointment)}
+                        className="p-1.5 rounded-md transition-colors"
+                        style={{ color: colors.text.muted }}
+                        onMouseEnter={(e) => {
+                          e.currentTarget.style.backgroundColor = darkMode ? 'rgba(255,255,255,0.1)' : '#F3F4F6';
+                        }}
+                        onMouseLeave={(e) => {
+                          e.currentTarget.style.backgroundColor = 'transparent';
+                        }}
+                        aria-label={`Supprimer ${getPatientName(appointment.appointedPatient)}`}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
+                    </>
+                  )}
                 </div>
               </div>
 
-              {/* Actions */}
-              <div className="flex items-center gap-1">
-                {appointment.status === 'PENDING' && (
-                  <>
-                    <button
-                      onClick={() => handleConfirm(appointment.appointmentId)}
-                      className="p-2 rounded-lg text-green-600 hover:bg-green-50 dark:hover:bg-green-900/20 transition-colors"
-                      aria-label="Confirmer le rendez-vous"
-                    >
-                      <CheckCircle className="w-5 h-5" />
-                    </button>
-                    <button
-                      onClick={() => handleCancel(appointment)}
-                      className="p-2 rounded-lg text-red-600 hover:bg-red-50 dark:hover:bg-red-900/20 transition-colors"
-                      aria-label="Refuser le rendez-vous"
-                    >
-                      <XCircle className="w-5 h-5" />
-                    </button>
-                  </>
-                )}
-                {appointment.status !== 'CANCELLED' && (
-                  <>
-                    <button
-                      onClick={() => handleEdit(appointment)}
-                      className="p-2 rounded-lg transition-colors"
-                      style={{ color: colors.text.muted }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
-                      aria-label="Modifier le rendez-vous"
-                    >
-                      <Edit2 className="w-4 h-4" />
-                    </button>
-                    <button
-                      onClick={() => handleDelete(appointment)}
-                      className="p-2 rounded-lg transition-colors"
-                      style={{ color: colors.text.muted }}
-                      onMouseEnter={(e) => {
-                        e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : '#F3F4F6';
-                      }}
-                      onMouseLeave={(e) => {
-                        e.currentTarget.style.backgroundColor = 'transparent';
-                      }}
-                      aria-label="Annuler le rendez-vous"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  </>
-                )}
+              {/* Bottom lines: Patient and Reason */}
+              <div className="flex flex-col gap-1">
+                <div className="flex items-center gap-2 text-sm" style={{ color: colors.text.primary }}>
+                  <User className="w-3.5 h-3.5" style={{ color: colors.text.muted }} aria-hidden="true" />
+                  <span className="font-medium truncate">{getPatientName(appointment.appointedPatient)}</span>
+                </div>
+                <div className="flex items-center gap-2 text-xs" style={{ color: colors.text.muted }}>
+                  <FileText className="w-3.5 h-3.5" aria-hidden="true" />
+                  <span className="truncate italic">{appointment.reason}</span>
+                </div>
               </div>
             </div>
           </div>

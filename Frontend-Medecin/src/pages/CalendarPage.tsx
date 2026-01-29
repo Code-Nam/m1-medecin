@@ -16,13 +16,13 @@ export const CalendarPage: React.FC = () => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
-          <h2 
+          <h2
             className="text-2xl font-bold"
             style={{ color: colors.text.primary }}
           >
             Calendrier
           </h2>
-          <p 
+          <p
             className="text-sm"
             style={{ color: colors.text.secondary }}
           >
@@ -42,14 +42,14 @@ export const CalendarPage: React.FC = () => {
       </div>
 
       {/* Main content */}
-      <div className="grid grid-cols-1 xl:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 2xl:grid-cols-4 gap-6">
         {/* Calendar */}
-        <div className="xl:col-span-3">
+        <div className="2xl:col-span-3">
           <CalendarView />
         </div>
 
         {/* Day view */}
-        <div className="xl:col-span-1">
+        <div className="2xl:col-span-1">
           <DayViewTable />
         </div>
       </div>

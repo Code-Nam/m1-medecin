@@ -11,8 +11,63 @@ export const SettingsPage: React.FC = () => {
   const { darkMode, toggleDarkMode, addToast } = useUIStore();
   const { colors } = useTheme();
 
-  const handleSave = () => {
-    addToast('success', 'Paramètres enregistrés');
+  const [profileData, setProfileData] = React.useState({
+    firstName: '',
+    surname: '',
+    specialization: '',
+    email: '',
+    phone: '',
+    openingTime: '08:00',
+    closingTime: '19:00',
+    slotDuration: 30,
+  });
+
+  React.useEffect(() => {
+    if (user) {
+      setProfileData({
+        firstName: user.firstName || '',
+        surname: user.surname || '',
+        specialization: user.specialization || '',
+        email: user.email || '',
+        phone: user.phone || '',
+        openingTime: user.openingTime || '08:00',
+        closingTime: user.closingTime || '19:00',
+        slotDuration: user.slotDuration || 30,
+      });
+    }
+  }, [user]);
+
+  const [isSaving, setIsSaving] = React.useState(false);
+
+  const handleProfileChange = (field: string, value: string | number) => {
+    setProfileData(prev => ({ ...prev, [field]: value }));
+  };
+
+  const handleSave = async () => {
+    if (!user) return;
+    setIsSaving(true);
+    try {
+      const { doctorsService, secretariesService } = await import('../services/api');
+      const { authService } = await import('../services/authService');
+
+      let updatedUser;
+      if (user.role === 'DOCTOR') {
+        updatedUser = await doctorsService.update(user.id, profileData);
+      } else {
+        updatedUser = await secretariesService.update(user.id, profileData);
+      }
+
+      // Update local storage and store
+      const fullUser = { ...user, ...(updatedUser as any) };
+      authService.storeAuth(localStorage.getItem('token') || '', fullUser);
+      useAuthStore.getState().login(fullUser);
+
+      addToast('success', 'Paramètres enregistrés avec succès');
+    } catch (error: any) {
+      addToast('error', error.message || 'Erreur lors de l\'enregistrement');
+    } finally {
+      setIsSaving(false);
+    }
   };
 
   return (
@@ -51,35 +106,38 @@ export const SettingsPage: React.FC = () => {
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <Input
             label="Nom"
-            value={user?.surname || ''}
-            readOnly
+            value={profileData.surname}
+            onChange={(e) => handleProfileChange('surname', e.target.value)}
             aria-label="Nom du médecin"
           />
           <Input
             label="Prénom"
-            value={user?.firstName || ''}
-            readOnly
+            value={profileData.firstName}
+            onChange={(e) => handleProfileChange('firstName', e.target.value)}
             aria-label="Prénom du médecin"
           />
-          <Input
-            label="Spécialisation"
-            value={user?.specialization || ''}
-            readOnly
-            aria-label="Spécialisation du médecin"
-          />
+          {user?.role === 'DOCTOR' && (
+            <Input
+              label="Spécialisation"
+              value={profileData.specialization}
+              onChange={(e) => handleProfileChange('specialization', e.target.value)}
+              aria-label="Spécialisation du médecin"
+            />
+          )}
           <Input
             label="Email"
             type="email"
-            value={user?.email || ''}
-            readOnly
+            value={profileData.email}
+            onChange={(e) => handleProfileChange('email', e.target.value)}
             aria-label="Email du médecin"
           />
           <Input
             label="Téléphone"
             type="tel"
-            value={(user as any)?.phone || ''}
-            readOnly
+            value={profileData.phone}
+            onChange={(e) => handleProfileChange('phone', e.target.value)}
             aria-label="Téléphone du médecin"
+            placeholder="06..."
           />
         </div>
       </section>
@@ -205,19 +263,22 @@ export const SettingsPage: React.FC = () => {
           <Input
             label="Début de journée"
             type="time"
-            defaultValue="08:00"
+            value={profileData.openingTime}
+            onChange={(e) => handleProfileChange('openingTime', e.target.value)}
             aria-label="Heure de début de journée"
           />
           <Input
             label="Fin de journée"
             type="time"
-            defaultValue="19:00"
+            value={profileData.closingTime}
+            onChange={(e) => handleProfileChange('closingTime', e.target.value)}
             aria-label="Heure de fin de journée"
           />
           <Input
             label="Durée d'un créneau (minutes)"
             type="number"
-            defaultValue="30"
+            value={profileData.slotDuration}
+            onChange={(e) => handleProfileChange('slotDuration', parseInt(e.target.value))}
             min="15"
             max="120"
             step="15"
@@ -232,6 +293,7 @@ export const SettingsPage: React.FC = () => {
           variant="primary"
           leftIcon={<Save className="w-4 h-4" />}
           onClick={handleSave}
+          isLoading={isSaving}
           aria-label="Enregistrer les paramètres"
         >
           Enregistrer

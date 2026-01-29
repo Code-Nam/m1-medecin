@@ -23,6 +23,10 @@ export interface Appointment {
     date: string; // format dd-MM-yyyy
     time: string; // format HH:MM
     reason: string;
-    status: 'confirmed' | 'pending' | 'cancelled' | 'doctor_created';
+    status: 'CONFIRMED' | 'PENDING' | 'CANCELLED' | 'DOCTOR_CREATED' | 'COMPLETED';
     createdBy: 'patient' | 'doctor';
+    slotId?: string;
+    notes?: string;
+    createdAt?: string;
+    updatedAt?: string;
 }

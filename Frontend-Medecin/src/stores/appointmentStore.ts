@@ -1,7 +1,7 @@
 import { create } from 'zustand';
 import { appointmentsService } from '../services/api';
 import type { Appointment } from '../types';
-import { formatDateAPI, parseDateAPI } from '../utils/dateFormatter';
+import { formatDateAPI } from '../utils/dateFormatter';
 
 interface AppointmentState {
   appointments: Appointment[];
@@ -9,13 +9,13 @@ interface AppointmentState {
   selectedDate: Date;
 
   setAppointments: (appointments: Appointment[]) => void;
-  addAppointment: (appointment: Omit<Appointment, 'appointmentId'>) => void;
-  updateAppointment: (appointmentId: string, updates: Partial<Appointment>) => void;
-  deleteAppointment: (appointmentId: string) => void;
+  addAppointment: (appointment: Omit<Appointment, 'appointmentId'>) => Promise<void>;
+  updateAppointment: (appointmentId: string, updates: Partial<Appointment>) => Promise<void>;
+  deleteAppointment: (appointmentId: string) => Promise<void>;
   selectAppointment: (appointment: Appointment | null) => void;
   setSelectedDate: (date: Date) => void;
-  confirmAppointment: (appointmentId: string) => void;
-  cancelAppointment: (appointmentId: string) => void;
+  confirmAppointment: (appointmentId: string) => Promise<void>;
+  cancelAppointment: (appointmentId: string) => Promise<void>;
 
   getAppointmentsByDoctor: (doctorId: string) => Appointment[];
   getAppointmentsByDate: (date: Date) => Appointment[];
@@ -36,8 +36,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   fetchAppointments: async (doctorId) => {
     try {
       const response: any = await appointmentsService.getByDoctor(doctorId, 1, 100);
-      // Ensure we map the response correctly depending on API format
-      const appointments = response.appointments || response;
+      const appointments = response.data || response.appointments || response;
 
       const mappedAppointments = Array.isArray(appointments) ? appointments.map((a: any) => ({
         appointmentId: a.id || a.appointmentId,
@@ -46,7 +45,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         date: a.date,
         time: a.time,
         reason: a.reason,
-        status: a.status,
+        status: (a.status || 'PENDING').toUpperCase() as Appointment['status'],
         createdBy: a.createdBy || 'doctor'
       })) : [];
 
@@ -58,21 +57,16 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
 
   addAppointment: async (appointmentData) => {
     try {
-      const apiPayload = {
-        ...appointmentData,
-        appointedPatientId: appointmentData.appointedPatient,
-        appointedDoctorId: appointmentData.appointedDoctor,
-      };
-      // remove non-API fields if necessary, or just spread. The service defines specific fields.
-      const response: any = await appointmentsService.create(apiPayload as any);
+      const response: any = await appointmentsService.create(appointmentData as any);
+      const appt = response.appointment || response;
       const newAppointment: Appointment = {
-        appointmentId: response.id || response.appointmentId || `appt_${Date.now()}`,
-        appointedPatient: response.appointedPatient || appointmentData.appointedPatient,
-        appointedDoctor: response.appointedDoctor || appointmentData.appointedDoctor,
-        date: response.date || appointmentData.date,
-        time: response.time || appointmentData.time,
-        reason: response.reason || appointmentData.reason,
-        status: (response.status || (appointmentData as any).status || 'pending') as Appointment['status'],
+        appointmentId: appt.id || appt.appointmentId || `appt_${Date.now()}`,
+        appointedPatient: appt.appointedPatient?.id || appt.appointedPatient || appointmentData.appointedPatient,
+        appointedDoctor: appt.appointedDoctor?.id || appt.appointedDoctor || appointmentData.appointedDoctor,
+        date: appt.date || appointmentData.date,
+        time: appt.time || appointmentData.time,
+        reason: appt.reason || appointmentData.reason,
+        status: ((appt.status || 'PENDING') as string).toUpperCase() as Appointment['status'],
         createdBy: (appointmentData as any).createdBy || 'doctor',
       };
       set((state) => ({
@@ -85,19 +79,16 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
 
   updateAppointment: async (appointmentId, updates) => {
     try {
-      const apiUpdates: any = { ...updates };
-      if (updates.appointedPatient) apiUpdates.appointedPatientId = updates.appointedPatient;
-      if (updates.appointedDoctor) apiUpdates.appointedDoctorId = updates.appointedDoctor;
-
-      const updatedAppointment: any = await appointmentsService.update(appointmentId, apiUpdates);
+      const response: any = await appointmentsService.update(appointmentId, updates as any);
+      const appt = response.appointment || response;
       const transformedAppointment: Appointment = {
-        appointmentId: updatedAppointment.id || updatedAppointment.appointmentId || appointmentId,
-        appointedPatient: updatedAppointment.appointedPatient || updates.appointedPatient || '',
-        appointedDoctor: updatedAppointment.appointedDoctor || updates.appointedDoctor || '',
-        date: updatedAppointment.date || updates.date || '',
-        time: updatedAppointment.time || updates.time || '',
-        reason: updatedAppointment.reason || updates.reason || '',
-        status: (updatedAppointment.status || updates.status || 'pending') as Appointment['status'],
+        appointmentId: appt.id || appt.appointmentId || appointmentId,
+        appointedPatient: appt.appointedPatient?.id || appt.appointedPatient || updates.appointedPatient || '',
+        appointedDoctor: appt.appointedDoctor?.id || appt.appointedDoctor || updates.appointedDoctor || '',
+        date: appt.date || updates.date || '',
+        time: appt.time || updates.time || '',
+        reason: appt.reason || updates.reason || '',
+        status: ((appt.status || updates.status || 'PENDING') as string).toUpperCase() as Appointment['status'],
         createdBy: (updates as any).createdBy || 'doctor',
       };
       set((state) => ({
@@ -110,34 +101,52 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
     }
   },
 
-  deleteAppointment: (appointmentId) => {
-    set((state) => ({
-      appointments: state.appointments.filter(a => a.appointmentId !== appointmentId)
-    }));
+  deleteAppointment: async (appointmentId) => {
+    try {
+      await appointmentsService.delete(appointmentId);
+      set((state) => ({
+        appointments: state.appointments.filter(a => a.appointmentId !== appointmentId)
+      }));
+    } catch (error) {
+      console.error('Failed to delete appointment', error);
+      throw error;
+    }
   },
 
   selectAppointment: (appointment) => set({ selectedAppointment: appointment }),
 
   setSelectedDate: (date) => set({ selectedDate: date }),
 
-  confirmAppointment: (appointmentId) => {
-    set((state) => ({
-      appointments: state.appointments.map(a =>
-        a.appointmentId === appointmentId
-          ? { ...a, status: 'confirmed' as const }
-          : a
-      )
-    }));
+  confirmAppointment: async (appointmentId) => {
+    try {
+      await appointmentsService.update(appointmentId, { status: 'CONFIRMED' });
+      set((state) => ({
+        appointments: state.appointments.map(a =>
+          a.appointmentId === appointmentId
+            ? { ...a, status: 'CONFIRMED' }
+            : a
+        )
+      }));
+    } catch (error) {
+      console.error('Failed to confirm appointment', error);
+      throw error;
+    }
   },
 
-  cancelAppointment: (appointmentId) => {
-    set((state) => ({
-      appointments: state.appointments.map(a =>
-        a.appointmentId === appointmentId
-          ? { ...a, status: 'cancelled' as const }
-          : a
-      )
-    }));
+  cancelAppointment: async (appointmentId) => {
+    try {
+      await appointmentsService.update(appointmentId, { status: 'CANCELLED' });
+      set((state) => ({
+        appointments: state.appointments.map(a =>
+          a.appointmentId === appointmentId
+            ? { ...a, status: 'CANCELLED' }
+            : a
+        )
+      }));
+    } catch (error) {
+      console.error('Failed to cancel appointment', error);
+      throw error;
+    }
   },
 
   getAppointmentsByDoctor: (doctorId) => {
@@ -167,7 +176,7 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
   getPendingAppointments: (doctorId) => {
     const { appointments } = get();
     return appointments.filter(
-      a => a.appointedDoctor === doctorId && a.status === 'pending'
+      a => a.appointedDoctor === doctorId && a.status === 'PENDING'
     );
   },
 
@@ -182,13 +191,13 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         let backgroundColor = '#22c55e'; // vert - confirmé
         let borderColor = '#16a34a';
 
-        if (a.status === 'pending') {
+        if (a.status === 'PENDING') {
           backgroundColor = '#eab308'; // jaune
           borderColor = '#ca8a04';
-        } else if (a.status === 'cancelled') {
+        } else if (a.status === 'CANCELLED') {
           backgroundColor = '#6b7280'; // gris
           borderColor = '#4b5563';
-        } else if (a.status === 'doctor_created') {
+        } else if (a.status === 'DOCTOR_CREATED') {
           backgroundColor = '#3b82f6'; // bleu
           borderColor = '#2563eb';
         }
@@ -210,12 +219,12 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
 
 function addMinutes(time: string, minutes: number): string {
   const [hStr, mStr] = time.split(':');
-  if (!hStr || !mStr) return time; // Return original time if format is invalid
+  if (!hStr || !mStr) return time;
 
   const h = Number(hStr);
   const m = Number(mStr);
 
-  if (isNaN(h) || isNaN(m)) return time; // Return original time if parsing fails
+  if (isNaN(h) || isNaN(m)) return time;
 
   const totalMinutes = h * 60 + m + minutes;
   const newH = Math.floor(totalMinutes / 60);

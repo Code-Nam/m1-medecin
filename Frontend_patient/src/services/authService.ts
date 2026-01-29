@@ -81,6 +81,10 @@ export const authService = {
   },
 
   storeAuth: (token: string, user: any) => {
+    // Ensure patientId is present if role is PATIENT
+    if (user.role === 'PATIENT' && !user.patientId && user.id) {
+        user.patientId = user.id;
+    }
     localStorage.setItem('token', token);
     localStorage.setItem('user', JSON.stringify(user));
   },

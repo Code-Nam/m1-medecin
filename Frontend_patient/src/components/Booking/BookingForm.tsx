@@ -39,12 +39,29 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                 try {
                     const slots = await doctorService.getAvailableSlots(selectedDoctor.doctorId, selectedDate);
                     // Map API slots to AppointmentSlot type
-                    const mappedSlots: AppointmentSlot[] = slots.map((s: any) => ({
+                    let mappedSlots: AppointmentSlot[] = slots.map((s: any) => ({
                         time: s.startTime,
                         available: !s.isBooked,
                         doctorId: s.doctorId,
                         slotId: s.id
                     }));
+
+                    // Filter out past slots if selected date is today
+                    const today = new Date();
+                    const isToday = selectedDate === today.toISOString().split('T')[0];
+
+                    if (isToday) {
+                        const currentHour = today.getHours();
+                        const currentMinute = today.getMinutes();
+
+                        mappedSlots = mappedSlots.filter(slot => {
+                            const [slotHour, slotMinute] = slot.time.split(':').map(Number);
+                            if (slotHour < currentHour) return false;
+                            if (slotHour === currentHour && slotMinute <= currentMinute) return false;
+                            return true;
+                        });
+                    }
+
                     setAvailableSlots(mappedSlots);
                 } catch (error) {
                     console.error('Error fetching slots:', error);
@@ -79,13 +96,21 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
         if (!selectedDoctor || !selectedTime) return;
 
         try {
+            // Find the slotId for the selected time
+            const selectedSlot = availableSlots.find(slot => slot.time === selectedTime);
+
+            // Format date to dd-MM-yyyy
+            const [year, month, day] = selectedDate.split('-');
+            const formattedDate = `${day}-${month}-${year}`;
+
             await createAppointment({
                 appointedPatient: patientId,
                 appointedDoctor: selectedDoctor.doctorId,
-                date: selectedDate,
+                date: formattedDate,
                 time: selectedTime,
                 reason: reason,
-                status: 'pending' as any, // Using string literal or import Enum
+                status: 'pending' as any,
+                slotId: selectedSlot?.slotId
             });
             onSuccess();
         } catch (error) {

@@ -6,7 +6,8 @@ import { TimeSlotSelector } from './TimeSlotSelector';
 import { BookingConfirmation } from './BookingConfirmation';
 import { Button } from '../Common/Button';
 import { useTheme } from '../../hooks/useTheme';
-import { Doctor } from '../../types';
+import type { Doctor, AppointmentSlot } from '../../types';
+import { doctorService } from '../../services';
 
 interface BookingFormProps {
     patientId: string;
@@ -20,13 +21,44 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
 
     const [step, setStep] = useState(1);
     const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
-    const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]); // Default today
+    const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0] || ''); // Default today
     const [selectedTime, setSelectedTime] = useState<string>('');
     const [reason, setReason] = useState('');
+
+    const [availableSlots, setAvailableSlots] = useState<AppointmentSlot[]>([]);
+    const [slotsLoading, setSlotsLoading] = useState(false);
 
     useEffect(() => {
         fetchAllDoctors();
     }, [fetchAllDoctors]);
+
+    useEffect(() => {
+        const fetchSlots = async () => {
+            if (selectedDoctor && selectedDate) {
+                setSlotsLoading(true);
+                try {
+                    const slots = await doctorService.getAvailableSlots(selectedDoctor.doctorId, selectedDate);
+                    // Map API slots to AppointmentSlot type
+                    const mappedSlots: AppointmentSlot[] = slots.map((s: any) => ({
+                        time: s.startTime,
+                        available: !s.isBooked,
+                        doctorId: s.doctorId,
+                        slotId: s.id
+                    }));
+                    setAvailableSlots(mappedSlots);
+                } catch (error) {
+                    console.error('Error fetching slots:', error);
+                    setAvailableSlots([]);
+                } finally {
+                    setSlotsLoading(false);
+                }
+            } else {
+                setAvailableSlots([]);
+            }
+        };
+
+        fetchSlots();
+    }, [selectedDoctor, selectedDate]);
 
     const handleDoctorSelect = (doctor: Doctor) => {
         setSelectedDoctor(doctor);
@@ -73,7 +105,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
             <nav aria-label="Progression de la prise de rendez-vous">
                 <ol className="flex items-center justify-center gap-2 mb-6">
                     <li className={`px-3 py-1 rounded ${step >= 1 ? 'font-semibold' : ''}`}
-                        style={{ 
+                        style={{
                             backgroundColor: step >= 1 ? colors.accent.primary : colors.bg.secondary,
                             color: step >= 1 ? '#FFFFFF' : colors.text.secondary
                         }}
@@ -81,7 +113,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                         1. Médecin
                     </li>
                     <li className={`px-3 py-1 rounded ${step >= 2 ? 'font-semibold' : ''}`}
-                        style={{ 
+                        style={{
                             backgroundColor: step >= 2 ? colors.accent.primary : colors.bg.secondary,
                             color: step >= 2 ? '#FFFFFF' : colors.text.secondary
                         }}
@@ -89,7 +121,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                         2. Date & Heure
                     </li>
                     <li className={`px-3 py-1 rounded ${step >= 3 ? 'font-semibold' : ''}`}
-                        style={{ 
+                        style={{
                             backgroundColor: step >= 3 ? colors.accent.primary : colors.bg.secondary,
                             color: step >= 3 ? '#FFFFFF' : colors.text.secondary
                         }}
@@ -109,23 +141,23 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
 
             {step === 2 && selectedDoctor && (
                 <form className="space-y-6" aria-label="Sélection de la date et de l'heure du rendez-vous">
-                    <div 
+                    <div
                         className="p-4 rounded-md mb-4"
                         style={{ backgroundColor: colors.bg.secondary }}
                         role="status"
                         aria-live="polite"
                     >
-                        <p 
+                        <p
                             className="text-sm"
                             style={{ color: colors.text.primary }}
                         >
                             Médecin sélectionné: <strong>Dr. {selectedDoctor.surname}</strong>
                         </p>
-                        <button 
+                        <button
                             type="button"
-                            onClick={() => setStep(1)} 
+                            onClick={() => setStep(1)}
                             className="text-xs transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 rounded px-2 py-1"
-                            style={{ 
+                            style={{
                                 color: colors.accent.primary,
                                 '--tw-ring-color': colors.accent.primary
                             } as React.CSSProperties}
@@ -144,7 +176,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                     <fieldset>
                         <legend className="sr-only">Informations de rendez-vous</legend>
                         <div>
-                            <label 
+                            <label
                                 htmlFor="appointment-date"
                                 className="block text-sm font-medium mb-1"
                                 style={{ color: colors.text.secondary }}
@@ -178,17 +210,19 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
                         </div>
                     </fieldset>
 
-                    {/* Ideally we fetch slots for this date here. For now using doctor.availableSlots from store if static, 
-              or we assume slots are daily repetitive for this simple version. 
-              In real app, we'd fetch slots by doctor and date. */}
-                    <TimeSlotSelector
-                        slots={selectedDoctor.availableSlots || []}
-                        selectedTime={selectedTime}
-                        onSelect={handleTimeSelect}
-                    />
+                    {/* Slots are now fetched dynamically */}
+                    {slotsLoading ? (
+                        <div className="text-center py-4">Chargement des créneaux...</div>
+                    ) : (
+                        <TimeSlotSelector
+                            slots={availableSlots}
+                            selectedTime={selectedTime}
+                            onSelect={handleTimeSelect}
+                        />
+                    )}
 
                     <div className="pt-4">
-                        <label 
+                        <label
                             htmlFor="appointment-reason"
                             className="block text-sm font-medium mb-1"
                             style={{ color: colors.text.secondary }}

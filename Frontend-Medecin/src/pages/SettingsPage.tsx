@@ -202,45 +202,51 @@ export const SettingsPage: React.FC = () => {
           Notifications
         </h2>
         <div className="space-y-4">
-          <label className="flex items-center justify-between cursor-pointer">
-            <div>
+          <div className="flex items-center justify-between">
+            <label htmlFor="notif-new" className="flex-1 cursor-pointer">
               <p className="font-medium" style={{ color: colors.text.primary }}>Nouveaux rendez-vous</p>
               <p className="text-sm" style={{ color: colors.text.muted }}>
                 Recevoir une notification pour chaque nouvelle demande de RDV
               </p>
-            </div>
+            </label>
             <input
+              id="notif-new"
               type="checkbox"
               defaultChecked
               className="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500"
+              aria-label="Recevoir des notifications pour les nouveaux rendez-vous"
             />
-          </label>
-          <label className="flex items-center justify-between cursor-pointer">
-            <div>
+          </div>
+          <div className="flex items-center justify-between">
+            <label htmlFor="notif-reminders" className="flex-1 cursor-pointer">
               <p className="font-medium" style={{ color: colors.text.primary }}>Rappels de RDV</p>
               <p className="text-sm" style={{ color: colors.text.muted }}>
                 Recevoir un rappel 1h avant chaque rendez-vous
               </p>
-            </div>
+            </label>
             <input
+              id="notif-reminders"
               type="checkbox"
               defaultChecked
               className="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500"
+              aria-label="Recevoir des rappels de rendez-vous"
             />
-          </label>
-          <label className="flex items-center justify-between cursor-pointer">
-            <div>
+          </div>
+          <div className="flex items-center justify-between">
+            <label htmlFor="notif-cancel" className="flex-1 cursor-pointer">
               <p className="font-medium" style={{ color: colors.text.primary }}>Annulations</p>
               <p className="text-sm" style={{ color: colors.text.muted }}>
                 Être notifié quand un patient annule
               </p>
-            </div>
+            </label>
             <input
+              id="notif-cancel"
               type="checkbox"
               defaultChecked
               className="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500"
+              aria-label="Recevoir des notifications en cas d'annulation"
             />
-          </label>
+          </div>
         </div>
       </section>
 

@@ -234,7 +234,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                 Aucun créneau disponible pour cette date.
               </div>
             ) : (
-              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3" role="listbox" aria-label="Sélectionner l'heure du rendez-vous">
                 {availableSlots
                   .filter(slot => !slot.isBooked)
                   .map((slot) => {
@@ -266,6 +266,10 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
                             e.currentTarget.style.backgroundColor = colors.bg.card;
                           }
                         }}
+                        aria-pressed={isSelected}
+                        aria-label={`Choisir le créneau de ${slot.startTime}`}
+                        role="option"
+                        aria-selected={isSelected}
                       >
                         {slot.startTime}
                       </button>

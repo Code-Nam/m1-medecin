@@ -5,7 +5,7 @@ import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
 import { formatPhoneDisplay } from '../../utils/validation';
 import Button from '../Common/Button';
-import type { Patient } from '../../utils/mockData';
+import type { Patient } from '../../types';
 
 interface PatientDetailProps {
   patient: Patient | null;
@@ -30,21 +30,21 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
 
   const getStatusBadge = (status: string) => {
     const styleMap: Record<string, { bg: string; text: string }> = {
-      confirmed: { 
-        bg: darkMode ? 'rgba(16, 185, 129, 0.3)' : '#D1FAE5', 
-        text: darkMode ? '#4ADE80' : '#065F46' 
+      confirmed: {
+        bg: darkMode ? 'rgba(16, 185, 129, 0.3)' : '#D1FAE5',
+        text: darkMode ? '#4ADE80' : '#065F46'
       },
-      pending: { 
-        bg: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7', 
-        text: darkMode ? '#FACC15' : '#92400E' 
+      pending: {
+        bg: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7',
+        text: darkMode ? '#FACC15' : '#92400E'
       },
-      cancelled: { 
-        bg: darkMode ? colors.bg.card : '#F3F4F6', 
-        text: colors.text.secondary 
+      cancelled: {
+        bg: darkMode ? colors.bg.card : '#F3F4F6',
+        text: colors.text.secondary
       },
-      doctor_created: { 
-        bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE', 
-        text: darkMode ? '#60A5FA' : '#1E40AF' 
+      doctor_created: {
+        bg: darkMode ? 'rgba(59, 130, 246, 0.3)' : '#DBEAFE',
+        text: darkMode ? '#60A5FA' : '#1E40AF'
       }
     };
 
@@ -58,7 +58,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
     const style = styleMap[status] || styleMap.confirmed;
 
     return (
-      <span 
+      <span
         className="px-2 py-0.5 rounded-full text-xs font-medium"
         style={{ backgroundColor: style.bg, color: style.text }}
       >
@@ -75,12 +75,12 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
     <div className="space-y-6">
       {/* Patient info */}
       <div className="flex items-start gap-4">
-        <div 
+        <div
           className="w-16 h-16 rounded-full flex items-center justify-center text-white font-bold text-xl shadow-lg"
-          style={{ 
-            background: darkMode 
-              ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)' 
-              : 'linear-gradient(to bottom right, #43A78B, #2E7D6B)' 
+          style={{
+            background: darkMode
+              ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)'
+              : 'linear-gradient(to bottom right, #43A78B, #2E7D6B)'
           }}
         >
           {patient.FirstName[0]}{patient.Surname[0]}
@@ -97,7 +97,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
 
       {/* Contact info */}
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div 
+        <div
           className="flex items-center gap-3 p-3 rounded-lg"
           style={{ backgroundColor: darkMode ? colors.bg.secondary : '#F9FAFB' }}
         >
@@ -109,7 +109,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
             </p>
           </div>
         </div>
-        <div 
+        <div
           className="flex items-center gap-3 p-3 rounded-lg"
           style={{ backgroundColor: darkMode ? colors.bg.secondary : '#F9FAFB' }}
         >
@@ -181,7 +181,7 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
       </div>
 
       {/* Actions */}
-      <div 
+      <div
         className="flex justify-end gap-3 pt-4 border-t"
         style={{ borderColor: colors.border.default }}
       >

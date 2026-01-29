@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Calendar, Users, Clock, AlertCircle, Plus, TrendingUp } from 'lucide-react';
 import { useAppointmentStore } from '../stores/appointmentStore';
 import { usePatientStore } from '../stores/patientStore';
@@ -8,22 +8,34 @@ import { useTheme } from '../hooks/useTheme';
 import { DayViewTable } from '../components/Calendar/DayViewTable';
 import { KPICard } from '../components/Statistics/KPICard';
 import Button from '../components/Common/Button';
-import { getPatientName } from '../utils/mockData';
+// import { getPatientName } from '../utils/mockData';
 import { format } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export const Dashboard: React.FC = () => {
   const doctor = useDoctor();
-  const { getTodayAppointments, getPendingAppointments, confirmAppointment } = useAppointmentStore();
-  const { patients, getPatientsByDoctor } = usePatientStore();
+  const { getTodayAppointments, getPendingAppointments, confirmAppointment, fetchAppointments } = useAppointmentStore();
+  const { patients, getPatientsByDoctor, fetchPatients } = usePatientStore();
   const { openModal, addToast } = useUIStore();
   const { darkMode, colors } = useTheme();
+
+  useEffect(() => {
+    if (doctor?.id) {
+      fetchPatients(doctor.id);
+      fetchAppointments(doctor.id);
+    }
+  }, [doctor?.id, fetchPatients, fetchAppointments]);
+
+  const getPatientName = (patientId: string): string => {
+    const patient = patients.find(p => p.patientId === patientId);
+    return patient ? `${patient.FirstName} ${patient.Surname}` : 'Patient inconnu';
+  };
 
   const todayAppointments = doctor ? getTodayAppointments(doctor.id) : [];
   const pendingAppointments = doctor ? getPendingAppointments(doctor.id) : [];
   const doctorPatients = doctor ? getPatientsByDoctor(doctor.id) : [];
 
-  const confirmedToday = todayAppointments.filter(a => 
+  const confirmedToday = todayAppointments.filter(a =>
     a.status === 'confirmed' || a.status === 'doctor_created'
   ).length;
 
@@ -35,16 +47,16 @@ export const Dashboard: React.FC = () => {
   return (
     <div className="space-y-6">
       {/* Welcome */}
-      <div 
+      <div
         className="dashboard-welcome rounded-2xl p-6 text-white shadow-lg"
-        style={{ 
-          background: darkMode 
-            ? 'linear-gradient(to right, #4DB6AC, #26A69A)' 
-            : 'linear-gradient(to right, #43A78B, #2E7D6B)' 
+        style={{
+          background: darkMode
+            ? 'linear-gradient(to right, #4DB6AC, #26A69A)'
+            : 'linear-gradient(to right, #43A78B, #2E7D6B)'
         }}
       >
         <h1 className="text-2xl font-bold mb-2 text-white">
-          Bonjour, Dr. {doctor?.FirstName} {doctor?.Surname} 👋
+          Bonjour, Dr. {doctor?.firstName} {doctor?.surname} 👋
         </h1>
         <p className="text-white">
           {format(new Date(), "EEEE d MMMM yyyy", { locale: fr })}
@@ -107,21 +119,21 @@ export const Dashboard: React.FC = () => {
         </div>
 
         {/* Pending appointments */}
-        <div 
+        <div
           className="rounded-xl shadow-sm border p-6"
           style={{
             backgroundColor: colors.bg.card,
             borderColor: colors.border.default
           }}
         >
-          <h3 
+          <h3
             className="text-lg font-semibold mb-4 flex items-center gap-2"
             style={{ color: colors.text.primary }}
           >
             <AlertCircle className="w-5 h-5 text-yellow-500" />
             En attente de confirmation
             {pendingAppointments.length > 0 && (
-              <span 
+              <span
                 className="ml-auto text-xs font-medium px-2 py-1 rounded-full"
                 style={{
                   backgroundColor: darkMode ? 'rgba(234, 179, 8, 0.3)' : '#FEF3C7',

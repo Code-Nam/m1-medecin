@@ -388,4 +388,3 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
 };
 
 export default AppointmentForm;
-

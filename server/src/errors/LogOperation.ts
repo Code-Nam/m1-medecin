@@ -30,6 +30,10 @@ export enum LogOperation {
     LOGIN = "LOGIN",
     REGISTER = "REGISTER",
 
+    // Email operations
+    EMAIL_SENT = "EMAIL_SENT",
+    EMAIL_FAILED = "EMAIL_FAILED",
+
     // Status operations
     SUCCESS = "SUCCESS",
     ERROR = "ERROR",

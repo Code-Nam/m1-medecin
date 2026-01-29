@@ -1,3 +1,7 @@
+// Set up test environment variables
+process.env.JWT_SECRET = "test-jwt-secret-key-for-testing";
+process.env.RESEND_API = "re_test_mock_api_key";
+
 // Mock Prisma Client
 jest.mock("../src/config/database", () => ({
     prisma: {

@@ -14,7 +14,11 @@ export const doctorService = {
     return ApiClient.get<Doctor>(`/doctors/${doctorId}`);
   },
 
-  getAvailableSlots: async (doctorId: string, date: string): Promise<any> => {
-    return ApiClient.get(`/availability/${doctorId}/slots?date=${date}`);
+  getAvailableSlots: async (doctorId: string, date: string): Promise<any[]> => {
+    const response = await ApiClient.get<{ slots: any[] } | any[]>(`/availability/${doctorId}/slots?date=${date}`);
+    if ('slots' in response && Array.isArray(response.slots)) {
+      return response.slots;
+    }
+    return Array.isArray(response) ? response : [];
   },
 };

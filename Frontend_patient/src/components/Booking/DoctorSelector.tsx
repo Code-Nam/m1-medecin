@@ -61,6 +61,18 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
                                         onSelect(doctor);
                                     }
                                 }}
+                                onFocus={(e) => {
+                                    if (!isSelected) {
+                                        e.currentTarget.style.borderColor = colors.accent.primary;
+                                        e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
+                                    }
+                                }}
+                                onBlur={(e) => {
+                                    if (!isSelected) {
+                                        e.currentTarget.style.borderColor = colors.border.default;
+                                        e.currentTarget.style.backgroundColor = 'transparent';
+                                    }
+                                }}
                                 onMouseEnter={(e) => {
                                     if (!isSelected) {
                                         e.currentTarget.style.borderColor = colors.accent.primary;

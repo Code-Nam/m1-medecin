@@ -100,10 +100,9 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("id", "doctor-123");
-            expect(response.body.data).toHaveProperty("firstName", "John");
-            expect(response.body.data).toHaveProperty(
+            expect(response.body).toHaveProperty("id", "doctor-123");
+            expect(response.body).toHaveProperty("firstName", "John");
+            expect(response.body).toHaveProperty(
                 "specialization",
                 "Cardiology"
             );

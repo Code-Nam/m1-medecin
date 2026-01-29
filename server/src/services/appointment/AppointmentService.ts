@@ -3,19 +3,20 @@ import { logger } from "../../config/logger";
 import { appointmentRepository } from "../../repositories/appointment/AppointmentRepository";
 import { patientRepository } from "../../repositories/patient/PatientRepository";
 import { doctorRepository } from "../../repositories/doctor/DoctorRepository";
+import { emailService } from "../email/EmailService";
 import type { IAppointmentService } from "./IAppointmentService";
 
 export class AppointmentService implements IAppointmentService {
     async getAppointmentsByPatient(
         patientId: string,
         page: number = 1,
-        pageSize: number = 10,
+        pageSize: number = 10
     ) {
         const { appointments, total } =
             await appointmentRepository.findAppointmentsByPatient(
                 patientId,
                 page,
-                pageSize,
+                pageSize
             );
 
         return {
@@ -40,13 +41,13 @@ export class AppointmentService implements IAppointmentService {
     async getAppointmentsByDoctor(
         doctorId: string,
         page: number = 1,
-        pageSize: number = 10,
+        pageSize: number = 10
     ) {
         const { appointments, total } =
             await appointmentRepository.findAppointmentsByDoctor(
                 doctorId,
                 page,
-                pageSize,
+                pageSize
             );
 
         return {
@@ -82,7 +83,7 @@ export class AppointmentService implements IAppointmentService {
 
         if (data.slotId) {
             const slot = await appointmentRepository.findAvailabilitySlotById(
-                data.slotId as string,
+                data.slotId as string
             );
             if (!slot) throw new Error("Availability slot not found");
             if (slot.isBooked || !slot.isAvailable)
@@ -107,7 +108,7 @@ export class AppointmentService implements IAppointmentService {
             const hour = parseInt(timeParts[0] || "0");
             const minute = parseInt(timeParts[1] || "0");
             const normalizedTime = `${String(hour).padStart(2, "0")}:${String(
-                minute,
+                minute
             ).padStart(2, "0")}`;
 
             let slot =
@@ -115,23 +116,24 @@ export class AppointmentService implements IAppointmentService {
                     doctor.id,
                     dateStart,
                     dateEnd,
-                    normalizedTime,
+                    normalizedTime
                 );
 
             if (!slot) {
-                const { availabilityService } =
-                    await import("../availability/AvailabilityService");
+                const { availabilityService } = await import(
+                    "../availability/AvailabilityService"
+                );
                 await availabilityService.generateSlotsForDoctor(
                     doctor.id,
                     dateStart,
-                    dateEnd,
+                    dateEnd
                 );
                 slot =
                     await appointmentRepository.findAvailabilitySlotForDoctorAtTime(
                         doctor.id,
                         dateStart,
                         dateEnd,
-                        normalizedTime,
+                        normalizedTime
                     );
             }
 
@@ -161,6 +163,27 @@ export class AppointmentService implements IAppointmentService {
         });
 
         logger.info(`Appointment created: ${appointment.id}`);
+
+        // Send appointment reminder email (non-blocking)
+        try {
+            await emailService.sendAppointmentReminder({
+                patientName: `${patient.firstName} ${patient.surname}`,
+                patientEmail: patient.email,
+                doctorName: `${doctor.firstName} ${doctor.surname}`,
+                doctorTitle: doctor.title ?? undefined,
+                doctorSpecialization: doctor.specialization ?? undefined,
+                appointmentDate: this.formatDateForResponse(appointment.date),
+                appointmentTime: appointment.time,
+                reason: appointment.reason,
+                notes: appointment.notes ?? undefined,
+            });
+        } catch (error) {
+            // Email sending failed but don't fail the appointment creation
+            logger.error(
+                `Failed to send reminder email for appointment ${appointment.id}: ${error}`
+            );
+        }
+
         return {
             id: appointment.id,
             appointedPatient: patient.id,
@@ -185,7 +208,7 @@ export class AppointmentService implements IAppointmentService {
         if (data.status === "CANCELLED" && appointment.availabilitySlotId) {
             await appointmentRepository.updateAvailabilitySlot(
                 appointment.availabilitySlotId,
-                { isBooked: false, isAvailable: true },
+                { isBooked: false, isAvailable: true }
             );
         }
 
@@ -193,13 +216,13 @@ export class AppointmentService implements IAppointmentService {
             if (appointment.availabilitySlotId) {
                 await appointmentRepository.updateAvailabilitySlot(
                     appointment.availabilitySlotId,
-                    { isBooked: false, isAvailable: true },
+                    { isBooked: false, isAvailable: true }
                 );
             }
 
             const newSlot =
                 await appointmentRepository.findAvailabilitySlotById(
-                    data.slotId as string,
+                    data.slotId as string
                 );
             if (!newSlot) throw new Error("Availability slot not found");
             if (newSlot.isBooked || !newSlot.isAvailable)
@@ -225,6 +248,34 @@ export class AppointmentService implements IAppointmentService {
             await appointmentRepository.updateAppointment(id, updateData);
 
         logger.info(`Appointment updated: ${id}`);
+
+        // Send recap email when appointment is marked as COMPLETED (non-blocking)
+        if (data.status === "COMPLETED") {
+            try {
+                const patient = updatedAppointment.patient;
+                const doctor = updatedAppointment.doctor;
+
+                await emailService.sendAppointmentRecap({
+                    patientName: `${patient.firstName} ${patient.surname}`,
+                    patientEmail: patient.email,
+                    doctorName: `${doctor.firstName} ${doctor.surname}`,
+                    doctorTitle: doctor.title ?? undefined,
+                    doctorSpecialization: doctor.specialization ?? undefined,
+                    appointmentDate: this.formatDateForResponse(
+                        updatedAppointment.date
+                    ),
+                    appointmentTime: updatedAppointment.time,
+                    reason: updatedAppointment.reason,
+                    notes: updatedAppointment.notes ?? undefined,
+                });
+            } catch (error) {
+                // Email sending failed but don't fail the appointment update
+                logger.error(
+                    `Failed to send recap email for appointment ${id}: ${error}`
+                );
+            }
+        }
+
         return {
             id: updatedAppointment.id,
             appointedPatient: updatedAppointment.appointedPatientId,
@@ -247,7 +298,7 @@ export class AppointmentService implements IAppointmentService {
         if (appointment.availabilitySlotId)
             await appointmentRepository.updateAvailabilitySlot(
                 appointment.availabilitySlotId,
-                { isBooked: false, isAvailable: true },
+                { isBooked: false, isAvailable: true }
             );
         await appointmentRepository.deleteAppointmentById(id);
         logger.info(`Appointment deleted: ${id}`);

@@ -1,6 +1,7 @@
-const API_BASE_URL = (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) 
-  || (typeof process !== 'undefined' && process.env?.VITE_API_URL)
-  || 'http://localhost:3002/v1';
+const API_BASE_URL =
+  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
+  (typeof process !== 'undefined' && process.env?.VITE_API_URL) ||
+  'http://localhost:3000/v1';
 
 interface RequestOptions extends RequestInit {
   doctorId?: string;

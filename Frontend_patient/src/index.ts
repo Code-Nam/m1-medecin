@@ -2,7 +2,8 @@ import { serve } from "bun";
 import index from "./index.html";
 
 const server = serve({
-  port: 3001,
+  // Port spécifique pour le frontend patient
+  port: 3003,
   routes: {
     "/*": index,
 

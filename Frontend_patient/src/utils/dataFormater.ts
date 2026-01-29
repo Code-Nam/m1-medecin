@@ -13,7 +13,9 @@ export const formatDate = (dateString: string): string => {
   const match = dateString.match(simpleDateRegex);
 
   if (match) {
-    const [, day, month, year] = match.map(Number);
+    const day = Number(match[1]);
+    const month = Number(match[2]);
+    const year = Number(match[3]);
     dateToFormat = new Date(year, month - 1, day);
   } else {
     dateToFormat = new Date(dateString);

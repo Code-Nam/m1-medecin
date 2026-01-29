@@ -17,8 +17,11 @@ export const BookAppointment = () => {
 
     return (
         <div className="max-w-3xl mx-auto">
-            <div 
-                className="rounded-lg shadow-sm border p-6"
+            <div
+                className="rounded-lg shadow-sm border p-6 focus:outline-none focus:ring-2 focus:ring-offset-2"
+                tabIndex={-1}
+                role="main"
+                aria-label="Réservation de rendez-vous"
                 style={{
                     backgroundColor: colors.bg.card,
                     borderColor: colors.border.default

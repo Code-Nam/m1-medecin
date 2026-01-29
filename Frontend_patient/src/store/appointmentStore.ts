@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { Appointment, AppointmentStatus } from '../types';
+import { type Appointment, AppointmentStatus } from '../types';
 import { appointmentService } from '../services';
 
 interface AppointmentStore {
@@ -108,24 +108,57 @@ export const useAppointmentStore = create<AppointmentStore>((set, get) => ({
     const now = new Date();
     return get().appointments
       .filter((appt) => {
-        const [day, month, year] = appt.date.split('-').map(Number);
-        const apptDate = new Date(year, month - 1, day);
-        const [hours, minutes] = appt.time.split(':').map(Number);
-        apptDate.setHours(hours, minutes);
-        return apptDate >= now;
+        if (!appt.date) return false;
+        if (appt.date.includes('-')) {
+            const parts = appt.date.split('-');
+            if (parts.length === 3) {
+                const day = Number(parts[0]);
+                const month = Number(parts[1]);
+                const year = Number(parts[2]);
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    const apptDate = new Date(year, month - 1, day);
+                    const timeParts = appt.time ? appt.time.split(':') : ['0', '0'];
+                    const hours = Number(timeParts[0]);
+                    const minutes = Number(timeParts[1]);
+                    if (!isNaN(hours) && !isNaN(minutes)) {
+                         apptDate.setHours(hours, minutes);
+                         return apptDate >= now;
+                    }
+                }
+            }
+        }
+        // Fallback
+        const apptDate = new Date(appt.date);
+        return !isNaN(apptDate.getTime()) && apptDate >= now;
       })
       .sort((a, b) => {
-        const [d1, m1, y1] = a.date.split('-').map(Number);
-        const dateA = new Date(y1, m1 - 1, d1);
-        const [h1, min1] = a.time.split(':').map(Number);
-        dateA.setHours(h1, min1);
-
-        const [d2, m2, y2] = b.date.split('-').map(Number);
-        const dateB = new Date(y2, m2 - 1, d2);
-        const [h2, min2] = b.time.split(':').map(Number);
-        dateB.setHours(h2, min2);
-        
-        return dateA.getTime() - dateB.getTime();
+        // Helper to get timestamp
+        const getTimestamp = (appt: Appointment) => {
+             if (appt.date && appt.date.includes('-')) {
+                 const parts = appt.date.split('-');
+                 if (parts.length >= 3) {
+                     const d = Number(parts[0]);
+                     const m = Number(parts[1]);
+                     const y = Number(parts[2]);
+                     if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+                         const date = new Date(y, m - 1, d);
+                         if (appt.time) {
+                             const timeParts = appt.time.split(':');
+                             if (timeParts.length >= 2) {
+                                 const h = Number(timeParts[0]);
+                                 const min = Number(timeParts[1]);
+                                 if (!isNaN(h) && !isNaN(min)) {
+                                     date.setHours(h, min);
+                                 }
+                             }
+                         }
+                         return date.getTime();
+                     }
+                 }
+             }
+             return new Date(appt.date).getTime();
+        };
+        return getTimestamp(a) - getTimestamp(b);
       });
   },
 
@@ -133,24 +166,57 @@ export const useAppointmentStore = create<AppointmentStore>((set, get) => ({
     const now = new Date();
     return get().appointments
       .filter((appt) => {
-        const [day, month, year] = appt.date.split('-').map(Number);
-        const apptDate = new Date(year, month - 1, day);
-        const [hours, minutes] = appt.time.split(':').map(Number);
-        apptDate.setHours(hours, minutes);
-        return apptDate < now;
+         if (!appt.date) return false;
+         if (appt.date.includes('-')) {
+            const parts = appt.date.split('-');
+            if (parts.length === 3) {
+                const day = Number(parts[0]);
+                const month = Number(parts[1]);
+                const year = Number(parts[2]);
+                if (!isNaN(day) && !isNaN(month) && !isNaN(year)) {
+                    const apptDate = new Date(year, month - 1, day);
+                    const timeParts = appt.time ? appt.time.split(':') : ['0', '0'];
+                    const hours = Number(timeParts[0]);
+                    const minutes = Number(timeParts[1]);
+                    if (!isNaN(hours) && !isNaN(minutes)) {
+                         apptDate.setHours(hours, minutes);
+                         return apptDate < now;
+                    }
+                }
+            }
+         }
+         // Fallback
+         const apptDate = new Date(appt.date);
+         return !isNaN(apptDate.getTime()) && apptDate < now;
       })
       .sort((a, b) => {
-        const [d1, m1, y1] = a.date.split('-').map(Number);
-        const dateA = new Date(y1, m1 - 1, d1);
-        const [h1, min1] = a.time.split(':').map(Number);
-        dateA.setHours(h1, min1);
-
-        const [d2, m2, y2] = b.date.split('-').map(Number);
-        const dateB = new Date(y2, m2 - 1, d2);
-        const [h2, min2] = b.time.split(':').map(Number);
-        dateB.setHours(h2, min2);
-        
-        return dateB.getTime() - dateA.getTime();
+        // Helper to get timestamp
+        const getTimestamp = (appt: Appointment) => {
+             if (appt.date && appt.date.includes('-')) {
+                 const parts = appt.date.split('-');
+                 if (parts.length >= 3) {
+                     const d = Number(parts[0]);
+                     const m = Number(parts[1]);
+                     const y = Number(parts[2]);
+                     if (!isNaN(d) && !isNaN(m) && !isNaN(y)) {
+                         const date = new Date(y, m - 1, d);
+                         if (appt.time) {
+                             const timeParts = appt.time.split(':');
+                             if (timeParts.length >= 2) {
+                                 const h = Number(timeParts[0]);
+                                 const min = Number(timeParts[1]);
+                                 if (!isNaN(h) && !isNaN(min)) {
+                                     date.setHours(h, min);
+                                 }
+                             }
+                         }
+                         return date.getTime();
+                     }
+                 }
+             }
+             return new Date(appt.date).getTime();
+        };
+        return getTimestamp(b) - getTimestamp(a);
       });
   },
 }));

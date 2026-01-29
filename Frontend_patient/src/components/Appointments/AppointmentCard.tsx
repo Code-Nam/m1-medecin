@@ -1,5 +1,5 @@
 import React from 'react';
-import { Appointment } from '../../types';
+import type { Appointment } from '../../types';
 import { AppointmentStatus } from './AppointmentStatus';
 import { formatDate, formatTime } from '../../utils/dataFormater';
 import { Calendar, Clock, User } from 'lucide-react';

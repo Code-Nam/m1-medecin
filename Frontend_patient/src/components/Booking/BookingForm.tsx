@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useDoctorStore } from '../../store/doctorStore';
 import { useAppointmentStore } from '../../store/appointmentStore';
 import { DoctorSelector } from './DoctorSelector';
@@ -6,7 +6,7 @@ import { TimeSlotSelector } from './TimeSlotSelector';
 import { BookingConfirmation } from './BookingConfirmation';
 import { Button } from '../Common/Button';
 import { useTheme } from '../../hooks/useTheme';
-import type { Doctor, AppointmentSlot } from '../../types';
+import { AppointmentStatus, type Doctor, type AppointmentSlot } from '../../types';
 import { doctorService } from '../../services';
 
 interface BookingFormProps {
@@ -18,6 +18,8 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
     const { doctors, fetchAllDoctors, isLoading: doctorsLoading } = useDoctorStore();
     const { createAppointment, isLoading: bookingLoading } = useAppointmentStore();
     const { colors } = useTheme();
+
+    const topOfFormRef = useRef<HTMLDivElement>(null); // Ref for accessibility focus management
 
     const [step, setStep] = useState(1);
     const [selectedDoctor, setSelectedDoctor] = useState<Doctor | null>(null);
@@ -31,6 +33,13 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
     useEffect(() => {
         fetchAllDoctors();
     }, [fetchAllDoctors]);
+
+    // Accessibility: Move focus to top of form when step changes
+    useEffect(() => {
+        if (topOfFormRef.current) {
+            topOfFormRef.current.focus();
+        }
+    }, [step]);
 
     useEffect(() => {
         const fetchSlots = async () => {
@@ -138,7 +147,7 @@ export const BookingForm: React.FC<BookingFormProps> = ({ patientId, onSuccess }
     );
 
     return (
-        <div className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div ref={topOfFormRef} tabIndex={-1} className="space-y-8 animate-in fade-in slide-in-from-bottom-4 duration-500 focus:outline-none">
             {/* Progress Indicator */}
             <nav aria-label="Progression de la prise de rendez-vous">
                 <ol className="flex items-center justify-center gap-2 mb-6">

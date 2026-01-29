@@ -146,10 +146,7 @@ export class AppointmentService implements IAppointmentService {
             }
         }
 
-        const status =
-            data.status === "DOCTOR_CREATED" || slotId
-                ? "DOCTOR_CREATED"
-                : "PENDING";
+        const status = data.status;
 
         const appointment = await appointmentRepository.createAppointment({
             appointedPatientId: patient.id,

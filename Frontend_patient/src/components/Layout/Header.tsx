@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, Moon, Bell, ChevronRight } from 'lucide-react';
+import { Menu, Sun, Moon, Bell, ChevronRight } from 'lucide-react';
 import { useUIStore } from '../../store/uiStore';
 import { useAppointmentStore } from '../../store/appointmentStore';
 import { usePatientStore } from '../../store/patientStore';
@@ -11,7 +11,7 @@ interface HeaderProps {
 }
 
 export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) => {
-  const { darkMode, toggleDarkMode } = useUIStore();
+  const { darkMode, toggleDarkMode, toggleSidebar } = useUIStore();
   const { currentPatient } = usePatientStore();
   const { appointments } = useAppointmentStore();
   const { colors } = useTheme();
@@ -56,9 +56,27 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
       aria-label="En-tête de l'application"
     >
       <div className="flex items-center justify-between px-4 lg:px-6 py-4">
-        {/* Left - Breadcrumb */}
+        {/* Left - Menu toggle + Breadcrumb */}
         <div className="flex items-center gap-4">
-          <nav aria-label="Fil d'Ariane">
+          <button
+            onClick={toggleSidebar}
+            className="p-2 rounded-lg transition-colors lg:hidden"
+            style={{
+              color: colors.text.secondary,
+              backgroundColor: 'transparent'
+            }}
+            onMouseEnter={(e) => {
+              e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
+            }}
+            onMouseLeave={(e) => {
+              e.currentTarget.style.backgroundColor = 'transparent';
+            }}
+            aria-label="Ouvrir le menu de navigation"
+          >
+            <Menu className="w-5 h-5" />
+          </button>
+
+          <nav aria-label="Fil d'Ariane" className="hidden sm:block">
             <ol className="flex items-center gap-2 text-sm">
               {breadcrumb.length > 0 ? (
                 breadcrumb.map((item, index) => (

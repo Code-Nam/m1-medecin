@@ -2,7 +2,7 @@ import React, { useMemo } from 'react';
 import { Calendar, Users, Clock, TrendingDown, RefreshCw } from 'lucide-react';
 import { useAppointmentStore } from '../../stores/appointmentStore';
 import { usePatientStore } from '../../stores/patientStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useTheme } from '../../hooks/useTheme';
 import { KPICard } from './KPICard';
 import { AppointmentsPerDayChart, ReasonsChart, PresenceRateChart } from './Charts';
@@ -11,33 +11,29 @@ import { format, subDays } from 'date-fns';
 import { fr } from 'date-fns/locale';
 
 export const StatsBoard: React.FC = () => {
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const { appointments, getAppointmentsByDoctor, getTodayAppointments } = useAppointmentStore();
   const { patients, getPatientsByDoctor } = usePatientStore();
   const { colors } = useTheme();
 
-  const doctorAppointments = doctor ? getAppointmentsByDoctor(doctor.doctorId) : [];
-  const todayAppointments = doctor ? getTodayAppointments(doctor.doctorId) : [];
-  const doctorPatients = doctor ? getPatientsByDoctor(doctor.doctorId) : [];
+  const doctorAppointments = doctor ? getAppointmentsByDoctor(doctor.id) : [];
+  const todayAppointments = doctor ? getTodayAppointments(doctor.id) : [];
+  const doctorPatients = doctor ? getPatientsByDoctor(doctor.id) : [];
 
-  // Calcul du taux d'occupation
   const occupationRate = useMemo(() => {
     const confirmedToday = todayAppointments.filter(a => 
       a.status === 'confirmed' || a.status === 'doctor_created'
     ).length;
-    // 11 créneaux par jour (8h-19h avec 1h/créneau)
     const totalSlots = 11;
     return Math.round((confirmedToday / totalSlots) * 100);
   }, [todayAppointments]);
 
-  // Calcul du taux de no-show
   const noShowRate = useMemo(() => {
     const cancelled = doctorAppointments.filter(a => a.status === 'cancelled').length;
     const total = doctorAppointments.length;
     return total > 0 ? Math.round((cancelled / total) * 100) : 0;
   }, [doctorAppointments]);
 
-  // Données pour le graphique des RDV par jour
   const appointmentsPerDay = useMemo(() => {
     const days: { day: string; appointments: number }[] = [];
     
@@ -53,7 +49,6 @@ export const StatsBoard: React.FC = () => {
     return days;
   }, [doctorAppointments]);
 
-  // Données pour le graphique des motifs
   const reasonsData = useMemo(() => {
     const reasonCounts: Record<string, number> = {};
     
@@ -73,7 +68,6 @@ export const StatsBoard: React.FC = () => {
       .slice(0, 5);
   }, [doctorAppointments]);
 
-  // Données pour le graphique du taux de présence
   const presenceRateData = useMemo(() => {
     const days: { day: string; rate: number }[] = [];
     
@@ -99,7 +93,6 @@ export const StatsBoard: React.FC = () => {
   }, [doctorAppointments]);
 
   const handleRefresh = () => {
-    // Simulation d'un rafraîchissement
     window.location.reload();
   };
 

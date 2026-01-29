@@ -1,5 +1,5 @@
 import { BrowserRouter as Router, Routes, Route, Navigate, useLocation, useNavigate } from 'react-router-dom';
-import { Dashboard, BookAppointment, MyAppointments, Profile } from './pages';
+import { Dashboard, BookAppointment, MyAppointments, Profile, Login, Register } from './pages';
 import { MainLayout } from './components/Layout';
 import { ErrorBoundary, ThemeProvider } from './components/Common';
 import './index.css';
@@ -9,13 +9,20 @@ import { useEffect } from 'react';
 function AppContent() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { currentPatient, fetchPatient } = usePatientStore();
+  const { currentPatient, isAuthenticated, initialize, fetchPatient } = usePatientStore();
 
   useEffect(() => {
-    if (!currentPatient) {
-      fetchPatient('1');
+    initialize();
+  }, [initialize]);
+
+  useEffect(() => {
+    if (isAuthenticated && !currentPatient) {
+      const user = JSON.parse(localStorage.getItem('user') || '{}');
+      if (user.patientId) {
+        fetchPatient(user.patientId);
+      }
     }
-  }, [currentPatient, fetchPatient]);
+  }, [isAuthenticated, currentPatient, fetchPatient]);
 
   const getPageInfo = (pathname: string) => {
     switch (pathname) {
@@ -38,6 +45,16 @@ function AppContent() {
   const handleNavigate = (path: string) => {
     navigate(path);
   };
+
+  if (!isAuthenticated) {
+    return (
+      <Routes>
+        <Route path="/login" element={<Login />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="*" element={<Navigate to="/login" replace />} />
+      </Routes>
+    );
+  }
 
   return (
     <MainLayout

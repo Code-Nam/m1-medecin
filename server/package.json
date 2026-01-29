@@ -1,16 +1,49 @@
 {
-  "name": "server",
-  "private": "true",
-  "module": "src/index.ts",
-  "type": "module",
-  "devDependencies": {
-    "@types/bun": "latest",
-    "@types/express": "^5.0.6"
-  },
-  "peerDependencies": {
-    "typescript": "^5"
-  },
-  "dependencies": {
-    "express": "^5.2.1"
-  }
+    "name": "server",
+    "private": "true",
+    "module": "src/server.ts",
+    "type": "module",
+    "scripts": {
+        "dev": "bun run src/server.ts",
+        "start": "bun run src/server.ts",
+        "test": "jest",
+        "test:unit": "jest unit",
+        "test:integration": "jest integration",
+        "test:watch": "jest --watch",
+        "test:coverage": "jest --coverage",
+        "db:generate": "prisma generate",
+        "db:push": "prisma db push",
+        "db:migrate": "prisma migrate dev",
+        "db:studio": "prisma studio",
+        "db:seed": "bun run prisma/seed.ts"
+    },
+    "devDependencies": {
+        "@types/bcryptjs": "^2.4.6",
+        "@types/bun": "latest",
+        "@types/cors": "^2.8.19",
+        "@types/express": "^5.0.6",
+        "@types/jest": "^29.5.12",
+        "@types/jsonwebtoken": "^9.0.7",
+        "@types/supertest": "^6.0.2",
+        "jest": "^30.2.0",
+        "prisma": "^5.19.1",
+        "supertest": "^7.0.0",
+        "ts-jest": "^29.1.2",
+        "ts-node": "^10.9.2"
+    },
+    "peerDependencies": {
+        "typescript": "^5"
+    },
+    "dependencies": {
+        "@prisma/client": "^5.19.1",
+        "@sentry/node": "^10.32.1",
+        "bcryptjs": "^2.4.3",
+        "cors": "^2.8.5",
+        "dotenv": "^16.4.5",
+        "express": "^5.2.1",
+        "jsonwebtoken": "^9.0.2",
+        "winston": "^3.19.0",
+        "winston-transport": "^4.9.0",
+        "zod": "^3.23.8"
+    }
 }

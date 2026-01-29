@@ -21,27 +21,23 @@ const initializeTheme = () => {
         htmlElement.style.colorScheme = 'dark';
         document.body.style.backgroundColor = '#0F0F0F';
         document.body.style.color = '#FFFFFF';
-        console.log('🌙 Dark mode activé depuis localStorage');
       } else {
         htmlElement.classList.remove('dark');
         htmlElement.style.colorScheme = 'light';
         document.body.style.backgroundColor = '#F5F5F5';
         document.body.style.color = '#1A1A1A';
-        console.log('☀️ Light mode activé depuis localStorage');
       }
     } catch (e) {
       htmlElement.classList.remove('dark');
       htmlElement.style.colorScheme = 'light';
       document.body.style.backgroundColor = '#F5F5F5';
       document.body.style.color = '#1A1A1A';
-      console.log('☀️ Light mode par défaut (erreur localStorage)');
     }
   } else {
     htmlElement.classList.remove('dark');
     htmlElement.style.colorScheme = 'light';
     document.body.style.backgroundColor = '#F5F5F5';
     document.body.style.color = '#1A1A1A';
-    console.log('☀️ Light mode par défaut (pas de localStorage)');
   }
 };
 

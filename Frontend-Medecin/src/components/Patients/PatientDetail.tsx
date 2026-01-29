@@ -21,7 +21,6 @@ export const PatientDetail: React.FC<PatientDetailProps> = ({ patient, onClose }
 
   const appointments = getAppointmentsByPatient(patient.patientId);
   const sortedAppointments = [...appointments].sort((a, b) => {
-    // Trier par date décroissante
     const [dayA, monthA, yearA] = a.date.split('-').map(Number);
     const [dayB, monthB, yearB] = b.date.split('-').map(Number);
     const dateA = new Date(yearA, monthA - 1, dayA);

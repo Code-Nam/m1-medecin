@@ -26,7 +26,6 @@ export const Spinner: React.FC<SpinnerProps> = ({ size = 'md', className = '' })
   );
 };
 
-// Full page spinner
 export const PageSpinner: React.FC = () => {
   const { darkMode } = useTheme();
   return (
@@ -39,7 +38,6 @@ export const PageSpinner: React.FC = () => {
   );
 };
 
-// Inline spinner for buttons or small areas
 export const InlineSpinner: React.FC<{ className?: string }> = ({ className = '' }) => {
   return (
     <svg

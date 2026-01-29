@@ -4,21 +4,20 @@ import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
 import { useAppointmentStore } from '../../stores/appointmentStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
 import { getPatientName } from '../../utils/mockData';
 
 export const CalendarView: React.FC = () => {
   const calendarRef = useRef<FullCalendar>(null);
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const { getAppointmentsForCalendar, selectAppointment, setSelectedDate } = useAppointmentStore();
   const { openModal } = useUIStore();
   const { colors } = useTheme();
 
-  const events = doctor ? getAppointmentsForCalendar(doctor.doctorId) : [];
+  const events = doctor ? getAppointmentsForCalendar(doctor.id) : [];
 
-  // Enrichir les événements avec le nom du patient
   const enrichedEvents = events.map(event => ({
     ...event,
     title: `${event.extendedProps.time} - ${getPatientName(event.extendedProps.appointedPatient)}`

@@ -27,7 +27,6 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
             ...formData,
             [e.target.name]: e.target.value,
         });
-        // Clear error when typing
         if (errors[e.target.name]) {
             setErrors({ ...errors, [e.target.name]: '' });
         }
@@ -52,7 +51,6 @@ export const ProfilForm: React.FC<ProfilFormProps> = ({ patient, onSave, onCance
         try {
             await onSave(formData);
         } catch (error) {
-            console.error(error);
         } finally {
             setIsLoading(false);
         }

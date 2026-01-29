@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { User, Mail, Phone } from 'lucide-react';
 import { usePatientStore } from '../../stores/patientStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
 import Button from '../Common/Button';
@@ -20,7 +20,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
   onSuccess,
   onCancel
 }) => {
-  const { doctor } = useAuthStore();
+  const doctor = useDoctor();
   const { addPatient, updatePatient } = usePatientStore();
   const { addToast } = useUIStore();
   const { darkMode, colors } = useTheme();
@@ -78,20 +78,20 @@ export const PatientForm: React.FC<PatientFormProps> = ({
         FirstName: formData.FirstName,
         email: formData.email,
         phone: formData.phone,
-        assigned_doctor: formData.assignToDoctor && doctor ? doctor.doctorId : ''
+        assigned_doctor: formData.assignToDoctor && doctor ? doctor.id : undefined
       };
 
       if (isEditing && patient) {
-        updatePatient(patient.patientId, patientData);
+        await updatePatient(patient.patientId, patientData);
         addToast('success', 'Patient modifié avec succès');
       } else {
-        addPatient(patientData);
+        await addPatient(patientData);
         addToast('success', 'Patient créé avec succès');
       }
 
       onSuccess();
-    } catch (error) {
-      addToast('error', 'Une erreur est survenue');
+    } catch (error: any) {
+      addToast('error', error.message || 'Une erreur est survenue');
     } finally {
       setIsSubmitting(false);
     }

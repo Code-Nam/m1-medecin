@@ -2,9 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { Calendar, Clock, User, FileText } from 'lucide-react';
 import { useAppointmentStore } from '../../stores/appointmentStore';
 import { usePatientStore } from '../../stores/patientStore';
-import { useAuthStore } from '../../stores/authStore';
+import { useDoctor } from '../../stores/authStore';
 import { useUIStore } from '../../stores/uiStore';
 import { useTheme } from '../../hooks/useTheme';
+import { availabilityService } from '../../services/api';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
 import Select from '../Common/Select';
@@ -20,6 +21,14 @@ interface AppointmentFormProps {
   onCancel: () => void;
 }
 
+interface AvailableSlot {
+  slotId: string;
+  startTime: string;
+  endTime: string;
+  isAvailable: boolean;
+  isBooked: boolean;
+}
+
 export const AppointmentForm: React.FC<AppointmentFormProps> = ({
   appointment,
   initialDate,
@@ -27,15 +36,14 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
   onSuccess,
   onCancel
 }) => {
-  const { doctor } = useAuthStore();
-  const { patients } = usePatientStore();
+  const doctor = useDoctor();
+  const { patients, fetchPatients } = usePatientStore();
   const { addAppointment, updateAppointment } = useAppointmentStore();
   const { addToast } = useUIStore();
   const { colors } = useTheme();
 
   const isEditing = !!appointment;
 
-  // Convertir date format yyyy-MM-dd vers dd-MM-yyyy pour l'API
   const convertToAPIDate = (isoDate: string): string => {
     if (!isoDate) return '';
     const parts = isoDate.split('-');
@@ -43,7 +51,6 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
     return `${parts[2]}-${parts[1]}-${parts[0]}`;
   };
 
-  // Convertir date format dd-MM-yyyy vers yyyy-MM-dd pour l'input
   const convertToInputDate = (apiDate: string): string => {
     if (!apiDate) return '';
     const parts = apiDate.split('-');
@@ -53,17 +60,52 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
 
   const [formData, setFormData] = useState({
     patientId: appointment?.appointedPatient || '',
-    date: appointment?.date ? convertToInputDate(appointment.date) : initialDate || '',
-    time: appointment?.time || initialTime || '09:00',
+    date: appointment?.date ? convertToInputDate(appointment.date) : initialDate || new Date().toISOString().split('T')[0],
+    time: appointment?.time || initialTime || '',
     reason: appointment?.reason || '',
     createdBy: appointment?.createdBy || 'doctor' as 'patient' | 'doctor'
   });
 
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [availableSlots, setAvailableSlots] = useState<AvailableSlot[]>([]);
+  const [loadingSlots, setLoadingSlots] = useState(false);
 
-  // Patients du médecin
-  const doctorPatients = patients.filter(p => p.assigned_doctor === doctor?.doctorId);
+  useEffect(() => {
+    if (doctor?.id) {
+      fetchPatients(doctor.id).catch(() => {});
+    }
+  }, [doctor?.id, fetchPatients]);
+
+  useEffect(() => {
+    if (doctor?.id && formData.date && !isEditing) {
+      fetchAvailableSlots(doctor.id, formData.date);
+    } else {
+      setAvailableSlots([]);
+    }
+  }, [doctor?.id, formData.date, isEditing, fetchAvailableSlots]);
+
+  const fetchAvailableSlots = React.useCallback(async (doctorId: string, date: string) => {
+    if (!doctorId || !date) {
+      setAvailableSlots([]);
+      return;
+    }
+    
+    setLoadingSlots(true);
+    try {
+      const response = await availabilityService.getAvailableSlots(doctorId, date);
+      setAvailableSlots(response.slots || []);
+    } catch (error: any) {
+      setAvailableSlots([]);
+      if (error.message && !error.message.includes('Doctor not found')) {
+        addToast('error', `Erreur: ${error.message}`);
+      }
+    } finally {
+      setLoadingSlots(false);
+    }
+  }, [addToast]);
+
+  const doctorPatients = patients.filter(p => p.assigned_doctor === doctor?.id);
   const patientOptions = doctorPatients.map(p => ({
     value: p.patientId,
     label: `${p.FirstName} ${p.Surname}`
@@ -107,27 +149,29 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
     setIsSubmitting(true);
 
     try {
+      const selectedSlot = availableSlots.find(slot => slot.startTime === formData.time);
+      const slotId = selectedSlot?.slotId;
+
       const appointmentData = {
-        appointedPatient: formData.patientId,
-        appointedDoctor: doctor.doctorId,
+        appointedPatientId: formData.patientId,
+        appointedDoctorId: doctor.id,
         date: convertToAPIDate(formData.date),
         time: formData.time,
         reason: formData.reason,
-        status: (formData.createdBy === 'doctor' ? 'doctor_created' : 'pending') as Appointment['status'],
-        createdBy: formData.createdBy as 'patient' | 'doctor'
+        slotId: slotId,
       };
 
       if (isEditing && appointment) {
-        updateAppointment(appointment.appointmentId, appointmentData);
+        await updateAppointment(appointment.appointmentId, appointmentData);
         addToast('success', 'Rendez-vous modifié avec succès');
       } else {
-        addAppointment(appointmentData);
+        await addAppointment(appointmentData);
         addToast('success', 'Rendez-vous créé avec succès');
       }
 
       onSuccess();
-    } catch (error) {
-      addToast('error', 'Une erreur est survenue');
+    } catch (error: any) {
+      addToast('error', error.message || 'Une erreur est survenue');
     } finally {
       setIsSubmitting(false);
     }
@@ -157,20 +201,86 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
           aria-label="Sélectionner un patient"
         />
 
-        {/* Date et Heure */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-5">
-          <Input
-            type="date"
-            label="Date"
-            value={formData.date}
-            onChange={(e) => handleChange('date', e.target.value)}
-            error={errors.date}
-            required
-            min={new Date().toISOString().split('T')[0]}
-            leftIcon={<Calendar className="w-4 h-4" />}
-            aria-label="Sélectionner la date du rendez-vous"
-          />
+        {/* Date */}
+        <Input
+          type="date"
+          label="Date"
+          value={formData.date}
+          onChange={(e) => {
+            handleChange('date', e.target.value);
+            handleChange('time', ''); // Réinitialiser l'heure quand la date change
+          }}
+          error={errors.date}
+          required
+          min={new Date().toISOString().split('T')[0]}
+          leftIcon={<Calendar className="w-4 h-4" />}
+          aria-label="Sélectionner la date du rendez-vous"
+        />
 
+        {/* Créneaux disponibles */}
+        {!isEditing && formData.date && (
+          <div>
+            <label className="block text-sm font-medium mb-2" style={{ color: colors.text.secondary }}>
+              Heure
+            </label>
+            {loadingSlots ? (
+              <div className="text-sm" style={{ color: colors.text.secondary }}>
+                Chargement des créneaux...
+              </div>
+            ) : availableSlots.length === 0 ? (
+              <div className="text-sm italic" style={{ color: colors.text.secondary }}>
+                Aucun créneau disponible pour cette date.
+              </div>
+            ) : (
+              <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 gap-3">
+                {availableSlots
+                  .filter(slot => slot.isAvailable && !slot.isBooked)
+                  .map((slot) => {
+                    const isSelected = formData.time === slot.startTime;
+                    return (
+                      <button
+                        key={slot.slotId}
+                        type="button"
+                        onClick={() => handleChange('time', slot.startTime)}
+                        className="py-2 px-3 text-sm font-medium rounded-md border transition-colors focus:outline-none focus:ring-2"
+                        style={{
+                          backgroundColor: isSelected 
+                            ? colors.accent.primary 
+                            : colors.bg.card,
+                          color: isSelected 
+                            ? '#FFFFFF' 
+                            : colors.text.primary,
+                          borderColor: isSelected 
+                            ? colors.accent.primary 
+                            : colors.border.default,
+                        }}
+                        onMouseEnter={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.backgroundColor = colors.bg.primary;
+                          }
+                        }}
+                        onMouseLeave={(e) => {
+                          if (!isSelected) {
+                            e.currentTarget.style.backgroundColor = colors.bg.card;
+                          }
+                        }}
+                      >
+                        {slot.startTime}
+                      </button>
+                    );
+                  })}
+              </div>
+            )}
+            {errors.time && (
+              <p className="mt-1 text-sm" style={{ color: '#ef4444' }}>
+                {errors.time}
+              </p>
+            )}
+          </div>
+        )}
+
+        {/* Input heure pour l'édition */}
+        {isEditing && (
           <Input
             type="time"
             label="Heure"
@@ -184,7 +294,7 @@ export const AppointmentForm: React.FC<AppointmentFormProps> = ({
             leftIcon={<Clock className="w-4 h-4" />}
             aria-label="Sélectionner l'heure du rendez-vous"
           />
-        </div>
+        )}
 
         {/* Motif */}
         <Textarea

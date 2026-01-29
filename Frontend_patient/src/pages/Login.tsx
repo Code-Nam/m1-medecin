@@ -152,7 +152,7 @@ export const Login = () => {
             Compte de test :
             <br />
             <span className="font-mono text-xs mt-2 block">
-              alice.dupont@example.com / password123
+              thomas.petit@example.com / 123456
             </span>
           </p>
         </div>

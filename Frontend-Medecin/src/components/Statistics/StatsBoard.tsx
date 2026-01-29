@@ -21,44 +21,44 @@ export const StatsBoard: React.FC = () => {
   const doctorPatients = doctor ? getPatientsByDoctor(doctor.id) : [];
 
   const occupationRate = useMemo(() => {
-    const confirmedToday = todayAppointments.filter(a => 
-      a.status === 'confirmed' || a.status === 'doctor_created'
+    const confirmedToday = todayAppointments.filter(a =>
+      a.status === 'CONFIRMED' || a.status === 'DOCTOR_CREATED'
     ).length;
     const totalSlots = 11;
     return Math.round((confirmedToday / totalSlots) * 100);
   }, [todayAppointments]);
 
   const noShowRate = useMemo(() => {
-    const cancelled = doctorAppointments.filter(a => a.status === 'cancelled').length;
+    const cancelled = doctorAppointments.filter(a => a.status === 'CANCELLED').length;
     const total = doctorAppointments.length;
     return total > 0 ? Math.round((cancelled / total) * 100) : 0;
   }, [doctorAppointments]);
 
   const appointmentsPerDay = useMemo(() => {
     const days: { day: string; appointments: number }[] = [];
-    
+
     for (let i = 6; i >= 0; i--) {
       const date = subDays(new Date(), i);
       const dateStr = format(date, 'dd-MM-yyyy');
       const dayName = format(date, 'EEE', { locale: fr });
-      
+
       const count = doctorAppointments.filter(a => a.date === dateStr).length;
       days.push({ day: dayName, appointments: count });
     }
-    
+
     return days;
   }, [doctorAppointments]);
 
   const reasonsData = useMemo(() => {
     const reasonCounts: Record<string, number> = {};
-    
+
     doctorAppointments.forEach(a => {
       const reason = a.reason.toLowerCase().includes('général') ? 'Consultation générale' :
-                     a.reason.toLowerCase().includes('suivi') ? 'Suivi' :
-                     a.reason.toLowerCase().includes('vaccin') ? 'Vaccination' :
-                     a.reason.toLowerCase().includes('ordonnance') ? 'Ordonnance' :
-                     a.reason.toLowerCase().includes('bilan') ? 'Bilan' :
-                     'Autre';
+        a.reason.toLowerCase().includes('suivi') ? 'Suivi' :
+          a.reason.toLowerCase().includes('vaccin') ? 'Vaccination' :
+            a.reason.toLowerCase().includes('ordonnance') ? 'Ordonnance' :
+              a.reason.toLowerCase().includes('bilan') ? 'Bilan' :
+                'Autre';
       reasonCounts[reason] = (reasonCounts[reason] || 0) + 1;
     });
 
@@ -70,25 +70,25 @@ export const StatsBoard: React.FC = () => {
 
   const presenceRateData = useMemo(() => {
     const days: { day: string; rate: number }[] = [];
-    
+
     for (let i = 6; i >= 0; i--) {
       const date = subDays(new Date(), i);
       const dateStr = format(date, 'dd-MM-yyyy');
       const dayName = format(date, 'EEE', { locale: fr });
-      
+
       const dayAppointments = doctorAppointments.filter(a => a.date === dateStr);
-      const confirmed = dayAppointments.filter(a => 
-        a.status === 'confirmed' || a.status === 'doctor_created'
+      const confirmed = dayAppointments.filter(a =>
+        a.status === 'CONFIRMED' || a.status === 'DOCTOR_CREATED'
       ).length;
-      const cancelled = dayAppointments.filter(a => a.status === 'cancelled').length;
-      
-      const rate = (confirmed + cancelled) > 0 
+      const cancelled = dayAppointments.filter(a => a.status === 'CANCELLED').length;
+
+      const rate = (confirmed + cancelled) > 0
         ? Math.round((confirmed / (confirmed + cancelled)) * 100)
         : 100;
-        
+
       days.push({ day: dayName, rate });
     }
-    
+
     return days;
   }, [doctorAppointments]);
 

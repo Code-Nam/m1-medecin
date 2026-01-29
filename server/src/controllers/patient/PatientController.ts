@@ -53,12 +53,18 @@ export class PatientController implements IPatientController {
         }
     }
 
-    async createPatient(req: any, res: Response): Promise<void> {
+    async createPatient(req: AuthRequest, res: Response): Promise<void> {
         try {
             logOperation(
                 LogOperation.CREATE,
                 `patient email=${req.body.email}`,
             );
+
+            // If the user is a doctor, automatically assign the patient to them if not specified
+            if (req.user?.role === 'DOCTOR' && !req.body.assigned_doctor && !req.body.assignedDoctorId) {
+                req.body.assigned_doctor = req.user.id;
+            }
+
             const patient = await patientService.createPatient(req.body);
             logSuccess(`Created patient ${patient.id}`);
             ResponseHandler.created(res, patient);

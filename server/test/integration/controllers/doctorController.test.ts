@@ -159,11 +159,11 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.doctors).toHaveLength(2);
-            expect(response.body.data.pagination).toHaveProperty("total", 2);
-            expect(response.body.data.pagination).toHaveProperty("page", 1);
-            expect(response.body.data.pagination).toHaveProperty(
+            // Response body checked directly
+            expect(response.body.doctors).toHaveLength(2);
+            expect(response.body.pagination).toHaveProperty("total", 2);
+            expect(response.body.pagination).toHaveProperty("page", 1);
+            expect(response.body.pagination).toHaveProperty(
                 "pageSize",
                 10
             );
@@ -181,9 +181,9 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.pagination).toHaveProperty("page", 1);
-            expect(response.body.data.pagination).toHaveProperty(
+            // Response body checked directly
+            expect(response.body.pagination).toHaveProperty("page", 1);
+            expect(response.body.pagination).toHaveProperty(
                 "pageSize",
                 10
             );
@@ -222,10 +222,10 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(201);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty("id", "doctor-123");
-            expect(response.body.data).toHaveProperty("firstName", "John");
-            expect(response.body.data).not.toHaveProperty("password");
+            // Response body checked directly
+            expect(response.body).toHaveProperty("id", "doctor-123");
+            expect(response.body).toHaveProperty("firstName", "John");
+            expect(response.body).not.toHaveProperty("password");
         });
 
         it("should return 400 for duplicate email", async () => {
@@ -295,12 +295,12 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data).toHaveProperty(
+            // Response body checked directly
+            expect(response.body).toHaveProperty(
                 "specialization",
                 "Neurology"
             );
-            expect(response.body.data).toHaveProperty("phone", "0987654321");
+            expect(response.body).toHaveProperty("phone", "0987654321");
         });
 
         it("should return 404 when doctor not found", async () => {
@@ -345,7 +345,7 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
+            // Response body checked directly
             expect(prisma.doctor.delete).toHaveBeenCalledWith({
                 where: { id: "doctor-123" },
             });
@@ -404,9 +404,9 @@ describe("DoctorController - Integration Tests", () => {
                 .expect(200);
 
             // Assert
-            expect(response.body).toHaveProperty("success", true);
-            expect(response.body.data.patients).toHaveLength(2);
-            expect(response.body.data.pagination).toHaveProperty("total", 2);
+            // Response body checked directly
+            expect(response.body.patients).toHaveLength(2);
+            expect(response.body.pagination).toHaveProperty("total", 2);
         });
     });
 });

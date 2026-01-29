@@ -1,4 +1,4 @@
-const API_BASE_URL = (process.env.BUN_PUBLIC_API_URL) as string;
+const API_BASE_URL = (import.meta.env.VITE_API_URL) as string;
 
 class ApiClient {
   private getAuthToken(): string | null {

@@ -33,7 +33,7 @@ export const MainLayout: React.FC<MainLayoutProps> = ({
       htmlElement.classList.remove('dark');
       htmlElement.style.colorScheme = 'light';
       document.body.style.backgroundColor = '#FCFCF7';
-      document.body.style.color = '#263238';
+      document.body.style.color = '#1A1A1A';
     }
   }, [darkMode]);
 

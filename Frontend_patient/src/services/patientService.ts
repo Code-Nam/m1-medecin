@@ -1,12 +1,20 @@
 import ApiClient from './api.client';
-import { Patient, PatientUpdatePayload } from '../types';
+import type { Patient, PatientUpdatePayload } from '../types';
 
 export const patientService = {
   getPatient: async (patientId: string): Promise<Patient> => {
-    return ApiClient.get<Patient>(`/patients/${patientId}`);
+    const response = await ApiClient.get<any>(`/patients/${patientId}`);
+    return {
+      ...response,
+      patientId: response.id || response.patientId
+    };
   },
 
   updatePatient: async (patientId: string, data: PatientUpdatePayload): Promise<Patient> => {
-    return ApiClient.put<Patient>(`/patients/${patientId}`, data);
+    const response = await ApiClient.put<any>(`/patients/${patientId}`, data);
+    return {
+      ...response,
+      patientId: response.id || response.patientId
+    };
   },
 };

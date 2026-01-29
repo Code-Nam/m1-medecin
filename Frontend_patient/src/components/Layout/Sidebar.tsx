@@ -5,7 +5,6 @@ import {
   PlusCircle,
   User,
   LogOut,
-  Menu,
   UserCircle
 } from 'lucide-react';
 import { usePatientStore } from '../../store/patientStore';
@@ -27,25 +26,12 @@ interface SidebarProps {
 
 export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => {
   const { currentPatient, logout } = usePatientStore();
-  const { sidebarCollapsed, toggleSidebar, darkMode } = useUIStore();
+  const { darkMode } = useUIStore();
   const { colors } = useTheme();
   
-  const [isDesktop, setIsDesktop] = React.useState(window.innerWidth >= 1024);
-  
-  React.useEffect(() => {
-    const handleResize = () => {
-      const desktop = window.innerWidth >= 1024;
-      setIsDesktop(desktop);
-      if (desktop && sidebarCollapsed) {
-        toggleSidebar();
-      }
-    };
-    
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
-  }, [sidebarCollapsed, toggleSidebar]);
-  
-  const isCollapsed = isDesktop ? false : sidebarCollapsed;
+  // TOUJOURS en mode desktop - pas de responsive
+  const isDesktop = true;
+  const isCollapsed = false;
 
   const navItems: NavItem[] = [
     { id: 'dashboard', label: 'Accueil', icon: <Home className="w-5 h-5" />, path: '/' },
@@ -58,14 +44,6 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
 
   return (
     <>
-      {!isCollapsed && (
-        <div
-          className="lg:hidden fixed inset-0 bg-black/50 z-40"
-          onClick={toggleSidebar}
-          aria-hidden="true"
-        />
-      )}
-
       <aside
         id="navigation"
         className={`
@@ -90,44 +68,25 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
             style={{ 
               background: darkMode 
                 ? 'linear-gradient(to bottom right, #4DB6AC, #26A69A)' 
-                : 'linear-gradient(to bottom right, #43A78B, #2E7D6B)' 
+                : 'linear-gradient(to bottom right, #00796B, #004D40)' 
             }}
           >
             <UserCircle className="w-6 h-6" />
           </div>
-          {!isCollapsed && (
-            <div className="flex-1 min-w-0">
-              <p 
-                className="text-sm font-semibold truncate"
-                style={{ color: colors.text.primary }}
-              >
-                {currentPatient.firstName} {currentPatient.surname}
-              </p>
-              <p 
-                className="text-xs truncate"
-                style={{ color: colors.text.secondary }}
-              >
-                Patient
-              </p>
-            </div>
-          )}
-          <button
-            onClick={toggleSidebar}
-            className="p-2 rounded-lg transition-colors lg:hidden"
-            style={{
-              color: colors.text.secondary,
-              backgroundColor: 'transparent'
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.backgroundColor = darkMode ? colors.bg.card : colors.bg.primary;
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.backgroundColor = 'transparent';
-            }}
-            aria-label={isCollapsed ? 'Ouvrir le menu' : 'Fermer le menu'}
-          >
-            <Menu className="w-5 h-5" />
-          </button>
+          <div className="flex-1 min-w-0">
+            <p 
+              className="text-sm font-semibold truncate"
+              style={{ color: colors.text.primary }}
+            >
+              {currentPatient.firstName} {currentPatient.surname}
+            </p>
+            <p 
+              className="text-xs truncate"
+              style={{ color: colors.text.secondary }}
+            >
+              Patient
+            </p>
+          </div>
         </div>
 
         <nav className="flex-1 px-3 py-4 overflow-y-auto" role="navigation">
@@ -142,11 +101,11 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                   `}
                   style={{
                     backgroundColor: currentPage === item.path
-                      ? darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(67, 167, 139, 0.1)'
+                      ? darkMode ? 'rgba(77, 182, 172, 0.2)' : 'rgba(0, 121, 107, 0.1)'
                       : 'transparent',
                     color: currentPage === item.path
-                      ? darkMode ? '#4DB6AC' : '#43A78B'
-                      : darkMode ? '#D1D5DB' : '#263238'
+                      ? darkMode ? '#4DB6AC' : '#00796B'
+                      : darkMode ? '#CFD8DC' : '#1A1A1A'
                   }}
                   onMouseEnter={(e) => {
                     if (currentPage !== item.path) {
@@ -159,31 +118,29 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
                     }
                   }}
                   aria-current={currentPage === item.path ? 'page' : undefined}
-                  aria-label={item.label}
                 >
                   <span 
                     className="flex-shrink-0"
+                    aria-hidden="true"
                     style={{
                       color: currentPage === item.path
-                        ? darkMode ? '#4DB6AC' : '#43A78B'
-                        : darkMode ? '#9CA3AF' : '#546E7A'
+                        ? darkMode ? '#4DB6AC' : '#00796B'
+                        : darkMode ? '#B0BEC5' : '#37474F'
                     }}
                     onMouseEnter={(e) => {
                       if (currentPage !== item.path) {
-                        e.currentTarget.style.color = darkMode ? '#4DB6AC' : '#43A78B';
+                        e.currentTarget.style.color = darkMode ? '#4DB6AC' : '#00796B';
                       }
                     }}
                     onMouseLeave={(e) => {
                       if (currentPage !== item.path) {
-                        e.currentTarget.style.color = darkMode ? '#9CA3AF' : '#546E7A';
+                        e.currentTarget.style.color = darkMode ? '#B0BEC5' : '#37474F';
                       }
                     }}
                   >
                     {item.icon}
                   </span>
-                  {!isCollapsed && (
-                    <span className="truncate">{item.label}</span>
-                  )}
+                  <span className="truncate">{item.label}</span>
                   {currentPage === item.path && (
                     <span className="sr-only">(page actuelle)</span>
                   )}
@@ -214,7 +171,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ currentPage, onNavigate }) => 
             aria-label="Se déconnecter"
           >
             <LogOut className="w-5 h-5 flex-shrink-0" />
-            {!isCollapsed && <span>Déconnexion</span>}
+            <span>Déconnexion</span>
           </button>
         </div>
       </aside>

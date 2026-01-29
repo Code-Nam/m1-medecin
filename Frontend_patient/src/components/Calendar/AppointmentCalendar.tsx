@@ -3,7 +3,7 @@ import FullCalendar from '@fullcalendar/react';
 import dayGridPlugin from '@fullcalendar/daygrid';
 import timeGridPlugin from '@fullcalendar/timegrid';
 import interactionPlugin from '@fullcalendar/interaction';
-import { Appointment, AppointmentStatus } from '../../types';
+import { type Appointment, AppointmentStatus } from '../../types';
 import { useTheme } from '../../hooks/useTheme';
 import './calendar.css'; // We will create this for any custom overrides if needed
 
@@ -35,20 +35,38 @@ export const AppointmentCalendar: React.FC<AppointmentCalendarProps> = ({
         }
     };
 
-    const events = appointments.map((appt) => ({
-        id: appt.appointmentId,
-        title: appt.reason,
-        start: `${appt.date}T${appt.time}`,
-        backgroundColor: getEventColor(appt.status),
-        borderColor: getEventColor(appt.status),
-        extendedProps: {
-            status: appt.status,
-            doctorId: appt.appointedDoctor,
-        },
-    }));
+    const events = appointments.map((appt) => {
+        let dateStr = appt.date;
+        // Fix for dd-MM-yyyy format
+        if (dateStr && dateStr.includes('-')) {
+            const parts = dateStr.split('-');
+            if (parts.length === 3) {
+                // Convert dd-MM-yyyy to YYYY-MM-DD
+                const day = parts[0];
+                const month = parts[1];
+                const year = parts[2];
+                // Ensure valid parts before swapping (simple check)
+                if (day && month && year && day.length === 2 && month.length === 2 && year.length === 4) {
+                    dateStr = `${year}-${month}-${day}`;
+                }
+            }
+        }
+
+        return {
+            id: appt.appointmentId,
+            title: appt.reason,
+            start: `${dateStr}T${appt.time}`,
+            backgroundColor: getEventColor(appt.status),
+            borderColor: getEventColor(appt.status),
+            extendedProps: {
+                status: appt.status,
+                doctorId: appt.appointedDoctor,
+            },
+        };
+    });
 
     return (
-        <div 
+        <div
             className="rounded-xl shadow-sm border p-4 lg:p-6"
             style={{
                 backgroundColor: colors.bg.card,

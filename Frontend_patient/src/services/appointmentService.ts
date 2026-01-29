@@ -8,12 +8,14 @@ export const appointmentService = {
   },
 
   createAppointment: async (appointment: {
-    appointedPatientId: string;
-    appointedDoctorId: string;
+    appointedPatient: string;
+    appointedDoctor: string;
     date: string;
     time: string;
     reason: string;
     notes?: string;
+    slotId?: string;
+    status: string;
   }): Promise<Appointment> => {
     return ApiClient.post<Appointment>('/appointments', appointment);
   },

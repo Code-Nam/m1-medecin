@@ -16,6 +16,7 @@ export interface Appointment {
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
+  slotId?: string;
 }
 
 export interface AppointmentSlot {

@@ -47,11 +47,13 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
 
   return (
     <header 
+      role="banner"
       className="sticky top-0 z-30 backdrop-blur-md border-b"
       style={{
         backgroundColor: darkMode ? 'rgba(30, 30, 30, 0.8)' : 'rgba(255, 255, 255, 0.8)',
         borderColor: colors.border.default
       }}
+      aria-label="En-tête de l'application"
     >
       <div className="flex items-center justify-between px-4 lg:px-6 py-4">
         {/* Left - Menu toggle + Breadcrumb */}
@@ -141,11 +143,12 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
             }}
             aria-label={`Notifications${pendingCount > 0 ? ` (${pendingCount} en attente)` : ''}`}
           >
-            <Bell className="w-5 h-5" />
+            <Bell className="w-5 h-5" aria-hidden="true" />
             {pendingCount > 0 && (
               <span 
                 className="absolute top-1 right-1 w-4 h-4 text-white text-xs font-bold rounded-full flex items-center justify-center"
                 style={{ backgroundColor: colors.semantic.danger }}
+                aria-hidden="true"
               >
                 {pendingCount > 9 ? '9+' : pendingCount}
               </span>
@@ -169,9 +172,9 @@ export const Header: React.FC<HeaderProps> = ({ pageTitle, breadcrumb = [] }) =>
             aria-label={darkMode ? 'Activer le mode clair' : 'Activer le mode sombre'}
           >
             {darkMode ? (
-              <Sun className="w-5 h-5" style={{ color: colors.semantic.warning }} />
+              <Sun className="w-5 h-5" style={{ color: colors.semantic.warning }} aria-hidden="true" />
             ) : (
-              <Moon className="w-5 h-5" />
+              <Moon className="w-5 h-5" aria-hidden="true" />
             )}
           </button>
         </div>

@@ -130,8 +130,8 @@ export const Dashboard: React.FC = () => {
             className="text-lg font-semibold mb-4 flex items-center gap-2"
             style={{ color: colors.text.primary }}
           >
-            <AlertCircle className="w-5 h-5 text-yellow-500" />
-            En attente de confirmation
+            <AlertCircle className="w-5 h-5" style={{ color: colors.accent.secondary || '#F57C00' }} />
+            Rendez-vous à valider
             {pendingAppointments.length > 0 && (
               <span
                 className="ml-auto text-xs font-medium px-2 py-1 rounded-full"
@@ -164,7 +164,7 @@ export const Dashboard: React.FC = () => {
                 >
                   <div className="flex items-center justify-between mb-2">
                     <span className="font-medium text-sm" style={{ color: colors.text.primary }}>
-                      {getPatientName(appointment.appointedPatient)}
+                      {(appointment as any).patientName || getPatientName(appointment.appointedPatient)}
                     </span>
                     <span className="text-xs font-mono" style={{ color: colors.text.muted }}>
                       {appointment.time}
@@ -178,7 +178,7 @@ export const Dashboard: React.FC = () => {
                       onClick={() => handleConfirmAppointment(appointment.appointmentId)}
                       className="flex-1 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-xs font-medium rounded-lg transition-colors"
                       style={{ color: 'rgba(255, 255, 255, 1)' }}
-                      aria-label="Confirmer ce rendez-vous"
+                      aria-label={`Confirmer le rendez-vous de ${getPatientName(appointment.appointedPatient)} à ${appointment.time}`}
                     >
                       Confirmer
                     </button>
@@ -195,7 +195,7 @@ export const Dashboard: React.FC = () => {
                       onMouseLeave={(e) => {
                         e.currentTarget.style.backgroundColor = colors.border.light;
                       }}
-                      aria-label="Refuser ce rendez-vous"
+                      aria-label={`Refuser le rendez-vous de ${getPatientName(appointment.appointedPatient)} à ${appointment.time}`}
                     >
                       Refuser
                     </button>

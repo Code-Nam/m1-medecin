@@ -158,12 +158,14 @@ export const PatientForm: React.FC<PatientFormProps> = ({
 
       {/* Assign to doctor */}
       {!isEditing && (
-        <label className="flex items-center gap-3 cursor-pointer">
+        <label htmlFor="assign-doctor" className="flex items-center gap-3 cursor-pointer">
           <input
+            id="assign-doctor"
             type="checkbox"
             checked={formData.assignToDoctor}
             onChange={(e) => handleChange('assignToDoctor', e.target.checked)}
             className="w-4 h-4 text-cyan-600 border-gray-300 rounded focus:ring-cyan-500"
+            aria-label="Assigner ce patient à mon compte"
           />
           <span className="text-sm text-gray-700 dark:text-gray-300">
             Assigner ce patient à mon compte

@@ -74,7 +74,7 @@ export const Login = () => {
           </p>
         </div>
 
-        <div className="mb-6 flex gap-2">
+        <div className="mb-6 flex gap-2" role="group" aria-label="Type d'utilisateur pour la connexion">
           <button
             type="button"
             onClick={() => setUserType('doctor')}
@@ -89,8 +89,10 @@ export const Login = () => {
                   : colors.bg.primary,
               color: colors.text.primary,
             }}
+            aria-pressed={userType === 'doctor'}
+            aria-label="Se connecter en tant que médecin"
           >
-            <User size={16} className="inline mr-2" />
+            <User size={16} className="inline mr-2" aria-hidden="true" />
             Médecin
           </button>
           <button
@@ -107,8 +109,10 @@ export const Login = () => {
                   : colors.bg.primary,
               color: colors.text.primary,
             }}
+            aria-pressed={userType === 'secretary'}
+            aria-label="Se connecter en tant que secrétaire"
           >
-            <Building2 size={16} className="inline mr-2" />
+            <Building2 size={16} className="inline mr-2" aria-hidden="true" />
             Secrétaire
           </button>
         </div>

@@ -46,7 +46,8 @@ export const useAppointmentStore = create<AppointmentState>((set, get) => ({
         time: a.time,
         reason: a.reason,
         status: (a.status || 'PENDING').toUpperCase() as Appointment['status'],
-        createdBy: a.createdBy || 'doctor'
+        createdBy: a.createdBy || 'doctor',
+        patientName: a.patient ? `${a.patient.firstName} ${a.patient.surname}` : undefined
       })) : [];
 
       set({ appointments: mappedAppointments });

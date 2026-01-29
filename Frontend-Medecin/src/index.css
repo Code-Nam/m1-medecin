@@ -498,13 +498,41 @@ html.dark ::selection {
 }
 
 /* FC Header */
+.fc .fc-toolbar {
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  justify-content: center;
+}
+
+@media (min-width: 768px) {
+  .fc .fc-toolbar {
+    justify-content: space-between;
+  }
+}
+
 .fc .fc-toolbar-title {
-  @apply text-xl font-semibold capitalize;
+  @apply text-lg sm:text-xl font-semibold capitalize;
   color: #263238 !important; /* Couleur Texte - Palette IIM */
+  text-align: center;
+  min-width: 150px;
 }
 
 html.dark .fc .fc-toolbar-title {
   color: #FFFFFF !important;
+}
+
+/* Responsive buttons */
+@media (max-width: 640px) {
+  .fc .fc-button {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.8rem !important;
+  }
+  
+  .fc .fc-toolbar-chunk {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
 }
 
 .fc .fc-button {

@@ -122,6 +122,11 @@ const entrypoints = [...new Bun.Glob("**.html").scanSync("src")]
   .filter(dir => !dir.includes("node_modules"));
 console.log(`📄 Found ${entrypoints.length} HTML ${entrypoints.length === 1 ? "file" : "files"} to process\n`);
 
+// Lire les variables d'environnement
+const VITE_API_URL = process.env.VITE_API_URL || "http://localhost:3000/v1";
+
+console.log(`📡 API URL configured: ${VITE_API_URL}`);
+
 const result = await Bun.build({
   entrypoints,
   outdir,
@@ -131,7 +136,8 @@ const result = await Bun.build({
   sourcemap: "linked",
   define: {
     "process.env.NODE_ENV": JSON.stringify("production"),
-    "import.meta.env.VITE_API_URL": JSON.stringify(process.env.VITE_API_URL || "http://localhost:3000/v1"),
+    "import.meta.env.VITE_API_URL": JSON.stringify(VITE_API_URL),
+    "process.env.VITE_API_URL": JSON.stringify(VITE_API_URL),
   },
   ...cliConfig,
 });

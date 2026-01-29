@@ -54,7 +54,7 @@ export const DoctorSelector: React.FC<DoctorSelectorProps> = ({
                                 role="radio"
                                 aria-checked={isSelected}
                                 aria-label={doctorLabel}
-                                tabIndex={isSelected ? 0 : -1}
+                                tabIndex={0}
                                 onKeyDown={(e) => {
                                     if (e.key === 'Enter' || e.key === ' ') {
                                         e.preventDefault();

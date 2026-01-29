@@ -9,7 +9,7 @@ import { Calendar, List } from 'lucide-react';
 
 export const MyAppointments = () => {
     const { currentPatient } = usePatientStore();
-    const { appointments, fetchAppointments, cancelAppointment, isLoading } = useAppointmentStore();
+    const { appointments, fetchAppointments, isLoading } = useAppointmentStore();
     const { doctors, fetchAllDoctors } = useDoctorStore();
     const { darkMode, colors } = useTheme();
     const [viewMode, setViewMode] = useState<'calendar' | 'list'>('list');
@@ -26,15 +26,7 @@ export const MyAppointments = () => {
         return doc ? `Dr. ${doc.surname}` : 'Médecin inconnu';
     };
 
-    const handleCancelAppointment = async (id: string) => {
-        if (window.confirm('Êtes-vous sûr de vouloir annuler ce rendez-vous ?')) {
-            try {
-                await cancelAppointment(id);
-            } catch (error) {
-                console.error('Erreur lors de l\'annulation:', error);
-            }
-        }
-    };
+
 
     if (isLoading) {
         return <div className="p-8 text-center">Chargement...</div>;
@@ -139,11 +131,6 @@ export const MyAppointments = () => {
                                         key={appt.appointmentId}
                                         appointment={appt}
                                         doctorName={getDoctorName(appt.appointedDoctor)}
-                                        onCancel={
-                                            appt.status !== 'cancelled' && appt.status !== 'completed'
-                                                ? handleCancelAppointment
-                                                : undefined
-                                        }
                                     />
                                 ))}
                             </div>

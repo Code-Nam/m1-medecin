@@ -107,14 +107,50 @@ export const useAppointmentStore = create<AppointmentStore>((set, get) => ({
   getUpcomingAppointments: () => {
     const now = new Date();
     return get().appointments
-      .filter((appt) => new Date(`${appt.date}T${appt.time}`) >= now)
-      .sort((a, b) => new Date(`${a.date}T${a.time}`).getTime() - new Date(`${b.date}T${b.time}`).getTime());
+      .filter((appt) => {
+        const [day, month, year] = appt.date.split('-').map(Number);
+        const apptDate = new Date(year, month - 1, day);
+        const [hours, minutes] = appt.time.split(':').map(Number);
+        apptDate.setHours(hours, minutes);
+        return apptDate >= now;
+      })
+      .sort((a, b) => {
+        const [d1, m1, y1] = a.date.split('-').map(Number);
+        const dateA = new Date(y1, m1 - 1, d1);
+        const [h1, min1] = a.time.split(':').map(Number);
+        dateA.setHours(h1, min1);
+
+        const [d2, m2, y2] = b.date.split('-').map(Number);
+        const dateB = new Date(y2, m2 - 1, d2);
+        const [h2, min2] = b.time.split(':').map(Number);
+        dateB.setHours(h2, min2);
+        
+        return dateA.getTime() - dateB.getTime();
+      });
   },
 
   getPastAppointments: () => {
     const now = new Date();
     return get().appointments
-      .filter((appt) => new Date(`${appt.date}T${appt.time}`) < now)
-      .sort((a, b) => new Date(`${b.date}T${b.time}`).getTime() - new Date(`${a.date}T${a.time}`).getTime());
+      .filter((appt) => {
+        const [day, month, year] = appt.date.split('-').map(Number);
+        const apptDate = new Date(year, month - 1, day);
+        const [hours, minutes] = appt.time.split(':').map(Number);
+        apptDate.setHours(hours, minutes);
+        return apptDate < now;
+      })
+      .sort((a, b) => {
+        const [d1, m1, y1] = a.date.split('-').map(Number);
+        const dateA = new Date(y1, m1 - 1, d1);
+        const [h1, min1] = a.time.split(':').map(Number);
+        dateA.setHours(h1, min1);
+
+        const [d2, m2, y2] = b.date.split('-').map(Number);
+        const dateB = new Date(y2, m2 - 1, d2);
+        const [h2, min2] = b.time.split(':').map(Number);
+        dateB.setHours(h2, min2);
+        
+        return dateB.getTime() - dateA.getTime();
+      });
   },
 }));

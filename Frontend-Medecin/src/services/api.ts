@@ -1,7 +1,4 @@
-const API_BASE_URL =
-  (typeof import.meta !== 'undefined' && import.meta.env?.VITE_API_URL) ||
-  (typeof process !== 'undefined' && process.env?.VITE_API_URL) ||
-  'http://localhost:3000/v1';
+const API_BASE_URL = (process.env.BUN_PUBLIC_API_URL) as string;
 
 interface RequestOptions extends RequestInit {
   doctorId?: string;
@@ -184,7 +181,7 @@ export const availabilityService = {
     api.post(`/availability/${doctorId}/generate`, { startDate, endDate }),
 
   cleanupPastSlots: () =>
-    api.post('/availability/cleanup'),
+    api.post('/availability/cleanup', {}),
 };
 
 export const secretariesService = {

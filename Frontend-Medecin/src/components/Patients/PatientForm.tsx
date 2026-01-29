@@ -7,7 +7,7 @@ import { useTheme } from '../../hooks/useTheme';
 import Button from '../Common/Button';
 import Input from '../Common/Input';
 import { isValidName, isValidEmail, isValidPhone, validationMessages } from '../../utils/validation';
-import type { Patient } from '../../utils/mockData';
+import type { Patient } from '../../types';
 
 interface PatientFormProps {
   patient?: Patient | null;
@@ -172,7 +172,7 @@ export const PatientForm: React.FC<PatientFormProps> = ({
       )}
 
       {/* Actions */}
-      <div 
+      <div
         className="flex justify-end gap-3 pt-4 border-t"
         style={{ borderColor: colors.border.default }}
       >

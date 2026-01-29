@@ -3,8 +3,8 @@ import type { Appointment } from '../types';
 
 export const appointmentService = {
   getAppointments: async (patientId: string): Promise<{ appointments: Appointment[] }> => {
-    const response = await ApiClient.get<{ data: Appointment[]; pagination: any }>(`/appointments?patientId=${patientId}`);
-    return { appointments: response.data };
+    const response = await ApiClient.get<{ appointments: Appointment[]; page: number; pageSize: number; totalPages: number; totalAppointments: number }>(`/appointments?patientId=${patientId}`);
+    return { appointments: response.appointments };
   },
 
   createAppointment: async (appointment: {

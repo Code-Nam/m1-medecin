@@ -4,20 +4,28 @@ import { CalendarView } from '../components/Calendar/CalendarView';
 import { CalendarModal } from '../components/Calendar/CalendarModal';
 import { DayViewTable } from '../components/Calendar/DayViewTable';
 import { useUIStore } from '../stores/uiStore';
+import { useTheme } from '../hooks/useTheme';
 import Button from '../components/Common/Button';
 
 export const CalendarPage: React.FC = () => {
   const { openModal } = useUIStore();
+  const { colors } = useTheme();
 
   return (
     <div className="space-y-6">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-4">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 dark:text-white">
+          <h2 
+            className="text-2xl font-bold"
+            style={{ color: colors.text.primary }}
+          >
             Calendrier
-          </h1>
-          <p className="text-sm text-gray-500 dark:text-gray-400">
+          </h2>
+          <p 
+            className="text-sm"
+            style={{ color: colors.text.secondary }}
+          >
             Gérez vos rendez-vous
           </p>
         </div>

@@ -5,7 +5,25 @@ export const formatDate = (dateString: string): string => {
     month: 'long',
     day: 'numeric',
   };
-  return new Date(dateString).toLocaleDateString('fr-FR', options);
+
+  let dateToFormat: Date;
+
+  // Check if dateString is in dd-MM-yyyy format
+  const simpleDateRegex = /^(\d{2})-(\d{2})-(\d{4})$/;
+  const match = dateString.match(simpleDateRegex);
+
+  if (match) {
+    const [, day, month, year] = match.map(Number);
+    dateToFormat = new Date(year, month - 1, day);
+  } else {
+    dateToFormat = new Date(dateString);
+  }
+
+  if (isNaN(dateToFormat.getTime())) {
+    return 'Date invalide';
+  }
+
+  return dateToFormat.toLocaleDateString('fr-FR', options);
 };
 
 export const formatTime = (timeString: string): string => {
